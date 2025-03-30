@@ -1,5 +1,5 @@
 import {Link, useNavigate} from "react-router-dom";
-
+import logo from '../assets/logo.png';
 export default function Header() {
     const navigate = useNavigate();
     navigate('/');
@@ -26,7 +26,7 @@ export default function Header() {
                                 </li>
                             </ul>
                         <Link className="navbar-brand d-flex mx-auto justify-content-center" to="/">
-                            <img className="img-fluid w-25" src="/src/assets/logo.png" alt="Logo Liderplast"/>
+                            <img className="img-fluid w-25" src={logo} alt="Logo Liderplast"/>
                         </Link>
                         <form className="d-flex">
                             <input className="form-control me-2" type="search" placeholder="Buscar..."
