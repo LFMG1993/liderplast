@@ -1,0 +1,15 @@
+{
+	"name": "liderplast",
+	"main": "src/index.ts",
+	"compatibility_date": "2025-04-04",
+	"d1_databases": [
+		{
+			"binding": "LIDERPLAST_DB",
+			"database_id": "4e9f30eb-f2c9-40e2-b780-848a4c7f6d66",
+			"database_name": "liderplast"
+		}
+	],
+	"observability": {
+		"enabled": true
+	}
+}

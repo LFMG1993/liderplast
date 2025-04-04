@@ -1,0 +1,25 @@
+.btn-no-link {
+  text-decoration: none; /* Quita el subrayado */
+  color: inherit; /* Hereda el color del padre */
+  background-color: transparent; /* Fondo transparente */
+  border: none; /* Sin borde */
+  padding: 0; /* Quita el padding extra si es necesario */
+}
+
+.dropdown-menu {
+  display: block;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* Cuando se muestre, ajustar la opacidad y posición */
+.dropdown-menu.show {
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
+  pointer-events: auto;
+}
+

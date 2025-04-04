@@ -1,189 +1,50 @@
 import {Link} from "react-router-dom";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "../Style/Home.css";
-import Header from "../Components/Header.tsx";
-import slider1 from "../assets/slider1.png";
+import images from "../utils/images.ts";
 
 export default function Home() {
     return (
         <div>
-            <Header/>
             <div className="content-offset">
-                <div id="myCarousel" className="carousel slide m-0" data-bs-ride="carousel">
-                    <div className="carousel-indicators">
-                        <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="0" className="disabled"
-                                aria-current="true" aria-label="Slide 1"></button>
-                        <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="1"
-                                aria-label="Slide 2"></button>
-                        <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="2"
-                                aria-label="Slide 3"></button>
-                    </div>
-                    <div className="carousel-inner">
-                        <div className="carousel-item active">
-                            <img src={slider1} className="" alt="liderplast"/>
-                            <div className="container">
-                                <div className="carousel-caption text-start">
-                                </div>
-                            </div>
-                        </div>
-                        <div className="carousel-item">
-                            <svg className="bd-placeholder-img" width="100%" height="100%"
-                                 xmlns="http://www.w3.org/2000/svg" aria-hidden="true"
-                                 preserveAspectRatio="xMidYMid slice" focusable="false">
-                                <rect width="100%" height="100%" fill="#777"/>
-                            </svg>
-
-                            <div className="container">
-                                <div className="carousel-caption">
-                                    <h1>Another example headline.</h1>
-                                    <p>Some representative placeholder content for the second slide of the
-                                        carousel.</p>
-                                    <p><a className="btn btn-lg btn-primary" href="#">Learn more</a></p>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="carousel-item">
-                            <svg className="bd-placeholder-img" width="100%" height="100%"
-                                 xmlns="http://www.w3.org/2000/svg" aria-hidden="true"
-                                 preserveAspectRatio="xMidYMid slice" focusable="false">
-                                <rect width="100%" height="100%" fill="#777"/>
-                            </svg>
-
-                            <div className="container">
-                                <div className="carousel-caption text-end">
-                                    <h1>One more for good measure.</h1>
-                                    <p>Some representative placeholder content for the third slide of this
-                                        carousel.</p>
-                                    <p><a className="btn btn-lg btn-primary" href="#">Browse gallery</a></p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <button className="carousel-control-prev" type="button" data-bs-target="#myCarousel"
-                            data-bs-slide="prev">
-                        <span className="carousel-control-prev-icon" aria-hidden="true"></span>
-                        <span className="visually-hidden">Previous</span>
-                    </button>
-                    <button className="carousel-control-next" type="button" data-bs-target="#myCarousel"
-                            data-bs-slide="next">
-                        <span className="carousel-control-next-icon" aria-hidden="true"></span>
-                        <span className="visually-hidden">Next</span>
-                    </button>
-                </div>
                 <div className="container marketing">
-
-                    <div className="row">
-                        <div className="col-lg-4">
-                            <svg className="bd-placeholder-img rounded-circle" width="140" height="140"
-                                 xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 140x140"
-                                 preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title>
-                                <rect width="100%" height="100%" fill="#777"/>
-                                <text x="50%" y="50%" fill="#777" dy=".3em">140x140</text>
-                            </svg>
-
-                            <h2>Heading</h2>
-                            <p>Some representative placeholder content for the three columns of text below the
-                                carousel.
-                                This is the first column.</p>
-                            <p><a className="btn btn-secondary" href="#">View details &raquo;</a></p>
-                        </div>
-                        <div className="col-lg-4">
-                            <svg className="bd-placeholder-img rounded-circle" width="140" height="140"
-                                 xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 140x140"
-                                 preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title>
-                                <rect width="100%" height="100%" fill="#777"/>
-                                <text x="50%" y="50%" fill="#777" dy=".3em">140x140</text>
-                            </svg>
-
-                            <h2>Heading</h2>
-                            <p>Another exciting bit of representative placeholder content. This time, we've moved on
-                                to
-                                the second column.</p>
-                            <p><a className="btn btn-secondary" href="#">View details &raquo;</a></p>
-                        </div>
-                        <div className="col-lg-4">
-                            <svg className="bd-placeholder-img rounded-circle" width="140" height="140"
-                                 xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 140x140"
-                                 preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title>
-                                <rect width="100%" height="100%" fill="#777"/>
-                                <text x="50%" y="50%" fill="#777" dy=".3em">140x140</text>
-                            </svg>
-
-                            <h2>Heading</h2>
-                            <p>And lastly this, the third column of representative placeholder content.</p>
-                            <p><a className="btn btn-secondary" href="#">View details &raquo;</a></p>
-                        </div>
-                    </div>
                     <hr className="featurette-divider"/>
-
                     <div className="row featurette">
                         <div className="col-md-7">
-                            <h2 className="featurette-heading">First featurette heading. <span
-                                className="text-muted">It’ll blow your mind.</span>
+                            <h2 className="featurette-heading">Mas de 10 Años de Historia
                             </h2>
-                            <p className="lead">Some great placeholder content for the first featurette here.
-                                Imagine
-                                some exciting prose here.</p>
+                            <p className="lead">Somos una micro empresa fundada en 2015, destacando por nuestro
+                                excelente
+                                servicio al cliente y precios competitivos.</p>
                         </div>
                         <div className="col-md-5">
-                            <svg
-                                className="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto"
-                                width="500" height="500" xmlns="http://www.w3.org/2000/svg" role="img"
-                                aria-label="Placeholder: 500x500" preserveAspectRatio="xMidYMid slice"
-                                focusable="false"><title>Placeholder</title>
-                                <rect width="100%" height="100%" fill="#eee"/>
-                                <text x="50%" y="50%" fill="#aaa" dy=".3em">500x500</text>
-                            </svg>
-
+                            <img className="img-fluid" src={images.fachada} alt="foto"/>
                         </div>
                     </div>
 
                     <hr className="featurette-divider"/>
-
                     <div className="row featurette">
                         <div className="col-md-7 order-md-2">
-                            <h2 className="featurette-heading">Oh yeah, it’s that good. <span
-                                className="text-muted">See for yourself.</span>
+                            <h2 className="featurette-heading">Productos de Excelente Calidad
                             </h2>
-                            <p className="lead">Another featurette? Of course. More placeholder content here to give
-                                you
-                                an idea of how this layout would work with some actual real-world content in
-                                place.</p>
+                            <p className="lead">Trabajamos con los mejores fabricantes de la region, ofreciendo
+                                productos de excelente calidad para multiples comercios.</p>
                         </div>
                         <div className="col-md-5 order-md-1">
-                            <svg
-                                className="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto"
-                                width="500" height="500" xmlns="http://www.w3.org/2000/svg" role="img"
-                                aria-label="Placeholder: 500x500" preserveAspectRatio="xMidYMid slice"
-                                focusable="false"><title>Placeholder</title>
-                                <rect width="100%" height="100%" fill="#eee"/>
-                                <text x="50%" y="50%" fill="#aaa" dy=".3em">500x500</text>
-                            </svg>
-
+                            <img className="img-fluid" src={images.contenedor} alt="foto"/>
                         </div>
                     </div>
 
                     <hr className="featurette-divider"/>
-
                     <div className="row featurette">
                         <div className="col-md-7">
-                            <h2 className="featurette-heading">And lastly, this one. <span
-                                className="text-muted">Checkmate.</span></h2>
-                            <p className="lead">And yes, this is the last block of representative placeholder
-                                content.
-                                Again, not really intended to be actually read, simply here to give you a better
-                                view of
-                                what this would look like with some actual content. Your content.</p>
+                            <h2 className="featurette-heading">Encuentranos en Google Maps </h2>
+                            <p className="lead">Navega a traves de tu telefono para llegar a nuestra sede fisica o pide
+                                a domicilio en nuestro whatsapp</p>
                         </div>
                         <div className="col-md-5">
-                            <svg
-                                className="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto"
-                                width="500" height="500" xmlns="http://www.w3.org/2000/svg" role="img"
-                                aria-label="Placeholder: 500x500" preserveAspectRatio="xMidYMid slice"
-                                focusable="false"><title>Placeholder</title>
-                                <rect width="100%" height="100%" fill="#eee"/>
-                                <text x="50%" y="50%" fill="#aaa" dy=".3em">500x500</text>
-                            </svg>
+                            <iframe
+                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3952.0374524933236!2d-72.50638242499737!3d7.891150705761184!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e66455e93349cdb%3A0x8aa9d6d8b0782d46!2sPlasticos%20El%20lider!5e0!3m2!1ses!2sco!4v1743737142891!5m2!1ses!2sco"
+                                width="500" height="500" style={{ border: 0 }} allowFullScreen loading="lazy"
+                                referrerPolicy="no-referrer-when-downgrade"></iframe>
                         </div>
                     </div>
                     <Link to="/Home"> </Link>
