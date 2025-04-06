@@ -3,6 +3,7 @@ import Home from "./pages/Home.tsx";
 import Contact from "./pages/contact.tsx";
 import Header from "./Components/Header.tsx";
 import Footer from "./Components/Footer.tsx";
+import WhatsAppButton from "./Components/WhatsAppButton.tsx";
 function App() {
   return (
       <Router>
@@ -12,6 +13,7 @@ function App() {
               <Route path="/contact" element={<Contact /> }/>
           </Routes>
           <Footer />
+          <WhatsAppButton />
       </Router>
   );
 }

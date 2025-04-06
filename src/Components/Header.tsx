@@ -9,7 +9,7 @@ export default function Header() {
                 <div className="container">
                     <div className="row align-items-center">
                         <div className="col-md-4">
-                            <div className="d-flex align-items-center">
+                            <div className="d-flex align-items-center d-none d-md-block">
                                 <a href="https://wa.me/573242940464" target="_blank" className="btn-no-link">
                                     <i className="bi bi-whatsapp me-2 text-success"></i>
                                     <span>+57 324 294 0464</span>
@@ -100,7 +100,7 @@ export default function Header() {
                                 </li>
 
                                 <li className="nav-item dropdown">
-                                    <Link className="nav-link dropdown-toggle" to="#" role="button" data-bs-toggle="dropdown">
+                                    <Link className="nav-link dropdown-toggle" to="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                         Tienda
                                     </Link>
                                     <ul className="dropdown-menu">
