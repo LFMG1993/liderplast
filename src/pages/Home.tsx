@@ -29,7 +29,7 @@ export default function Home() {
                                 productos de excelente calidad para multiples comercios.</p>
                         </div>
                         <div className="col-md-5 order-md-1">
-                            <img className="img-fluid" src={images.contenedor} alt="foto"/>
+                            <img className="img-fluid" src={images.contenedorP} alt="foto"/>
                         </div>
                     </div>
 

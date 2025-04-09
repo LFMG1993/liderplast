@@ -104,8 +104,8 @@ export default function Header() {
                                         Tienda
                                     </Link>
                                     <ul className="dropdown-menu">
-                                        <li><Link className="dropdown-item" to="/shop">Todos los Productos</Link></li>
-                                        <li><Link className="dropdown-item" to="/checkout">Categorías</Link></li>
+                                        <li><Link className="dropdown-item" to="/all-products">Todos los Productos</Link></li>
+                                        <li><Link className="dropdown-item" to="/category">Categorías</Link></li>
                                         <li><Link className="dropdown-item" to="/cart">Destacados</Link></li>
                                         <li><Link className="dropdown-item" to="/pricing">Promociones</Link></li>
                                     </ul>
