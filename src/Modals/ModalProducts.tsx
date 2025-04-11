@@ -1,5 +1,4 @@
 import {Link} from "react-router-dom";
-import images from "../utils/images.ts";
 
 export default function ModalProducts() {
     return (<div className="modal product-modal fade" id="product-modal">
