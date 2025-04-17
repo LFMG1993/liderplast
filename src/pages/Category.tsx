@@ -11,35 +11,59 @@ export default function Category() {
                             <h2>Categorías</h2>
                         </div>
                     </div>
-                    <div className="col-md-6">
+                </div>
+                <div className="row">
+                    <div className="col-md-3">
                         <div className="img-zoom">
                             <Link to="/shop" className={"btn-no-link"}>
-                                <img className="img-fluid" src={images.contenedorP} alt="foto"/>
+                                <img className="img-fluid" src={images.contenedores} alt="Contenedores"/>
                                 <div className="content">
-                                    <h3>Contenedores de Plástico</h3>
-                                    <p>Disponible en diferentes tamaños.</p>
-                                </div>
-                            </Link>
-                        </div>
-                        <div className="img-zoom">
-                            <Link to="/shop" className={"btn-no-link"}>
-                                <img className="img-fluid " src={images.contenedorI} alt="foto"/>
-                                <div className="content">
-                                    <h3>Contenedores de Icopor.</h3>
-                                    <p>encuentralos de 3oz 6oz 9oz 12oz</p>
+                                    <h4 className={"text-center"}>Contenedores</h4>
                                 </div>
                             </Link>
                         </div>
                     </div>
-                    <div className="col-md-6">
-                        <div className="img-zoom">
+                    <div className="col-md-3">
+                        <div className="img-zoom text-center">
                             <Link to="/shop" className={"btn-no-link"}>
-                                <img className="img-fluid" src={images.copasV} alt="foto"/>
+                                <img className="img-fluid " src={images.Bandejas} alt="Bandejas Desechables"/>
                                 <div className="content">
-                                    <h3>Copas Venecianas</h3>
-                                    <p>Todas las presentaciones disponibles.</p>
+                                    <h4 className={"text-center"}>Bandejas</h4>
                                 </div>
                             </Link>
+                        </div>
+                    </div>
+                    <div className="col-md-3">
+                        <div className="img-zoom">
+                            <Link to="/shop" className={"btn-no-link"}>
+                                <img className="img-fluid" src={images.Bioseguridad} alt="bioseguridad"/>
+                                <div className="content">
+                                    <h4 className={"text-center"}>Bioseguridad</h4>
+                                </div>
+                            </Link>
+                        </div>
+                    </div>
+                    <div className="col-md-3">
+                        <div className="img-zoom">
+                            <Link to="/shop" className={"btn-no-link"}>
+                                <img className="img-fluid" src={images.Bolsas} alt="Bolsas desechables"/>
+                                <div className="content">
+                                    <h4 className={"text-center"}>Bolsas</h4>
+                                </div>
+                            </Link>
+                        </div>
+                    </div>
+                    <div className="row mt-5">
+                        <div className="col-md-3">
+                            <div className="img-zoom">
+                                <Link to="/shop" className={"btn-no-link"}>
+                                    <img className="img-fluid" src={images.Cubiertos}
+                                         alt="Cubiertos Plasticos"/>
+                                    <div className="content">
+                                        <h4 className={"text-center"}>Cubiertos</h4>
+                                    </div>
+                                </Link>
+                            </div>
                         </div>
                     </div>
                 </div>

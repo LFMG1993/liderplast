@@ -18,7 +18,7 @@ export default function Header() {
                         </div>
                         <div className="col-md-4 text-center">
                             <Link to="/">
-                                <img src={images.logo} alt="Logo" className="img-fluid" style={{maxHeight: "50px"}}/>
+                                <img src={images.logo} alt="Logo" className="img-fluid" style={{maxHeight: "100px"}}/>
                             </Link>
                         </div>
                         <div className="col-md-4">
