@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "title": "Contenedores Darnel Alimentos",
+    "name": "Contenedores Desechables",
+    "description": "Contenedores desechables de la marca Darnel para alimentos.",
+    "category": "contenedores",
+    "image": "contenedorP"
+  },
+    {
+        "id": 2,
+        "title": "Bolsa Parafinada Papas Fritas",
+        "name": "",
+        "description": "",
+        "category": "bolsas",
+        "image": "contenedorP"
+    },
+    {
+        "id": 3,
+        "title": "Contenedores Darnel Alimentos",
+        "name": "Contenedores Desechables",
+        "description": "Contenedores desechables de la marca Darnel para alimentos.",
+        "category": "Cubiertos",
+        "image": "contenedorP"
+    }
+]

@@ -30,3 +30,7 @@
 .img-zoom:hover {
   transform: scale(1.04); /* Aumenta el tamaño al pasar el cursor */
 }
+
+.background-liderplast {
+  background-color: #4a3084;
+}

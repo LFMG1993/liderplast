@@ -1,5 +1,5 @@
 import {Link} from "react-router-dom";
-import images from "../utils/images.ts";
+import { ImagesHome , ImagesCategory} from "../utils/images.ts";
 
 export default function Home() {
     return (
@@ -16,7 +16,7 @@ export default function Home() {
                                 servicio al cliente y precios competitivos.</p>
                         </div>
                         <div className="col-md-5">
-                            <img className="img-fluid" src={images.fachada} alt="foto"/>
+                            <img className="img-fluid" src={ImagesHome.fachada} alt="foto"/>
                         </div>
                     </div>
 
@@ -29,7 +29,7 @@ export default function Home() {
                                 productos de excelente calidad para multiples comercios.</p>
                         </div>
                         <div className="col-md-5 order-md-1">
-                            <img className="img-fluid" src={images.contenedorP} alt="foto"/>
+                            <img className="img-fluid" src={ImagesCategory.contenedorP} alt="foto"/>
                         </div>
                     </div>
 

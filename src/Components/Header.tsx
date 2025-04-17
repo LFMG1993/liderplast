@@ -1,5 +1,5 @@
 import {Link} from "react-router-dom";
-import images from "../utils/images.ts";
+import { ImagesHome } from "../utils/images.ts";
 
 export default function Header() {
 
@@ -18,7 +18,7 @@ export default function Header() {
                         </div>
                         <div className="col-md-4 text-center">
                             <Link to="/">
-                                <img src={images.logo} alt="Logo" className="img-fluid" style={{maxHeight: "100px"}}/>
+                                <img src={ImagesHome.logo} alt="Logo" className="img-fluid" style={{maxHeight: "100px"}}/>
                             </Link>
                         </div>
                         <div className="col-md-4">
@@ -100,14 +100,16 @@ export default function Header() {
                                 </li>
 
                                 <li className="nav-item dropdown">
-                                    <Link className="nav-link dropdown-toggle" to="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <Link className="nav-link dropdown-toggle" to="#" role="button"
+                                          data-bs-toggle="dropdown" aria-expanded="false">
                                         Tienda
                                     </Link>
                                     <ul className="dropdown-menu">
-                                        <li><Link className="dropdown-item" to="/all-products">Todos los Productos</Link></li>
                                         <li><Link className="dropdown-item" to="/category">Categorías</Link></li>
                                         <li><Link className="dropdown-item" to="/cart">Destacados</Link></li>
                                         <li><Link className="dropdown-item" to="/pricing">Promociones</Link></li>
+                                        <li><Link className="dropdown-item" to="/all-products">Todos los
+                                            Productos</Link></li>
                                     </ul>
                                 </li>
                                 <li className="nav-item">
