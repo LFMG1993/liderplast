@@ -1,4 +1,16 @@
-[
+import type { CategoryImageKey } from "../utils/images";
+
+export interface Product {
+    id: number;
+    name: string;
+    title: string;
+    description: string;
+    category: string;
+    image: CategoryImageKey;   // TS se asegura de que aquí solo pongas esas claves
+}
+
+// Definimos el array directamente en TS y lo comprobamos con `satisfies`
+export const products =[
   {
     "id": 1,
     "title": "Contenedores Darnel Alimentos",
@@ -23,4 +35,4 @@
         "category": "Cubiertos",
         "image": "contenedorP"
     }
-]
+] satisfies Product[];

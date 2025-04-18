@@ -14,5 +14,8 @@ import Platos from "../assets/category/Platos.webp";
 import Vasos from "../assets/category/Vasos.webp";
 import PeliculasExtensibles from "../assets/category/PeliculasExtensibles.webp";
 
-export const ImagesHome = { logo, fachada, slider1};
-export const ImagesCategory = { contenedorP, contenedores, Bandejas, Bioseguridad, Bolsas, Cubiertos, Frascos, Platos, Vasos, PeliculasExtensibles };
+export const ImagesHome = { logo, fachada, slider1} as const;
+export const ImagesCategory = { contenedorP, contenedores, Bandejas, Bioseguridad, Bolsas, Cubiertos, Frascos, Platos, Vasos, PeliculasExtensibles }as const;
+
+export type HomeImageKey = keyof typeof ImagesHome;
+export type CategoryImageKey = keyof typeof ImagesCategory;

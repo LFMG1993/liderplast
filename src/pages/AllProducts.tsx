@@ -1,4 +1,3 @@
-import React from "react";
 import {useProductFilter} from "../hooks/useProductFilter";
 import FilterSidebar from "../Components/FilterSidebar";
 import ProductCard from "../Components/ProductCard";
@@ -6,7 +5,8 @@ import {useSearchParams} from "react-router-dom";
 
 export default function AllProducts() {
     const [searchParams, setSearchParams] = useSearchParams();
-    const initialCategory = searchParams.get("category");
+    const initialCategory = searchParams.get("category") ?? "";
+
     const {
         filteredProducts,
         searchText,
@@ -14,20 +14,13 @@ export default function AllProducts() {
         selectedCats,
         allCategories,
         toggleCategory,
-        clearFilters,
-        setInitialCategory,
-    } = useProductFilter();
-// Establece la categoría inicial al cargar el componente
-    React.useEffect(() => {
-        if (initialCategory) {
-            setInitialCategory(initialCategory);
-        }
-    }, [initialCategory, setInitialCategory]);
+        clearFilters: clearLocalFilters,
+    } = useProductFilter(initialCategory);
 
-    const handleClearFilters = () => {
-        clearFilters();
-        searchParams.delete("category"); // Elimina el parámetro de la URL
-        setSearchParams(searchParams); // Actualiza la URL
+    // función que limpia tanto el estado como la URL
+    const clearAllFilters = () => {
+        clearLocalFilters();       // vacía selectedCats y searchText
+        setSearchParams({});       // quita todos los params de la URL
     };
 
     // Simula la función de añadir al carrito
@@ -45,7 +38,7 @@ export default function AllProducts() {
                         selectedCats={selectedCats}
                         allCategories={allCategories}
                         toggleCategory={toggleCategory}
-                        clearFilters={clearFilters}
+                        clearFilters={clearAllFilters}
                     />
 
                     {/* Grid de productos */}
@@ -56,7 +49,7 @@ export default function AllProducts() {
                                     className="col-6 col-md-4 col-xl-3"
                                     key={p.id}
                                 >
-                                    <ProductCard/>
+                                    <ProductCard product={p} onAdd={addToCart} />
                                 </div>
                             ))}
 
@@ -65,7 +58,7 @@ export default function AllProducts() {
                                     <p className="text-muted">No se encontraron productos.</p>
                                     <button
                                         className="btn btn-outline-primary"
-                                        onClick={handleClearFilters}
+                                        onClick={clearAllFilters}
                                     >
                                         Ver todos
                                     </button>

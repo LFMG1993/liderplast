@@ -1,9 +1,11 @@
-import { useState, useMemo } from "react";
-import products from "../data/product.json";
+import { useState, useMemo, useEffect } from "react";
+import { products } from "../data/product.ts";
 
-export function useProductFilter() {
+export function useProductFilter(initialCategory = "") {
     const [searchText, setSearchText] = useState("");
-    const [selectedCats, setSelectedCats] = useState<string[]>([]);
+    const [selectedCats, setSelectedCats] = useState<string[]>(
+        initialCategory ? [initialCategory] : []
+    );
 
     const allCategories = useMemo(
         () => Array.from(new Set(products.map((p) => p.category))),
@@ -22,11 +24,11 @@ export function useProductFilter() {
     };
 
     // Función para establecer una categoría inicial
-    const setInitialCategory = (category: string) => {
-        if (!selectedCats.includes(category)) {
-            setSelectedCats([category]);
+    useEffect(() => {
+        if (initialCategory) {
+            setSelectedCats([initialCategory]);
         }
-    };
+    }, [initialCategory]);
 
     const filteredProducts = useMemo(() => {
         return products.filter((p) => {
@@ -46,7 +48,6 @@ export function useProductFilter() {
         allCategories,
         toggleCategory,
         clearFilters,
-        setInitialCategory,
         filteredProducts
     };
 }

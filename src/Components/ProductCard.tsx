@@ -1,11 +1,11 @@
-import { ImagesCategory } from "../utils/images.ts";
+import { CategoryImageKey, ImagesCategory } from "../utils/images.ts";
 
 type Product = {
     id: number;
     name: string;
     title: string;
     price?: number;
-    image: keyof typeof ImagesCategory;
+    image: CategoryImageKey;
     category: string;
 };
 
