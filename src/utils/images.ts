@@ -15,7 +15,7 @@ import Vasos from "../assets/category/Vasos.webp";
 import PeliculasExtensibles from "../assets/category/PeliculasExtensibles.webp";
 import Alimentos from "../assets/category/Alimentos.webp"
 import Catering from "../assets/category/Catering.webp";
-// Imagenes de los productos
+// Imagenes de los productos que se mostraran en el catalogo de la tienda.
 import Azucar from "../assets/products/Azucar-RIOPAILA-tubipack.avif";
 import BandejaIco01 from "../assets/products/Bandeja-icopor-1.avif";
 import BandejaIco04 from "../assets/products/Bandeja-icopor-4.avif";
