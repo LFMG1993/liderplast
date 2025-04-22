@@ -53,7 +53,7 @@ import FrascosCuadrados from "../assets/products/Frascos-Cuadradados.avif";
 import FrascosRedondos from "../assets/products/Frascos-Redondos.avif";
 import Garrafa1L from "../assets/products/Garrafa-litro.avif";
 import Mezclador from "../assets/products/Mezclador-Economico.avif";
-import MiniPack from "../assets/products/mini-Packs.avif";
+import MiniPack from "../assets/products/mini-packs.avif";
 import MoldeAluminio from "../assets/products/MOLDE-ALUMINIO.avif";
 import MoldeMufi from "../assets/products/Molde-Mufi.avif";
 import Motita6 from "../assets/products/Motita-6oz.avif";
