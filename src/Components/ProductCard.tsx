@@ -1,11 +1,11 @@
-import { CategoryImageKey, ImagesCategory } from "../utils/images.ts";
+import { ImagesProducts, ProductImageKey} from "../utils/images.ts";
 
 type Product = {
     id: number;
     name: string;
     title: string;
     price?: number;
-    image: CategoryImageKey;
+    image: ProductImageKey;
     category: string;
 };
 
@@ -19,7 +19,7 @@ export default function ProductCard({ product, onAdd }: Props) {
         <div className="card shadow-sm rounded-3 overflow-hidden h-100">
             <div className="bg-info d-flex align-items-center justify-content-center ratio ratio-1x1">
                 <img
-                    src={ImagesCategory[product.image]}
+                    src={ImagesProducts[product.image]}
                     alt={product.name}
                     className="img-fluid"
                     style={{ objectFit: "cover" }}

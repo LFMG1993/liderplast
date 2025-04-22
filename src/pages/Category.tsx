@@ -9,6 +9,8 @@ const categories = [
     { key: "peliculas", label: "Películas Extensibles", img: ImagesCategory.PeliculasExtensibles },
     { key: "platos", label: "Platos", img: ImagesCategory.Platos },
     { key: "vasos", label: "Vasos", img: ImagesCategory.Vasos },
+    { key: "alimentos", label: "Alimentos", img: ImagesCategory.Alimentos },
+    { key: "catering", label: "Catering", img: ImagesCategory.Catering },
 ];
 
 export default function Category() {

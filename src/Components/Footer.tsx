@@ -28,7 +28,7 @@ export default function Footer() {
                                 <Link to="/Contact" className="btn btn-no-link">Contacto</Link>
                             </li>
                             <li className="mx-2">
-                                <Link to="shop.html" className="btn btn-no-link">Tienda</Link>
+                                <Link to="/all-products" className="btn btn-no-link">Tienda</Link>
                             </li>
                             <li className="mx-2">
                                 <Link to="pricing.html" className="btn btn-no-link">Presupuesto</Link>
