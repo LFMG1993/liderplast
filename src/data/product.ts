@@ -1,15 +1,4 @@
-import type { ProductImageKey} from "../utils/images";
-
-export interface Product {
-    id: number;
-    name: string;
-    title: string;
-    description: string;
-    category: string;
-    image: ProductImageKey;   // TS se asegura de que aquí solo pongas esas claves
-}
-
-// Definimos el array directamente en TS y lo comprobamos con `satisfies`
+import type { Product } from "../types.ts";
 export const products =[
   {
     "id": 1,

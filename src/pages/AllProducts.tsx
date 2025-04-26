@@ -1,7 +1,8 @@
-import {useProductFilter} from "../hooks/useProductFilter";
+import { useProductFilter } from "../hooks/useProductFilter";
 import FilterSidebar from "../Components/FilterSidebar";
 import ProductCard from "../Components/ProductCard";
-import {useSearchParams} from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
+import { useCart } from "../hooks/CardContext";
 
 export default function AllProducts() {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -23,9 +24,8 @@ export default function AllProducts() {
         setSearchParams({});       // quita todos los params de la URL
     };
 
-    // Simula la función de añadir al carrito
-    const addToCart = (product: any) =>
-        console.log("añadiendo al carrito:", product);
+    // 2. extraes addItem del context
+    const { addItem } = useCart();
 
     return (
         <section className="products section py-5">
@@ -49,7 +49,7 @@ export default function AllProducts() {
                                     className="col-6 col-md-4 col-xl-3"
                                     key={p.id}
                                 >
-                                    <ProductCard product={p} onAdd={addToCart} />
+                                    <ProductCard product={p} onAdd={addItem} />
                                 </div>
                             ))}
 

@@ -33,4 +33,11 @@
 
 .background-liderplast {
   background-color: #4a3084;
+  color: #fff; /* Color del texto */
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.background-liderplast:hover {
+  background-color: #8b78b6; /* Color de fondo al pasar el cursor */
+  color: #fff; /* Asegura que el texto siga visible */
 }

@@ -1,5 +1,6 @@
 import {Link} from "react-router-dom";
 import { ImagesHome } from "../utils/images.ts";
+import CardDropdown from "./CartDropdown.tsx";
 
 export default function Header() {
 
@@ -18,32 +19,34 @@ export default function Header() {
                         </div>
                         <div className="col-md-4 text-center">
                             <Link to="/">
-                                <img src={ImagesHome.logo} alt="Logo" className="img-fluid" style={{maxHeight: "100px"}}/>
+                                <img src={ImagesHome.logo} alt="Logo" className="img-fluid"
+                                     style={{maxHeight: "100px"}}/>
                             </Link>
                         </div>
                         <div className="col-md-4">
                             <ul className="list-inline text-end mb-0">
-                                <li className="list-inline-item dropdown">
-                                    <Link to="/"
-                                          className="dropdown-toggle btn-no-link"
-                                          data-bs-toggle="dropdown"
-                                          aria-expanded="false"
-                                    >
-                                        <i className="bi bi-cart-check me-2"></i> Carrito
-                                    </Link>
-                                    <ul className="dropdown-menu dropdown-menu-end">
-                                        <li>
-                                            <Link to="/" className="dropdown-item">
-                                                Ver Carrito
-                                            </Link>
-                                        </li>
-                                        <li>
-                                            <Link to="/" className="dropdown-item">
-                                                Pagar
-                                            </Link>
-                                        </li>
-                                    </ul>
-                                </li>
+                                {/*<li className="list-inline-item dropdown">*/}
+                                {/*    <Link to="/"*/}
+                                {/*          className="dropdown-toggle btn-no-link"*/}
+                                {/*          data-bs-toggle="dropdown"*/}
+                                {/*          aria-expanded="false"*/}
+                                {/*    >*/}
+                                {/*        <i className="bi bi-cart-check me-2"></i> Carrito*/}
+                                {/*    </Link>*/}
+                                {/*    <ul className="dropdown-menu dropdown-menu-end">*/}
+                                {/*        <li>*/}
+                                {/*            <Link to="/" className="dropdown-item">*/}
+                                {/*                Ver Carrito*/}
+                                {/*            </Link>*/}
+                                {/*        </li>*/}
+                                {/*        <li>*/}
+                                {/*            <Link to="/" className="dropdown-item">*/}
+                                {/*                Pagar*/}
+                                {/*            </Link>*/}
+                                {/*        </li>*/}
+                                {/*    </ul>*/}
+                                {/*</li>*/}
+                                <CardDropdown/>
                                 <li className="list-inline-item dropdown ms-3">
                                     <a
                                         href="#!"

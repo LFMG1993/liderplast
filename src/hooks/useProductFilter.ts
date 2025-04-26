@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
+import type { Product } from "../types.ts";
 import { products } from "../data/product.ts";
 
 export function useProductFilter(initialCategory = "") {
@@ -30,7 +31,7 @@ export function useProductFilter(initialCategory = "") {
         }
     }, [initialCategory]);
 
-    const filteredProducts = useMemo(() => {
+    const filteredProducts = useMemo<Product[]>(() => {
         return products.filter((p) => {
             const matchCat =
                 selectedCats.length === 0 || selectedCats.includes(p.category);
