@@ -1,13 +1,16 @@
-import { useProductFilter } from "../hooks/useProductFilter";
+import {useState} from "react";
+import {useProductFilter} from "../hooks/useProductFilter";
 import FilterSidebar from "../Components/FilterSidebar";
 import ProductCard from "../Components/ProductCard";
-import { useSearchParams } from "react-router-dom";
-import { useCart } from "../hooks/CardContext";
+import {useSearchParams} from "react-router-dom";
+import {useCart, CartItem} from "../hooks/CardContext";
+import EditCartItemModal from "../Modals/EditCartModal.tsx";
+
 
 export default function AllProducts() {
     const [searchParams, setSearchParams] = useSearchParams();
     const initialCategory = searchParams.get("category") ?? "";
-
+    const initialSearch = searchParams.get("search") ?? "";
     const {
         filteredProducts,
         searchText,
@@ -16,7 +19,7 @@ export default function AllProducts() {
         allCategories,
         toggleCategory,
         clearFilters: clearLocalFilters,
-    } = useProductFilter(initialCategory);
+    } = useProductFilter(initialCategory, initialSearch);
 
     // función que limpia tanto el estado como la URL
     const clearAllFilters = () => {
@@ -25,7 +28,9 @@ export default function AllProducts() {
     };
 
     // 2. extraes addItem del context
-    const { addItem } = useCart();
+    const {updateItemQuantity} = useCart();
+
+    const [editingProduct, setEditingProduct] = useState<CartItem | null>(null);
 
     return (
         <section className="products section py-5">
@@ -49,7 +54,7 @@ export default function AllProducts() {
                                     className="col-6 col-md-4 col-xl-3"
                                     key={p.id}
                                 >
-                                    <ProductCard product={p} onAdd={addItem} />
+                                    <ProductCard product={p} onAdd={() => setEditingProduct({...p, quantity: 1})}/>
                                 </div>
                             ))}
 
@@ -68,6 +73,16 @@ export default function AllProducts() {
                     </div>
                 </div>
             </div>
+            {/* Modal para editar cantidad / ver detalles */}
+            <EditCartItemModal
+                show={!!editingProduct}
+                item={editingProduct}
+                onClose={() => setEditingProduct(null)}
+                onSave={(product, newQty) => {
+                    updateItemQuantity(product, newQty);
+                    setEditingProduct(null);
+                }}
+            />
         </section>
     );
 }

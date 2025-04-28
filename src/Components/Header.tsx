@@ -1,8 +1,22 @@
-import {Link} from "react-router-dom";
-import { ImagesHome } from "../utils/images.ts";
+import {useState} from "react";
+import {Link, useNavigate} from "react-router-dom";
+import {ImagesHome, ImagesProducts} from "../utils/images.ts";
 import CardDropdown from "./CartDropdown.tsx";
+import {useProductFilter} from "../hooks/useProductFilter.ts";
+import { useTranslation } from "react-i18next";
 
 export default function Header() {
+    const {t, i18n} = useTranslation();
+    const navigate = useNavigate();
+    // Usamos el hook solo para buscar sobre todos, no importa la categoría
+    const {searchText, setSearchText, filteredProducts} =
+        useProductFilter("", "");
+    const [open, setOpen] = useState(false);
+
+    const onSelect = (title: string) => {
+        navigate(`/all-products?search=${encodeURIComponent(title)}`);
+        setOpen(false);
+    };
 
     return (
         <header>
@@ -25,55 +39,68 @@ export default function Header() {
                         </div>
                         <div className="col-md-4">
                             <ul className="list-inline text-end mb-0">
-                                {/*<li className="list-inline-item dropdown">*/}
-                                {/*    <Link to="/"*/}
-                                {/*          className="dropdown-toggle btn-no-link"*/}
-                                {/*          data-bs-toggle="dropdown"*/}
-                                {/*          aria-expanded="false"*/}
-                                {/*    >*/}
-                                {/*        <i className="bi bi-cart-check me-2"></i> Carrito*/}
-                                {/*    </Link>*/}
-                                {/*    <ul className="dropdown-menu dropdown-menu-end">*/}
-                                {/*        <li>*/}
-                                {/*            <Link to="/" className="dropdown-item">*/}
-                                {/*                Ver Carrito*/}
-                                {/*            </Link>*/}
-                                {/*        </li>*/}
-                                {/*        <li>*/}
-                                {/*            <Link to="/" className="dropdown-item">*/}
-                                {/*                Pagar*/}
-                                {/*            </Link>*/}
-                                {/*        </li>*/}
-                                {/*    </ul>*/}
-                                {/*</li>*/}
                                 <CardDropdown/>
-                                <li className="list-inline-item dropdown ms-3">
-                                    <a
-                                        href="#!"
-                                        className="dropdown-toggle btn-no-link"
-                                        data-bs-toggle="dropdown"
-                                        aria-expanded="false"
+                                {/* Search dropdown */}
+                                <li className="list-inline-item dropdown ms-3 position-relative">
+                                    <button
+                                        type="button"
+                                        className="btn btn-link btn-no-link dropdown-toggle"
+                                        onClick={() => setOpen((o) => !o)}
                                     >
-                                        <i className="bi bi-search me-2"></i> Buscar
-                                    </a>
-                                    <div className="dropdown-menu dropdown-menu-end p-2" style={{minWidth: "200px"}}>
-                                        <form>
+                                        <i className="bi bi-search me-2"></i>Buscar
+                                    </button>
+                                    {open && (
+                                        <div
+                                            className="dropdown-menu dropdown-menu-end p-2 show"
+                                            style={{minWidth: 200}}
+                                        >
                                             <input
                                                 type="search"
-                                                className="form-control"
+                                                className="form-control mb-2"
                                                 placeholder="Buscar Producto..."
+                                                value={searchText}
+                                                onChange={(e) => setSearchText(e.target.value)}
                                             />
-                                        </form>
-                                    </div>
+                                            {searchText.trim() !== "" && (
+                                                <ul className="list-group">
+                                                    {filteredProducts.slice(0, 5).map((p) => (
+                                                        <li
+                                                            key={p.id}
+                                                            className="list-group-item list-group-item-action d-flex align-items-center"
+                                                            onClick={() => onSelect(p.title)}
+                                                            style={{cursor: "pointer"}}
+                                                        >
+                                                            <img
+                                                                src={ImagesProducts[p.image]}
+                                                                alt={p.title}
+                                                                className="img-thumbnail me-2"
+                                                                style={{
+                                                                    width: 40,
+                                                                    height: 40,
+                                                                    objectFit: "cover",
+                                                                }}
+                                                            />
+                                                            <span>{p.title}</span>
+                                                        </li>
+                                                    ))}
+                                                    {searchText && filteredProducts.length === 0 && (
+                                                        <li className="list-group-item text-muted">
+                                                            No se encontraron resultados
+                                                        </li>
+                                                    )}
+                                                </ul>
+                                            )}
+                                        </div>
+                                    )}
                                 </li>
                                 <li className="list-inline-item ms-3">
-                                    <select className="form-select form-select-sm" style={{width: "auto"}}>
-                                        <option>
-                                            Español
-                                        </option>
-                                        <option>
-                                            English
-                                        </option>
+                                    <select className="form-select form-select-sm"
+                                            style={{width: "auto"}}
+                                            value={i18n.language}
+                                            onChange={(e) => i18n.changeLanguage(e.target.value)}
+                                    >
+                                        <option value="es">Español</option>
+                                        <option value="en">English</option>
                                     </select>
                                 </li>
                             </ul>
@@ -82,44 +109,30 @@ export default function Header() {
                 </div>
             </section>
             <section className="menu">
-                <nav className="navbar navbar-expand-lg navigation">
-                    <div className="container">
-                        <button
-                            className="navbar-toggler"
-                            type="button"
-                            data-bs-toggle="collapse"
-                            data-bs-target="#navbarNav"
-                            aria-controls="navbarNav"
-                            aria-expanded="false"
-                            aria-label="Toggle navigation"
-                        >
-                            <span className="navbar-toggler-icon"></span>
-                        </button>
+                <nav className="navbar navigation">
+                    <div className="container justify-content-center">
+                        <ul className="navbar-nav d-flex flex-row">
+                            <li className="nav-item me-3">
+                                <Link className="nav-link" to="/">{t("Inicio")}</Link>
+                            </li>
 
-                        <div id="navbarNav" className="collapse navbar-collapse">
-                            <ul className="navbar-nav mx-auto">
-                                <li className="nav-item">
-                                    <Link className="nav-link" to="/">Inicio</Link>
-                                </li>
-
-                                <li className="nav-item dropdown">
-                                    <Link className="nav-link dropdown-toggle" to="#" role="button"
-                                          data-bs-toggle="dropdown" aria-expanded="false">
-                                        Tienda
-                                    </Link>
-                                    <ul className="dropdown-menu">
-                                        <li><Link className="dropdown-item" to="/category">Categorías</Link></li>
-                                        <li><Link className="dropdown-item" to="/cart">Destacados</Link></li>
-                                        <li><Link className="dropdown-item" to="/pricing">Promociones</Link></li>
-                                        <li><Link className="dropdown-item" to="/all-products">Todos los
-                                            Productos</Link></li>
-                                    </ul>
-                                </li>
-                                <li className="nav-item">
-                                    <Link className="nav-link" to="/Contact">Contacto</Link>
-                                </li>
-                            </ul>
-                        </div>
+                            <li className="nav-item dropdown me-3 position-relative">
+                                <Link className="nav-link dropdown-toggle" to="#" role="button"
+                                      data-bs-toggle="dropdown" aria-expanded="false">
+                                    {t("Tienda")}
+                                </Link>
+                                <ul className="dropdown-menu">
+                                    <li><Link className="dropdown-item" to="/category">Categorías</Link></li>
+                                    <li><Link className="dropdown-item" to="/all-products">Destacados</Link></li>
+                                    <li><Link className="dropdown-item" to="/all-products">Promociones</Link></li>
+                                    <li><Link className="dropdown-item" to="/all-products">Todos los
+                                        Productos</Link></li>
+                                </ul>
+                            </li>
+                            <li className="nav-item me-3">
+                                <Link className="nav-link" to="/Contact">{t("Contacto")}</Link>
+                            </li>
+                        </ul>
                     </div>
                 </nav>
             </section>

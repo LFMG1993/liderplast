@@ -2,8 +2,17 @@ import { useState, useMemo, useEffect } from "react";
 import type { Product } from "../types.ts";
 import { products } from "../data/product.ts";
 
-export function useProductFilter(initialCategory = "") {
-    const [searchText, setSearchText] = useState("");
+ // Normaliza un texto: baja a minúsculas y elimina caracteres no alfanuméricos
+const normalize = (str: string) =>
+    str
+        .toLowerCase()
+        .normalize("NFD")             // descompone caracteres acentuados
+        .replace(/\p{Diacritic}/gu, "") // elimina marcas diacríticas
+        .replace(/[^a-z0-9]/g, "");     // solo letras y números
+
+export function useProductFilter(initialCategory = "",
+                                 initialSearch = "") {
+    const [searchText, setSearchText] = useState<string>(initialSearch);
     const [selectedCats, setSelectedCats] = useState<string[]>(
         initialCategory ? [initialCategory] : []
     );
@@ -32,12 +41,24 @@ export function useProductFilter(initialCategory = "") {
     }, [initialCategory]);
 
     const filteredProducts = useMemo<Product[]>(() => {
+        const terms = searchText
+            .trim()
+            .split(/\s+/)
+            .map((t) => normalize(t))
+            .filter((t) => t.length > 0);
+
         return products.filter((p) => {
             const matchCat =
                 selectedCats.length === 0 || selectedCats.includes(p.category);
-            const matchSearch =
-                !searchText ||
-                p.name.toLowerCase().includes(searchText.toLowerCase());
+            if (terms.length === 0 && matchCat) {
+                return true;
+            }
+            // Normaliza los campos de producto
+            const titleNorm = normalize(p.title);
+            const nameNorm = p.name ? normalize(p.name) : "";
+            const matchSearch = terms.every(
+                (term) => titleNorm.includes(term) || nameNorm.includes(term)
+            );
             return matchCat && matchSearch;
         });
     }, [searchText, selectedCats]);
