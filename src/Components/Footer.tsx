@@ -31,7 +31,7 @@ export default function Footer() {
                                 <Link to="/all-products" className="btn btn-no-link">Tienda</Link>
                             </li>
                             <li className="mx-2">
-                                <Link to="pricing.html" className="btn btn-no-link">Presupuesto</Link>
+                                <Link to="/Contact" className="btn btn-no-link">Presupuesto</Link>
                             </li>
                             <li className="mx-2">
                                 <Link to="/Contact" className="btn btn-no-link">Política de privacidad</Link>

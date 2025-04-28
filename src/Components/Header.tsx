@@ -47,7 +47,7 @@ export default function Header() {
                                         className="btn btn-link btn-no-link dropdown-toggle"
                                         onClick={() => setOpen((o) => !o)}
                                     >
-                                        <i className="bi bi-search me-2"></i>Buscar
+                                        <i className="bi bi-search me-2"></i>
                                     </button>
                                     {open && (
                                         <div

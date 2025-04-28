@@ -1,6 +1,45 @@
 import {Link} from "react-router-dom";
+import {useState} from "react";
 
 export default function Contact() {
+    const [form, setForm] = useState({
+        name: "",
+        email: "",
+        subject: "",
+        message: "",
+    });
+    const [status, setStatus] = useState<null | "sending" | "sent" | "error">(null);
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        setForm({...form, [e.target.name]: e.target.value});
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setStatus("sending");
+        try {
+            // Mapeo de inglés → español
+            const payload = {
+                nombre:  form.name,
+                email:   form.email,
+                asunto:  form.subject,
+                mensaje: form.message,
+            };
+
+            const res = await fetch("/api/contact", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify(payload),
+            });
+            if (!res.ok) throw new Error(await res.text());
+            setStatus("sent");
+            setForm({name: "", email: "", subject: "", message: ""});
+        } catch (err) {
+            console.error(err);
+            setStatus("error");
+        }
+    };
+
     return (
         <>
             <section>
@@ -23,56 +62,55 @@ export default function Contact() {
                         <div className="row">
                             {/* Contact Form */}
                             <div className="contact-form col-md-6">
-                                <form>
-                                    <div className="form-group">
-                                        <input
-                                            type="text"
-                                            placeholder="Tu nombre"
-                                            className="form-control"
-                                            name="name"
-                                            value=""
-                                        />
-                                    </div>
-<br/>
-                                    <div className="form-group">
-                                        <input
-                                            type="email"
-                                            placeholder="Tu correo"
-                                            className="form-control"
-                                            name="email"
-                                            value=""
-                                        />
-                                    </div>
+                                <form onSubmit={handleSubmit}>
+                                    {["name", "email", "subject"].map((field) => (
+                                        <div className="form-group mb-3" key={field}>
+                                            <input
+                                                type={field === "email" ? "email" : "text"}
+                                                placeholder={field === "name" ? "Tu nombre" :
+                                                    field === "email" ? "Tu correo" :
+                                                        "Asunto"}
+                                                className="form-control"
+                                                name={field}
+                                                value={form[field as keyof typeof form]}
+                                                onChange={handleChange}
+                                                required
+                                            />
+                                        </div>
+                                    ))}
                                     <br/>
-
-                                    <div className="form-group">
-                                        <input
-                                            type="text"
-                                            placeholder="Asunto"
+                                    <div className="form-group mb-3">
+                                        <textarea
+                                            rows={6}
+                                            placeholder="Mensaje"
                                             className="form-control"
-                                            name="subject"
-                                            value=""
+                                            name="message"
+                                            value={form.message}
+                                            onChange={handleChange}
+                                            required
                                         />
                                     </div>
-                                    <br/>
 
-                                    <div className="form-group">
-                    <textarea
-                        rows={6}
-                        placeholder="Mensaje"
-                        className="form-control"
-                        name="message"
-                        value=""
-                    ></textarea>
-                                        <br/>
+                                    <button
+                                        type="submit"
+                                        className="btn btn-success"
+                                        disabled={status === "sending"}
+                                    >
+                                        {status === "sending" ? "Enviando…" : "Enviar"}
+                                    </button>
 
-                                    </div>
-                                    <div>
-                                        <button type="submit" className="btn btn-success">Enviar</button>
-                                    </div>
+                                    {status === "sent" && (
+                                        <div className="alert alert-success mt-3">
+                                            ¡Gracias! Tu mensaje ha sido enviado.
+                                        </div>
+                                    )}
+                                    {status === "error" && (
+                                        <div className="alert alert-danger mt-3">
+                                            Ocurrió un error. Intenta de nuevo.
+                                        </div>
+                                    )}
                                 </form>
                             </div>
-
                             {/* Contact Details */}
                             <div className="contact-details col-md-6">
                                 <div className="google-map">
@@ -98,11 +136,13 @@ export default function Contact() {
                                     </li>
                                     <li>
                                         <i className="bi bi-globe me-2"></i>
-                                         <span>Sitio web: <Link to={"https//:distribucioneslider.com.co"} target={"_blank"}>www.distribucioneslider.com.co</Link></span>
+                                        <span>Sitio web: <Link to={"https//:distribucioneslider.com.co"}
+                                                               target={"_blank"}>www.distribucioneslider.com.co</Link></span>
                                     </li>
                                     <li>
                                         <i className="bi bi-envelope-fill me-2"></i>
-                                        <span>Email: <Link to={"mailto:liderplast@gmail.com"} target={"_blank"}> liderplast@gmail.com </Link></span>
+                                        <span>Email: <Link to={"mailto:liderplast@gmail.com"}
+                                                           target={"_blank"}> liderplast@gmail.com </Link></span>
                                     </li>
                                 </ul>
                             </div>
