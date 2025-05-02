@@ -1,7 +1,7 @@
 // imagenes del home
-import logo from "../assets/logo.png";
-import fachada from "../assets/fachada.jpg";
-import slider1 from "../assets/slider1.png";
+import logo from "../assets/logo.avif";
+import fachada from "../assets/fachada.avif";
+import slider1 from "../assets/slider1.avif";
 // Imagenes de las categorias
 import contenedorP from "../assets/ContenedorPresentacion.avif";
 import contenedores from "../assets/category/Contenedores.webp";
