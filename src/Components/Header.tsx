@@ -33,8 +33,7 @@ export default function Header() {
                         </div>
                         <div className="col-md-4 text-center">
                             <Link to="/">
-                                <img src={ImagesHome.logo} alt="Logo" className="img-fluid"
-                                     style={{maxHeight: "100px"}}/>
+                                <img src={ImagesHome.logo} width={"180"} height={"100"} alt="Logo" className="img-fluid" />
                             </Link>
                         </div>
                         <div className="col-md-4">
@@ -44,6 +43,7 @@ export default function Header() {
                                 <li className="list-inline-item dropdown ms-3 position-relative">
                                     <button
                                         type="button"
+                                        aria-label="Buscar"
                                         className="btn btn-link btn-no-link dropdown-toggle"
                                         onClick={() => setOpen((o) => !o)}
                                     >

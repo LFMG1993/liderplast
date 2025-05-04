@@ -8,10 +8,11 @@ export default function CartDropdown() {
 
     return (
         <li className="list-inline-item dropdown">
-            <a
+            <button
                 className="dropdown-toggle btn-no-link p-0 position-relative"
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
+                aria-label={"Carrito de compras"}
             >
                 <i className="bi bi-cart-check fs-4"></i> {count > 0 && (
                 <span
@@ -28,7 +29,7 @@ export default function CartDropdown() {
             {count}
           </span>
             )}
-            </a>
+            </button>
             <ul className="dropdown-menu dropdown-menu-end p-2" style={{minWidth: 300}}>
                 {items.length === 0 ? (
                     <li className="dropdown-item text-center text-muted">Carrito vacío</li>

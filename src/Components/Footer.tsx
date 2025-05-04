@@ -10,16 +10,19 @@ export default function Footer() {
                             <li className="mx-3">
                                 <a href="https://www.facebook.com/lider.plast.52" target={"_blank"}>
                                     <i className="bi bi-facebook text-primary fs-3"></i>
+                                    <span className={"sr-only"}>Liderplast en Facebook</span>
                                 </a>
                             </li>
                             <li className="mx-3">
                                 <a href="https://www.instagram.com/distribucionesliderplast/" target={"_blank"}>
                                     <i className="bi bi-instagram text-black fs-3"></i>
+                                    <span className={"sr-only"}>Liderplast en Instagram</span>
                                 </a>
                             </li>
                             <li className="mx-3">
                                 <a href="https://wa.me/573242940464" target={"_blank"}>
                                     <i className="bi bi-whatsapp text-success fs-3"></i>
+                                    <span className={"sr-only"}>Enviar un mensaje a Liderplast</span>
                                 </a>
                             </li>
                         </ul>
