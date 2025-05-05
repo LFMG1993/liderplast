@@ -48,7 +48,7 @@ export default function Home() {
                             referrerPolicy="no-referrer-when-downgrade"></iframe>
                     </div>
                 </div>
-                <Link to="/Home"> </Link>
+                <Link to="/Home" aria-label={"Volver al inicio"}> </Link>
             </div>
         </div>
     );

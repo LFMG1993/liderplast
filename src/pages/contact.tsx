@@ -20,11 +20,12 @@ export default function Contact() {
         try {
             // Mapeo de inglés → español
             const payload = {
-                nombre:  form.name,
-                email:   form.email,
-                asunto:  form.subject,
-                mensaje: form.message,
+                nombre:  form.name.trim(),
+                email:   form.email.trim(),
+                asunto:  form.subject.trim(),
+                mensaje: form.message.trim(),
             };
+            console.log("Enviando payload:", payload);
 
             const res = await fetch("/api/contact", {
                 method: "POST",
