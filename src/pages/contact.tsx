@@ -25,7 +25,6 @@ export default function Contact() {
                 asunto:  form.subject.trim(),
                 mensaje: form.message.trim(),
             };
-            console.log("Enviando payload:", payload);
 
             const res = await fetch("/api/contact", {
                 method: "POST",
