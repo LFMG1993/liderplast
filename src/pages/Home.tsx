@@ -15,7 +15,7 @@ export default function Home() {
                             servicio al cliente y precios competitivos.</p>
                     </div>
                     <div className="col-md-5">
-                        <img className="img-fluid" src={ImagesHome.fachada} width={"500"} height={"400"} alt="foto" aria-label={"Imagen fachada"}/>
+                        <img className="img-fluid" src={ImagesHome.fachada} width={"500"} height={"400"} alt="foto" aria-label={"Imagen fachada"} loading={"lazy"}/>
                     </div>
                 </div>
 

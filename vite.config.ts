@@ -21,4 +21,8 @@ export default defineConfig({
             },
         },
     },
+    build: {
+        minify: 'esbuild',
+        cssCodeSplit: true,
+    }
 })

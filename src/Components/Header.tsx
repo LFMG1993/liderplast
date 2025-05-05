@@ -25,7 +25,7 @@ export default function Header() {
                     <div className="row align-items-center">
                         <div className="col-md-4">
                             <div className="d-flex align-items-center d-none d-md-block">
-                                <a href="https://wa.me/573242940464" target="_blank" className="btn-no-link">
+                                <a href="https://wa.me/573242940464" target="_blank" className="btn-no-link" aria-label={"Enviar un mensaje a Liderplast"}>
                                     <i className="bi bi-whatsapp me-2 text-success"></i>
                                     <span>+57 324 294 0464</span>
                                 </a>
@@ -97,6 +97,7 @@ export default function Header() {
                                     <select className="form-select form-select-sm"
                                             style={{width: "auto"}}
                                             value={i18n.language}
+                                            aria-label={"Seleccionar idioma"}
                                             onChange={(e) => i18n.changeLanguage(e.target.value)}
                                     >
                                         <option value="es">Español</option>
