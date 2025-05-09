@@ -17,7 +17,7 @@ export default function FilterSidebar({
                                           clearFilters,
                                       }: Props) {
     return (
-        <aside className="col-md-2 border-end position-sticky top-0">
+        <aside className="col-md-2 border-end position-static position-md-sticky top-0 bg-white">
             <input
                 type="text"
                 className="form-control mb-2"

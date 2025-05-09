@@ -309,7 +309,7 @@ export const products =[
         "title": "Molde de Aluminio",
         "name": "",
         "description": "",
-        "category": "peliculas",
+        "category": "contenedores",
         "image": "MoldeAluminio"
     },
     {
@@ -360,5 +360,446 @@ export const products =[
         "category": "vasos",
         "image": "VasosCafe"
     },
+    {
+        "id": 46,
+        "title": "Base en Domo Redonda 4oz",
+        "name": "",
+        "description": "Ideal para postres o helados",
+        "category": "vasos",
+        "image": "BaseDomo4"
+    },
+    {
+        "id": 47,
+        "title": "Base en Domo Redonda 6oz",
+        "name": "",
+        "description": "Ideal para postres o helados",
+        "category": "vasos",
+        "image": "BaseDomo6"
+    },
+    {
+        "id": 48,
+        "title": "Bolsas de Papel Kraft para Navidad",
+        "name": "",
+        "description": "Para regalos o detalles navideños",
+        "category": "bolsas",
+        "image": "BolsaNavidad"
+    },
+    {
+        "id": 49,
+        "title": "Bolsas de Regalo Papel Kraft",
+        "name": "",
+        "description": "Multiples usos",
+        "category": "bolsas",
+        "image": "BolsaPapelKraft"
+    },
+    {
+        "id": 50,
+        "title": "Bolsas tipo Ziplock",
+        "name": "",
+        "description": "Excelente para conservar alimentos",
+        "category": "bolsas",
+        "image": "BolsasZiplo"
+    },
+    {
+        "id": 51,
+        "title": "Caba de Icopor de 124 Litros",
+        "name": "",
+        "description": "Ideal para conservar alimentos de gran tamaño",
+        "category": "contenedores",
+        "image": "Caba124"
+    },
+    {
+        "id": 52,
+        "title": "Caja de Carton Rectangular",
+        "name": "",
+        "description": "Para conservar alimentos",
+        "category": "contenedores",
+        "image": "CajaCartonRectangular"
+    },
+    {
+        "id": 53,
+        "title": "Caja de Carton de 45oz",
+        "name": "",
+        "description": "Para conservar alimentos",
+        "category": "contenedores",
+        "image": "CajaComida45"
+    },
+    {
+        "id": 54,
+        "title": "Caja para Pizza con estampados",
+        "name": "",
+        "description": "Especial para pizzas de todos los tamaños",
+        "category": "contenedores",
+        "image": "CajaPizzaEstandar"
+    },
+    {
+        "id": 55,
+        "title": "Contenedor Cuadrado de 4oz",
+        "name": "",
+        "description": "Para postres o alimentos",
+        "category": "contenedores",
+        "image": "ContenedorCuadrado4"
+    },
+    {
+        "id": 56,
+        "title": "Cuchara Suraplast Grande x100",
+        "name": "",
+        "description": "Tamaño Sopera",
+        "category": "cubiertos",
+        "image": "CucharaGrande100"
+    },
+    {
+        "id": 57,
+        "title": "Empaques para Huevos de Codorniz",
+        "name": "",
+        "description": "Almacenaje y transporte",
+        "category": "contenedores",
+        "image": "EmpaqueCodorniz"
+    },
+    {
+        "id": 58,
+        "title": "Envase para bananas split",
+        "name": "",
+        "description": "Ideal para preparaciones con helados",
+        "category": "contenedores",
+        "image": "EnvaseBananas"
+    },
+    {
+        "id": 59,
+        "title": "Contenedor para Sandwich",
+        "name": "",
+        "description": "Tamaño ideal para sandwiches",
+        "category": "contenedores",
+        "image": "EnvaseSandwich"
+    },
+    {
+        "id": 60,
+        "title": "Contenedores con molde de Corazón",
+        "name": "",
+        "description": "Para postres o helados",
+        "category": "contenedores",
+        "image": "EnvasesCorazon"
+    },
+    {
+        "id": 61,
+        "title": "Contenedores con Sello de Seguridad",
+        "name": "",
+        "description": "Ajuste perfecto para conservar alimentos",
+        "category": "contenedores",
+        "image": "EnvasesSelloPlus"
+    },
+    {
+        "id": 62,
+        "title": "Contenedores Triangular Alto",
+        "name": "",
+        "description": "Util para ensaladas, postres o alimentos",
+        "category": "contenedores",
+        "image": "EnvasesTriangularesAltos"
+    },
+    {
+        "id": 63,
+        "title": "Esponja para Limpiar",
+        "name": "",
+        "description": "Util para limpiar y brillar",
+        "category": "catering",
+        "image": "EsponjaBrillo"
+    },
+    {
+        "id": 64,
+        "title": "Gorros tipo Oruga x100",
+        "name": "",
+        "description": "Cubierta para la cabeza",
+        "category": "varios",
+        "image": "GorrosOruga100"
+    },
+    {
+        "id": 65,
+        "title": "Guantes de Nitrilo x100",
+        "name": "",
+        "description": "Proteccion para las manos",
+        "category": "varios",
+        "image": "GuantesNitrilo"
+    },
+    {
+        "id": 66,
+        "title": "Guantes de Nitrilo Azules x100",
+        "name": "",
+        "description": "Proteccion para las manos",
+        "category": "varios",
+        "image": "GuantesNitriloAzul"
+    },
+    {
+        "id": 67,
+        "title": "Contenedor Mini cuadrado",
+        "name": "",
+        "description": "Ideal para cupcakes o postres",
+        "category": "contenedores",
+        "image": "MinipackCuadrado"
+    },
+    {
+        "id": 68,
+        "title": "Molde para Wafles",
+        "name": "",
+        "description": "Wafles de 4 porciones",
+        "category": "contenedores",
+        "image": "MoldeWaffles"
+    },
+    {
+        "id": 69,
+        "title": "Palo para paletas corto",
+        "name": "",
+        "description": "Helados o paletas",
+        "category": "catering",
+        "image": "PaloPaletasCorto"
+    },
+    {
+        "id": 70,
+        "title": "Papel Aluminio",
+        "name": "",
+        "description": "Para proteger y conservar alimentos",
+        "category": "peliculas",
+        "image": "PapelAluminio"
+    },
+    {
+        "id": 71,
+        "title": "Papel Higienico Industrial Nube",
+        "name": "",
+        "description": "Limpieza y Economico",
+        "category": "peliculas",
+        "image": "PapelHigienicoIndNube"
+    },
+    {
+        "id": 72,
+        "title": "Pelicula en Vinipel",
+        "name": "",
+        "description": "Para proteger y conservar alimentos",
+        "category": "peliculas",
+        "image": "PeliculaVinipel"
+    },
+    {
+        "id": 73,
+        "title": "Palillos de Madera de 25cm",
+        "name": "",
+        "description": "Ideal para pinchos o brochetas",
+        "category": "catering",
+        "image": "Pinchos25cm"
+    },
+    {
+        "id": 74,
+        "title": "Pitillos de Plastico tipo cuchara",
+        "name": "",
+        "description": "Multiples usos",
+        "category": "cubiertos",
+        "image": "PitilloCuchara"
+    },
+    {
+        "id": 75,
+        "title": "Platos de multiples colores",
+        "name": "",
+        "description": "Multiples usos",
+        "category": "platos",
+        "image": "PlatosColores"
+    },
+    {
+        "id": 76,
+        "title": "Contenedor Para Papas Fritas",
+        "name": "",
+        "description": "Multiples usos",
+        "category": "contenedores",
+        "image": "PortaPapas"
+    },
+    {
+        "id": 77,
+        "title": "Servilletas Evo x300",
+        "name": "",
+        "description": "Limpieza y Economia",
+        "category": "catering",
+        "image": "ServilletasEvo300"
+    },
+    {
+        "id": 78,
+        "title": "Servilletas Nube x300",
+        "name": "",
+        "description": "Limpieza y Economia",
+        "category": "catering",
+        "image": "ServilletasNube300"
+    },
+    {
+        "id": 79,
+        "title": "Servilletas Familia x100",
+        "name": "",
+        "description": "Limpieza y Calidad",
+        "category": "catering",
+        "image": "ServilletasFamilia100"
+    },
+    {
+        "id": 80,
+        "title": "Servilletas Popular x330",
+        "name": "",
+        "description": "Limpieza y Economia",
+        "category": "catering",
+        "image": "ServilletasPopular330"
+    },
+    {
+        "id": 81,
+        "title": "Servilletas TORK PLUS x100",
+        "name": "",
+        "description": "Limpieza y Calidad",
+        "category": "catering",
+        "image": "ServilletasTORKPlus100"
+    },
+    {
+        "id": 82,
+        "title": "Servilletas TORK x150",
+        "name": "",
+        "description": "Limpieza y Calidad",
+        "category": "catering",
+        "image": "ServilletasTORK150"
+    },
+    {
+        "id": 83,
+        "title": "Sombrillas Cocteleras",
+        "name": "",
+        "description": "Cocteles o bebidas",
+        "category": "vasos",
+        "image": "SombrillasCocteleras"
+    },
+    {
+        "id": 84,
+        "title": "Toalla de Cocina Favorita",
+        "name": "",
+        "description": "Limpieza y Economia",
+        "category": "peliculas",
+        "image": "ToallaCocinaFavorita"
+    },
+    {
+        "id": 85,
+        "title": "Toalla de Mano Natural Nube",
+        "name": "",
+        "description": "Limpieza y Economia",
+        "category": "peliculas",
+        "image": "ToallaManoNaturalNube"
+    },
+    {
+        "id": 86,
+        "title": "Toalla de Mano Natural Tizu",
+        "name": "",
+        "description": "Limpieza y Economia",
+        "category": "peliculas",
+        "image": "ToallaManoNaturalTizu"
+    },
+    {
+        "id": 87,
+        "title": "Toalla de Mano Nube",
+        "name": "",
+        "description": "Limpieza y Economia",
+        "category": "peliculas",
+        "image": "ToallaManoNube"
+    },
+    {
+        "id": 88,
+        "title": "Toalla de Mano Generica",
+        "name": "",
+        "description": "Limpieza y Economia",
+        "category": "peliculas",
+        "image": "ToallaManosGenerica"
+    },
+    {
+        "id": 89,
+        "title": "Vaso de Carton de 4oz",
+        "name": "",
+        "description": "Ideal para cafe o bebidas",
+        "category": "vasos",
+        "image": "VasoCarton4"
+    },
+    {
+        "id": 90,
+        "title": "Vaso de Carton de 6oz",
+        "name": "",
+        "description": "Ideal para cafe o bebidas",
+        "category": "vasos",
+        "image": "VasoCarton6"
+    },
+    {
+        "id": 91,
+        "title": "Vaso de Carton de 7oz",
+        "name": "",
+        "description": "Ideal para cafe o bebidas",
+        "category": "vasos",
+        "image": "VasoCarton7"
+    },
+    {
+        "id": 92,
+        "title": "Vaso de Carton de 9oz",
+        "name": "",
+        "description": "Ideal para cafe o bebidas",
+        "category": "vasos",
+        "image": "VasoCarton9"
+    },
+    {
+        "id": 93,
+        "title": "Vaso de Carton Chevere de 7oz",
+        "name": "",
+        "description": "Ideal para cafe o bebidas",
+        "category": "vasos",
+        "image": "VasoCartonChevere7"
+    },
+    {
+        "id": 94,
+        "title": "Vaso tipo Pet con tapa",
+        "name": "",
+        "description": "Postres, bebidas o helados",
+        "category": "vasos",
+        "image": "VasoPet"
+    },
+    {
+        "id": 95,
+        "title": "Vasos de Acme Leon",
+        "name": "",
+        "description": "Multiples usos",
+        "category": "vasos",
+        "image": "VasosAcmeLeon"
+    },
+    {
+        "id": 96,
+        "title": "Vasos Desechables Todos los tamaños",
+        "name": "",
+        "description": "Multiples usos",
+        "category": "vasos",
+        "image": "VasosDesechables"
+    },
+    {
+        "id": 97,
+        "title": "Vaso Desechable Formosa 7oz",
+        "name": "",
+        "description": "Multiples usos",
+        "category": "vasos",
+        "image": "VasosFormosa7"
+    },
+    {
+        "id": 98,
+        "title": "Vasos Pet de 8oz",
+        "name": "",
+        "description": "Multiples usos",
+        "category": "vasos",
+        "image": "VasosPet8"
+    },
+    {
+        "id": 99,
+        "title": "Vasos Linea VBC",
+        "name": "",
+        "description": "Multiples usos",
+        "category": "vasos",
+        "image": "VasosVBC"
+    },
+    {
+        "id": 100,
+        "title": "Vasos VBC de 12oz",
+        "name": "",
+        "description": "Multiples usos",
+        "category": "vasos",
+        "image": "VasosVBC12"
+    },
+
 
 ] satisfies Product[];

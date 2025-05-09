@@ -22,10 +22,7 @@ export default async function contactHandler(
 	);
 	const result = await stmt.bind(nombre, email, asunto, mensaje).run();
 
-	const { lastInsertRowid } = await stmt
-		.bind(nombre, email, asunto, mensaje)
-		.run();
-
+	const { lastInsertRowid } = result;
 	// 3. Responder con éxito
 	return new Response(
 		JSON.stringify({ success: true, id: lastInsertRowid }),

@@ -11,7 +11,7 @@ export default function CartPage() {
 
     // Genera el link de WhatsApp como antes…
     const whatsappLink = () => {
-        const header = "🛒 *Mi Pedido*%0A%0A";
+        const header = "🛒 *Hola, Deseo hacer el siguiente pedido*%0A%0A";
         const lines = items.map((it, idx) => `${idx + 1}. ${it.quantity}× ${it.title}`);
         const body = lines.join("%0A");
         return `https://api.whatsapp.com/send?phone=${phone}&text=${header + body}`;
