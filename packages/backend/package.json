@@ -1,13 +1,13 @@
 {
-	"name": "backend-liderplast",
-	"version": "0.0.0",
+	"name": "@liderplast/backend",
+	"version": "1.0.0",
 	"private": true,
+	"type": "module",
 	"scripts": {
-		"deploy": "../../backend-liderplast/node_modules/.bin/wrangler deploy",
-		"dev": "../../backend-liderplast/node_modules/.bin/wrangler dev",
-		"start": "../../backend-liderplast/node_modules/.bin/wrangler dev",
-		"test": "../../backend-liderplast/node_modules/.bin/vitest",
-		"cf-typegen": "../../backend-liderplast/node_modules/.bin/wrangler types"
+		"deploy": "wrangler deploy",
+		"dev": "wrangler dev",
+		"test": "vitest",
+		"cf-typegen": "wrangler types"
 	},
 	"devDependencies": {
 		"@cloudflare/vitest-pool-workers": "^0.8.22",

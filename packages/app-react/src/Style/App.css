@@ -1,3 +1,7 @@
+@import "tailwindcss";
+
+@import "bootstrap-icons/font/bootstrap-icons.css";
+
 .btn-no-link {
     text-decoration: none; /* Quita el subrayado */
     color: inherit; /* Hereda el color del padre */

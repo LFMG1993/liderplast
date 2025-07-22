@@ -33,10 +33,11 @@ export default function AllProducts() {
     const [editingProduct, setEditingProduct] = useState<CartItem | null>(null);
 
     return (
-        <section className="products section py-5">
-            <div className="container-fluid">
-                <div className="row">
-                    {/* Sidebar */}
+        <section className="py-8">
+            {/* ANTES: container-fluid */}
+            <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
+                {/* ANTES: row */}
+                <div className="flex flex-col md:flex-row gap-8">
                     <FilterSidebar
                         searchText={searchText}
                         onSearch={setSearchText}
@@ -46,34 +47,35 @@ export default function AllProducts() {
                         clearFilters={clearAllFilters}
                     />
 
-                    {/* Grid de productos */}
-                    <div className="col-12 col-lg-9">
-                        <div className="row g-4">
+                    {/* ANTES: col-12 col-lg-9 */}
+                    <main className="w-full md:w-3/4 lg:w-4/5">
+                        {/* ANTES: row g-4 */}
+                        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                             {filteredProducts.map((p) => (
-                                <div
-                                    className="col-6 col-md-4 col-xl-3"
+                                // La clase de columna ya no es necesaria aquí, la grilla la maneja
+                                <ProductCard
                                     key={p.id}
-                                >
-                                    <ProductCard product={p} onAdd={() => setEditingProduct({...p, quantity: 1})}/>
-                                </div>
+                                    product={p}
+                                    onAdd={() => setEditingProduct({...p, quantity: 1})}
+                                />
                             ))}
-
-                            {filteredProducts.length === 0 && (
-                                <div className="col-12 text-center">
-                                    <p className="text-muted">No se encontraron productos.</p>
-                                    <button
-                                        className="btn btn-outline-primary"
-                                        onClick={clearAllFilters}
-                                    >
-                                        Ver todos
-                                    </button>
-                                </div>
-                            )}
                         </div>
-                    </div>
+
+                        {filteredProducts.length === 0 && (
+                            <div className="col-span-full text-center py-16">
+                                <p className="text-gray-500 text-xl mb-4">No se encontraron productos.</p>
+                                {/* ANTES: btn btn-outline-primary */}
+                                <button
+                                    className="border border-liderplast-primary text-liderplast-primary px-6 py-2 rounded-md hover:bg-liderplast-primary hover:text-white transition-colors"
+                                    onClick={clearAllFilters}
+                                >
+                                    Ver todos los productos
+                                </button>
+                            </div>
+                        )}
+                    </main>
                 </div>
             </div>
-            {/* Modal para editar cantidad / ver detalles */}
             <EditCartItemModal
                 show={!!editingProduct}
                 item={editingProduct}

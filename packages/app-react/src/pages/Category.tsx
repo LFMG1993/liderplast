@@ -6,7 +6,7 @@ const categories = [
     { key: "bolsas", label: "Bolsas", img: ImagesCategory.Bolsas },
     { key: "cubiertos", label: "Cubiertos", img: ImagesCategory.Cubiertos },
     { key: "frascos", label: "Frascos", img: ImagesCategory.Frascos },
-    { key: "peliculas", label: "Películas Extensibles", img: ImagesCategory.PeliculasExtensibles },
+    { key: "peliculas", label: "Películas Extensibles", img: ImagesCategory.PeliculaExtensible },
     { key: "platos", label: "Platos", img: ImagesCategory.Platos },
     { key: "vasos", label: "Vasos", img: ImagesCategory.Vasos },
     { key: "alimentos", label: "Alimentos", img: ImagesCategory.Alimentos },

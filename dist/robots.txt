@@ -1,0 +1,6 @@
+# Permitir que todos los robots rastreen todo el sitio.
+User-agent: *
+Disallow:
+
+# Ubicación del mapa del sitio.
+Sitemap: https://distribucioneslider.com.co/sitemap.xml

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <!-- Página Principal (Landing)  -->
+    <url>
+        <loc>https://distribucioneslider.com.co/</loc>
+        <lastmod>2025-07-21</lastmod>
+        <priority>1.0</priority>
+    </url>
+    <!-- Página de la Tienda (React App) -->
+    <url>
+        <loc>https://distribucioneslider.com.co/tienda/</loc>
+        <lastmod>2025-05-22</lastmod>
+        <priority>0.8</priority>
+    </url>
+</urlset>

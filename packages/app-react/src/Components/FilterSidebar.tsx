@@ -1,4 +1,3 @@
-
 type Props = {
     searchText: string;
     onSearch: (text: string) => void;
@@ -17,33 +16,40 @@ export default function FilterSidebar({
                                           clearFilters,
                                       }: Props) {
     return (
-        <aside className="col-md-2 border-end position-static position-md-sticky top-0 bg-white">
+        // ANTES: col-md-2 border-end position-static position-md-sticky top-0 bg-white
+        <aside className="w-full md:w-1/4 lg:w-1/5 md:border-r border-gray-200 p-4 md:sticky top-24 h-screen">
+            {/* ANTES: form-control mb-2 */}
             <input
                 type="text"
-                className="form-control mb-2"
+                className="w-full border border-gray-300 rounded-md px-3 py-2 mb-4 focus:ring-2 focus:ring-liderplast-primary focus:border-liderplast-primary"
                 placeholder="Buscar producto..."
                 value={searchText}
                 onChange={(e) => onSearch(e.target.value)}
             />
+            {/* ANTES: btn btn-outline-secondary w-100 d-flex justify-content-center mb-4 */}
             <button
-                className="btn btn-outline-secondary w-100 d-flex justify-content-center mb-4"
+                className="w-full border border-gray-300 text-gray-700 px-4 py-2 rounded-md mb-6 transition-colors hover:bg-gray-100"
                 onClick={clearFilters}
             >
-                Ver todos
+                Limpiar Filtros
             </button>
-            <h6>Categorías</h6>
-            <ul className="list-unstyled">
+            <h6 className="font-semibold text-lg mb-3">Categorías</h6>
+            {/* ANTES: list-unstyled */}
+            <ul className="space-y-2">
                 {allCategories.map((cat) => (
                     <li key={cat}>
-                        <div className="form-check">
+                        {/* ANTES: form-check */}
+                        <div className="flex items-center">
+                            {/* ANTES: form-check-input */}
                             <input
                                 id={`cat-${cat}`}
-                                className="form-check-input"
+                                className="h-4 w-4 rounded border-gray-300 text-liderplast-primary focus:ring-liderplast-primary"
                                 type="checkbox"
                                 checked={selectedCats.includes(cat)}
                                 onChange={() => toggleCategory(cat)}
                             />
-                            <label className="form-check-label" htmlFor={`cat-${cat}`}>
+                            {/* ANTES: form-check-label */}
+                            <label className="ml-3 min-w-0 flex-1 text-gray-600" htmlFor={`cat-${cat}`}>
                                 {cat.charAt(0).toUpperCase() + cat.slice(1)}
                             </label>
                         </div>

@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+body {
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Animación para el carrusel */
+.carousel-item {
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+}
+
+.carousel-item.is-active {
+    /* El item activo se hace visible con una transición suave */
+    opacity: 1;
+}
+
+/* Estilo para el header al hacer scroll */
+.header-scrolled {
+    background-color: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    backdrop-filter: blur(8px);
+}
+
+.header-scrolled .nav-link {
+    color: #1f2937; /* Gris oscuro para los enlaces */
+}
+
+.header-scrolled .logo-text {
+    color: #1f2937;
+}
+
+.background-lider {
+    background-color: #4a3084;
+    transition: background-color 0.3s ease-in-out;
+}
+.background-lider:hover {
+    /* Cambiamos a un color ligeramente más claro al pasar el cursor */
+    background-color: #5a4094;
+}
+
+/* --- Estilos para la Burbuja de WhatsApp --- */
+#whatsapp-bubble {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    transform-origin: bottom right;
+}
+
+/* Clase para ocultar la burbuja con una transición suave */
+#whatsapp-bubble.is-hidden {
+    opacity: 0;
+    transform: translateY(10px) scale(0.9);
+    pointer-events: none;
+}

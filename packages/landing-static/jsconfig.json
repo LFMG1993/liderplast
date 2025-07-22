@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@shared-assets/*": [
+        "../../shared/assets/*"
+      ]
+    },
+    "moduleResolution": "bundler",
+    "checkJs": true,
+    "target": "ESNext",
+    "module": "ESNext"
+  },
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
+}

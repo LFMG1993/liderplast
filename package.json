@@ -1,17 +1,26 @@
 {
   "name": "liderplast-monorepo",
-  "version": "1.0.0",
   "private": true,
   "workspaces": [
     "packages/*"
   ],
   "scripts": {
-    "dev:app": "npm run dev --workspace=app-react",
-    "dev:backend": "npm run dev --workspace=backend",
+    "//--- Comandos de Desarrollo (corren en paralelo) ---": "",
+    "dev:landing": "npm run dev --workspace=@liderplast/landing-static",
+    "dev:app": "npm run dev --workspace=@liderplast/app-react",
+    "dev:backend": "npm run dev --workspace=@liderplast/backend",
     "dev": "npm-run-all --parallel dev:*",
-    "build": "npm run build --workspace=app-react"
+    "//--- Comandos de Producción ---": "",
+    "build": "npm run build --workspace=@liderplast/landing-static && npm run build --workspace=@liderplast/app-react",
+    "deploy:backend": "npm run deploy --workspace=@liderplast/backend",
+    "deploy:prepare-dist": "rm -rf dist && mkdir dist && cp -R packages/landing-static/dist/* dist/ && mkdir dist/tienda && cp -R packages/app-react/dist/* dist/tienda/",
+    "deploy": "npm run build && npm run deploy:prepare-dist",
+    "//--- ✅ NUEVO: Script solo para la Landing Page ---": "",
+    "build:landing": "npm run build --workspace=@liderplast/landing-static",
+    "deploy:landing": "npm run build:landing && rm -rf dist && mkdir dist && cp -R packages/landing-static/dist/* dist/"
   },
   "devDependencies": {
+    "cross-env": "^7.0.3",
     "npm-run-all": "^4.1.5"
   }
 }

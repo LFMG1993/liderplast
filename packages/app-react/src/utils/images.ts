@@ -1,20 +1,19 @@
 // imagenes del home
 import logo from "../assets/logo.avif";
-import fachada from "../assets/fachada.avif";
+import fachada from "../../../../shared/assets/iniciosLiderplast.avif";
 import slider1 from "../assets/slider1.avif";
 // Imagenes de las categorias
-import contenedorP from "../assets/ContenedorPresentacion.avif";
-import contenedores from "../assets/category/Contenedores.webp";
-import Bandejas from "../assets/category/Bandejas.webp";
-import Bioseguridad from "../assets/category/Bioseguridad.webp";
-import Bolsas from "../assets/category/Bolsas.webp";
-import Cubiertos from "../assets/category/Cubiertos.webp";
-import Frascos from "../assets/category/Frascos.webp";
-import Platos from "../assets/category/Platos.webp";
-import Vasos from "../assets/category/Vasos.webp";
-import PeliculasExtensibles from "../assets/category/PeliculasExtensibles.webp";
-import Alimentos from "../assets/category/Alimentos.webp"
-import Catering from "../assets/category/Catering.webp";
+import contenedores from "@shared/assets/category/Contenedores.webp";
+import Bandejas from "@shared/assets/category/Bandejas.webp";
+import Bioseguridad from "@shared/assets/category/Bioseguridad.webp";
+import Bolsas from "@shared/assets/category/Bolsas.webp";
+import Cubiertos from "@shared/assets/category/Cubiertos.webp";
+import Frascos from "@shared/assets/category/Frascos.webp";
+import Platos from "@shared/assets/category/Platos.webp";
+import Vasos from "@shared/assets/category/Vasos.webp";
+import PeliculaExtensible from "@shared/assets/category/PeliculaExtensible.webp";
+import Alimentos from "@shared/assets/category/Alimentos.webp"
+import Catering from "@shared/assets/category/Catering.webp";
 // Imagenes de los productos que se mostraran en el catálogo de la tienda.
 import Azucar from "../assets/products/Azucar-RIOPAILA-tubipack.avif";
 import BandejaIco01 from "../assets/products/Bandeja-icopor-1.avif";
@@ -119,7 +118,6 @@ import VasosVBC12 from "../assets/products/VasosVBC12.avif";
 
 export const ImagesHome = { logo, fachada, slider1 } as const;
 export const ImagesCategory = {
-    contenedorP,
     contenedores,
     Bandejas,
     Bioseguridad,
@@ -128,7 +126,7 @@ export const ImagesCategory = {
     Frascos,
     Platos,
     Vasos,
-    PeliculasExtensibles,
+    PeliculaExtensible,
     Alimentos,
     Catering
 } as const;
