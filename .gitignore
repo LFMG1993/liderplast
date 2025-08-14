@@ -25,6 +25,7 @@ dist-ssr
 wrangler.toml
 
 # Build output para el panel de administración
+dist
  packages/admin-panel/dist
 
  # Caché de herramientas de desarrollo
