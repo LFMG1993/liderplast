@@ -11,5 +11,13 @@
 	],
 	"observability": {
 		"enabled": true
+	},
+	"vars": {
+		"JWT_SECRET": "AdMiN@3987",
+		"CORS_ALLOWED_ORIGINS": "http://localhost:5173,http://127.0.0.1:5175",
+		"R2_BUCKET_NAME": "images",
+		"R2_ACCOUNT_ID": "191cdf1182c72ea9f37d98476ff46c33",
+		"R2_ACCESS_KEY_ID": "d97a963c146ed96900b96f9c51300d6c",
+		"R2_SECRET_ACCESS_KEY": "eda90b4fd2777640e4a91b87ad8bbc709cf308229b7a9cb446299d111de85ed7"
 	}
 }

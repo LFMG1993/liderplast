@@ -1,0 +1,33 @@
+import { Button } from '../general/Button';
+import { X } from 'lucide-react';
+
+// ✅ MEJORA: El modal de formulario ahora es un componente genérico y reutilizable.
+interface FormModalProps {
+    title: string;
+    isOpen: boolean;
+    onClose: () => void;
+    onSubmit: (e: React.FormEvent) => void;
+    children: React.ReactNode;
+    isSubmitting: boolean;
+}
+
+export const AttributeForm = ({ title, isOpen, onClose, onSubmit, children, isSubmitting }: FormModalProps) => {
+    if (!isOpen) return null;
+    return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center">
+            <div className="bg-white rounded-lg shadow-xl w-full max-w-md text-gray-700">
+                <form onSubmit={onSubmit}>
+                    <div className="flex justify-between items-center p-4 border-b">
+                        <h3 className="text-lg font-medium">{title}</h3>
+                        <button type="button" onClick={onClose}><X className="h-6 w-6 text-gray-500" /></button>
+                    </div>
+                    <div className="p-6">{children}</div>
+                    <div className="flex justify-end gap-4 p-4 border-t bg-gray-50">
+                        <Button type="button" variant="secondary" onClick={onClose} disabled={isSubmitting}>Cancelar</Button>
+                        <Button type="submit" disabled={isSubmitting}>{isSubmitting ? 'Guardando...' : 'Guardar'}</Button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    );
+};

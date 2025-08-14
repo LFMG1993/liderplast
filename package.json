@@ -1,26 +1,44 @@
 {
   "name": "liderplast-monorepo",
   "private": true,
-  "workspaces": [
-    "packages/*"
-  ],
   "scripts": {
     "//--- Comandos de Desarrollo (corren en paralelo) ---": "",
-    "dev:landing": "npm run dev --workspace=@liderplast/landing-static",
-    "dev:app": "npm run dev --workspace=@liderplast/app-react",
-    "dev:backend": "npm run dev --workspace=@liderplast/backend",
+    "dev:landing": "pnpm --filter @liderplast/landing-static dev",
+    "dev:app": "pnpm --filter @liderplast/app-react dev",
+    "dev:admin": "pnpm --filter @liderplast/admin-panel dev",
+    "dev:backend": "pnpm --filter @liderplast/backend dev:remote",
     "dev": "npm-run-all --parallel dev:*",
+    "//--- Comandos de Base de Datos ---": "",
+    "db:remote:ls": "npx wrangler d1 execute liderplast --remote --command='SELECT name FROM sqlite_master WHERE type=\"table\";'",
+    "db:migrate:remote": "npx wrangler d1 migrations apply liderplast --remote",
     "//--- Comandos de Producción ---": "",
-    "build": "npm run build --workspace=@liderplast/landing-static && npm run build --workspace=@liderplast/app-react",
-    "deploy:backend": "npm run deploy --workspace=@liderplast/backend",
-    "deploy:prepare-dist": "rm -rf dist && mkdir dist && cp -R packages/landing-static/dist/* dist/ && mkdir dist/tienda && cp -R packages/app-react/dist/* dist/tienda/",
-    "deploy": "npm run build && npm run deploy:prepare-dist",
+    "build:landing": "pnpm --filter @liderplast/landing-static build",
+    "build:app": "pnpm --filter @liderplast/app-react build",
+    "build:admin": "pnpm --filter @liderplast/admin-panel build",
+    "build": "npm-run-all --parallel build:landing build:app build:admin",
+    "deploy:backend": "pnpm --filter @liderplast/backend deploy",
     "//--- ✅ NUEVO: Script solo para la Landing Page ---": "",
-    "build:landing": "npm run build --workspace=@liderplast/landing-static",
-    "deploy:landing": "npm run build:landing && rm -rf dist && mkdir dist && cp -R packages/landing-static/dist/* dist/"
+    "deploy:prepare-dist": "rm -rf dist && mkdir dist && cp -R packages/landing-static/dist/* dist/ && mkdir -p dist/tienda && cp -R packages/app-react/dist/* dist/tienda/ && mkdir -p dist/admin && cp -R packages/admin-panel/dist/* dist/admin/",
+    "deploy": "npm run build && npm run deploy:prepare-dist"
+  },
+  "overrides": {
+    "vite": "6.3.5",
+    "typescript": "5.7.2",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "tailwindcss": "4.1.11"
   },
   "devDependencies": {
     "cross-env": "^7.0.3",
     "npm-run-all": "^4.1.5"
+  },
+  "pnpm": {
+    "allowed-build-scripts": [
+      "@swc/core",
+      "@tailwindcss/oxide",
+      "esbuild",
+      "sharp",
+      "workerd"
+    ]
   }
 }

@@ -47,12 +47,9 @@ export default function AllProducts() {
                         clearFilters={clearAllFilters}
                     />
 
-                    {/* ANTES: col-12 col-lg-9 */}
                     <main className="w-full md:w-3/4 lg:w-4/5">
-                        {/* ANTES: row g-4 */}
                         <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                             {filteredProducts.map((p) => (
-                                // La clase de columna ya no es necesaria aquí, la grilla la maneja
                                 <ProductCard
                                     key={p.id}
                                     product={p}

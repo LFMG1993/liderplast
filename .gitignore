@@ -21,3 +21,4 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+/packages/backend/wrangler.jsonc

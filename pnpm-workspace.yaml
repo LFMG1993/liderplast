@@ -1,0 +1,4 @@
+# Este archivo le dice a pnpm dónde encontrar los paquetes del monorepo.
+packages:
+  # Busca todos los paquetes dentro de la carpeta 'packages'.
+  - 'packages/*'

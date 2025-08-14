@@ -1,0 +1,103 @@
+import {useState, useEffect, useCallback} from 'react';
+import {userService, type User, type UserCreationData} from '../services/userService';
+import {UserTable} from '../components/users/UserTable';
+import {UserForm} from '../components/users/UserForm';
+import {ConfirmationModal} from '../components/general/ConfirmationModal';
+import {Button} from '../components/general/Button';
+import {PlusCircle} from 'lucide-react';
+import {useNotification} from "../context/NotificationContext";
+
+export default function UsersPage() {
+    const [users, setUsers] = useState<User[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const {addNotification} = useNotification();
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [userToEdit, setUserToEdit] = useState<User | null>(null);
+
+    const fetchUsers = useCallback(async () => {
+        try {
+            setIsLoading(true);
+            const data = await userService.getUsers();
+            setUsers(data.users);
+            setError(null);
+        } catch (err: any) {
+            setError(err.message || 'Error al cargar los usuarios.');
+        } finally {
+            setIsLoading(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        fetchUsers();
+    }, [fetchUsers]);
+
+    const handleOpenCreateModal = () => {
+        setUserToEdit(null);
+        setIsModalOpen(true);
+    };
+
+    const handleOpenEditModal = (user: User) => {
+        setUserToEdit(user);
+        setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setUserToEdit(null);
+    };
+
+    const handleDelete = async (user: User) => {
+        if (window.confirm(`¿Estás seguro de que quieres eliminar a ${user.nombre}?`)) {
+            try {
+                await userService.deleteUser(user.id);
+                addNotification('Usuario eliminado con éxito', 'success');
+                fetchUsers(); // Recargar la lista
+            } catch (err: any) {
+                addNotification(err.message || 'Error al eliminar el usuario.', 'error');
+            }
+        }
+    };
+
+    const handleFormSubmit = async (data: UserCreationData) => {
+        try {
+            if (userToEdit) {
+                await userService.updateUser(userToEdit.id, data);
+                addNotification('Usuario actualizado con éxito', 'success');
+            } else {
+                await userService.createUser(data);
+                addNotification('Usuario creado con éxito', 'success');
+            }
+            handleCloseModal();
+            fetchUsers(); // Recargar la lista
+        } catch (err: any) {
+            // Idealmente, mostrar este error en el formulario
+            addNotification(err.message || 'Error al guardar el usuario.', 'error');
+        }
+    };
+
+    return (
+        <div className="p-4 sm:p-6 lg:p-8">
+            <div className="sm:flex sm:items-center">
+                <div className="sm:flex-auto">
+                    <h1 className="text-xl font-semibold text-gray-900">Usuarios</h1>
+                    <p className="mt-2 text-sm text-gray-700">Una lista de todos los usuarios en el sistema.</p>
+                </div>
+                <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
+                    <Button onClick={handleOpenCreateModal}><PlusCircle className="mr-2 h-5 w-5"/>Crear Usuario</Button>
+                </div>
+            </div>
+            <div className="mt-8">
+                {isLoading && <p>Cargando...</p>}
+                {error && <p className="text-red-500">{error}</p>}
+                {!isLoading && !error &&
+                    <UserTable users={users} onEdit={handleOpenEditModal} onDelete={handleDelete}/>}
+            </div>
+            <ConfirmationModal isOpen={isModalOpen} onClose={handleCloseModal}
+                               title={userToEdit ? 'Editar Usuario' : 'Crear Nuevo Usuario'}>
+                <UserForm userToEdit={userToEdit} onSubmit={handleFormSubmit} onCancel={handleCloseModal}/>
+            </ConfirmationModal>
+        </div>
+    );
+}
