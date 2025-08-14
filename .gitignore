@@ -22,3 +22,19 @@ dist-ssr
 *.sln
 *.sw?
 /packages/backend/wrangler.jsonc
+wrangler.toml
+
+# Build output para el panel de administración
+ packages/admin-panel/dist
+
+ # Caché de herramientas de desarrollo
+ .vite/
+ .wrangler/
+
+ # Variables de entorno y secretos - ¡NUNCA SUBIR A GIT!
+ .env
+ .env*.local
+ .dev.vars
+
+ # Reportes de cobertura de pruebas
+ coverage/
