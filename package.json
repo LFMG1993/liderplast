@@ -16,7 +16,7 @@
     "build:app": "pnpm --filter @liderplast/app-react build",
     "build:admin": "pnpm --filter @liderplast/admin-panel build",
     "build": "npm-run-all --serial build:landing build:app build:admin",
-    "build:backend": "pnpm --filter @liderplast/backend deploy",
+    "build:backend": "pnpm --filter @liderplast/backend bundle",
     "//--- ✅ Scripts para el despliegue en Cloudflare Pages ---": "",
     "deploy:prepare-dist": "rm -rf dist && mkdir dist && cp -R packages/landing-static/dist/* dist/ && mkdir -p dist/tienda && cp -R packages/app-react/dist/* dist/tienda/ && mkdir -p dist/admin && cp -R packages/admin-panel/dist/* dist/admin/",
     "deploy": "npm run build && npm run deploy:prepare-dist && npm run build:backend"

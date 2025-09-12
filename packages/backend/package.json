@@ -4,7 +4,7 @@
 	"private": true,
 	"scripts": {
 		"test": "vitest",
-		"deploy": "wrangler deploy --outdir ../../dist --name _worker src/index.ts",
+		"bundle": "wrangler deploy --outdir ../../dist --name _worker src/index.ts",
 		"dev": "wrangler dev src/index.ts",
 		"dev:remote": "wrangler dev --remote",
 		"db:generate": "drizzle-kit generate",
