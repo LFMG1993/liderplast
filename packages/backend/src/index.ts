@@ -35,6 +35,11 @@ app.route('/api/admin/attributes/:attributeId/values', attributeValuesRoutes);
 app.route('/api/admin/products', productRoutes);
 app.post('/api/admin/upload-url', getUploadUrl);
 
+// --- ✅ NUEVO: Manejador de Activos Estáticos (Modo Avanzado de Pages) ---
+// Esta es la última ruta, por lo que solo se ejecutará si ninguna ruta de API coincide.
+// Delega la petición al servicio de activos estáticos de Cloudflare Pages.
+app.all('*', (c) => c.env.ASSETS.fetch(c.req.raw));
+
 // --- 3. Manejo de Errores y 404 ---
 app.notFound((c) => c.json({success: false, error: 'Not Found'}, 404));
 app.onError((err, c) => {
