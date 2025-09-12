@@ -25,4 +25,4 @@ dir = "dist"
 
 # Directorio que contiene el código del backend (el Worker).
 # ¡Esta es la configuración que reemplaza la opción que no encontrabas en la UI!
-functions_dir = "/packages/backend"
+functions = "/packages/backend"
