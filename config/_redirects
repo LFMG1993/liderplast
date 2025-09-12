@@ -1,0 +1,7 @@
+# Reglas para las Single Page Applications (SPA)
+
+# Cualquier ruta dentro de /tienda que no sea un archivo, la sirve index.html
+/tienda/*  /tienda/index.html  200
+
+# Cualquier ruta dentro de /admin que no sea un archivo, la sirve index.html
+/admin/*   /admin/index.html   200

@@ -59,7 +59,7 @@ export default async function loginHandler(c: Context<{ Bindings: Env }>): Promi
 
 		// Usamos la utilidad para obtener las opciones y añadimos Max-Age
 		const cookieOptions = getCookieOptions(c);
-		setCookie(c, 'auth_token', token, {...cookieOptions, maxAge: 86400});
+		setCookie(c, 'auth_token', token, {...cookieOptions, maxAge: 3600});
 
 		console.log('[login] success for', email);
 		return c.json({success: true, user: {id: user.id, name: user.nombre, email: user.email}});

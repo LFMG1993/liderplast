@@ -1,14 +1,28 @@
-name = "liderplast-backend"
-main = "packages/backend/src/index.ts"
-compatibility_date = "2024-05-01"
+#name = "liderplast-backend"
+#main = "packages/backend/src/index.ts"
+#compatibility_date = "2024-05-01"
+#
+#[[d1_databases]]
+#binding = "LIDERPLAST_DB"
+#database_name = "liderplast"
+#database_id = "4e9f30eb-f2c9-40e2-b780-848a4c7f6d66"
+#migrations_dir = "packages/backend/migrations"
+#preview_database_id = "4e9f30eb-f2c9-40e2-b780-848a4c7f6d66"
+#
+#[vars]
+#JWT_SECRET = "una-clave-secreta-muy-segura-para-desarrollo-local"
+#CORS_ALLOWED_ORIGINS = "http://localhost:5175"
 
-[[d1_databases]]
-binding = "LIDERPLAST_DB"
-database_name = "liderplast"
-database_id = "4e9f30eb-f2c9-40e2-b780-848a4c7f6d66"
-migrations_dir = "packages/backend/migrations"
-preview_database_id = "4e9f30eb-f2c9-40e2-b780-848a4c7f6d66"
+# Este es el archivo de configuración para el despliegue de Cloudflare Pages.
+# Define la estructura de tu proyecto Full-Stack.
 
-[vars]
-JWT_SECRET = "una-clave-secreta-muy-segura-para-desarrollo-local"
-CORS_ALLOWED_ORIGINS = "http://localhost:5175"
+name = "liderplast"
+compatibility_date = "2024-08-13" # Usa una fecha reciente
+
+[pages_build_output]
+# Directorio que contiene los archivos estáticos del frontend (generado por `npm run deploy`).
+dir = "dist"
+
+# Directorio que contiene el código del backend (el Worker).
+# ¡Esta es la configuración que reemplaza la opción que no encontrabas en la UI!
+functions_dir = "/packages/backend"
