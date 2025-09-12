@@ -18,7 +18,7 @@
     "build": "npm-run-all --parallel build:landing build:app build:admin",
     "deploy:backend": "pnpm --filter @liderplast/backend deploy",
     "//--- ✅ Scripts para el despliegue en Cloudflare Pages ---": "",
-    "deploy:prepare-dist": "rm -rf dist && mkdir dist && cp -R packages/landing-static/dist/* dist/ && mkdir -p dist/tienda && cp -R packages/app-react/dist/* dist/tienda/ && mkdir -p dist/admin && cp -R packages/admin-panel/dist/* dist/admin/ && cp config/_redirects dist/ && cp config/_routes.json dist/",
+    "deploy:prepare-dist": "rm -rf dist && mkdir dist && cp -R packages/landing-static/dist/* dist/ && mkdir -p dist/tienda && cp -R packages/app-react/dist/* dist/tienda/ && mkdir -p dist/admin && cp -R packages/admin-panel/dist/* dist/admin/ && cp config/_routes.json dist/",
     "deploy": "npm run build && npm run deploy:prepare-dist"
   },
   "overrides": {

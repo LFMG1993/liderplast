@@ -1,11 +1,9 @@
-# Este es el archivo de configuración para el despliegue de Cloudflare Pages.
-# Define la estructura de nu proyecto Full-Stack.
-
 name = "liderplast"
 compatibility_date = "2025-09-12"
 
-# Directorio que contiene los archivos estáticos del frontend.
-pages_build_output_dir = "dist"
+[pages]
+# Directorio que contiene los archivos estáticos del frontend (generado por `npm run deploy`).
+build_output_dir = "dist"
 
 # Directorio que contiene el código del backend (el Worker).
-pages_build_output_functions_dir = "/packages/backend"
+build_output_functions_dir = "/packages/backend"
