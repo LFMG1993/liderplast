@@ -4,7 +4,7 @@
 	"private": true,
 	"scripts": {
 		"test": "vitest",
-		"bundle": "wrangler pages functions build --outdir ../../dist --name _worker --entry src/index.ts",
+		"bundle": "wrangler pages functions build src --outdir ../../dist",
 		"dev": "wrangler dev src/index.ts",
 		"dev:remote": "wrangler dev --remote",
 		"db:generate": "drizzle-kit generate",
