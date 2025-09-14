@@ -1,12 +1,16 @@
 import {useEffect, useState} from 'react';
-import {productService, type Product, type ProductCreationData} from '../services/productService';
+import {productService} from '../services/productService';
+import type {Product, ProductCreationData} from '../types';
 import {Button} from '../components/general/Button';
 import {ConfirmationModal} from '../components/general/ConfirmationModal';
 import {ProductTable} from '../components/products/ProductTable';
 import {useNotification} from '../providers/NotificationProvider';
 import {ProductForm} from '../components/products/ProductForm';
-import {attributeService, type Attribute} from "../services/attributeService";
-import {categoryService, type Category} from "../services/categoryService";
+import {attributeService} from "../services/attributeService";
+import {categoryService} from "../services/categoryService";
+import type {Attribute, Category} from "../types";
+import {uploadImage} from "../services/imageService";
+import {slugify} from "../utils/utils";
 
 const ProductsPage = () => {
     const [products, setProducts] = useState<Product[]>([]);
@@ -27,9 +31,10 @@ const ProductsPage = () => {
                 productService.getProducts(),
                 attributeService.getAttributesWithValues(),
                 categoryService.getCategories()
-            ]);setProducts(productsData.products);
-            setAttributes(attributesData.attributes);
-            setCategories(categoriesData.categories);
+            ]);
+            setProducts(productsData);
+            setAttributes(attributesData);
+            setCategories(categoriesData);
         } catch (err: any) {
             setError(err.message || 'Error al cargar los productos.');
             showNotification({message: err.message || 'Error al cargar los productos.', type: 'error'});
@@ -54,21 +59,49 @@ const ProductsPage = () => {
         setProductToDelete(product);
     };
 
-    const handleSaveProduct = async (data: ProductCreationData) => {
+    const handleSaveProduct = async (
+        data: ProductCreationData & { id?: number | null },
+        imageFile: File | null
+    ) => {
         setIsSubmitting(true);
         try {
             if (editingProduct) {
-                await productService.updateProduct(editingProduct.id, data);
-                showNotification({message: 'Producto actualizado con éxito.', type: 'success'});
+                let finalImageUrl = data.image_url;
+
+                // Si hay un nuevo archivo, lo subimos y obtenemos la nueva URL.
+                if (imageFile) {
+                    const slug = slugify(editingProduct.name); // Usamos el nombre original para estabilidad.
+                    const entityName = `product/${slug}-${editingProduct.id}`; // Hacemos el nombre único con el ID.
+                    finalImageUrl = await uploadImage(imageFile, entityName);
+                }
+                // Construimos el payload final con TODOS los datos y la URL correcta.
+                const payload: ProductCreationData = {
+                    ...data,
+                    image_url: finalImageUrl,
+                };
+
+                // Hacemos UNA SOLA llamada a la API con el objeto completo.
+                await productService.updateProduct(editingProduct.id, payload);
             } else {
-                await productService.createProduct(data);
-                showNotification({message: 'Producto creado con éxito.', type: 'success'});
+                // 1. Creamos el producto SIN la URL de la imagen.
+                const newProduct = await productService.createProduct(data);
+                // 2. Si hay un archivo de imagen, lo subimos y actualizamos el producto recién creado.
+                if (imageFile) {
+                    const slug = slugify(newProduct.name);
+                    const entityName = `product/${slug}-${newProduct.id}`; // Hacemos el nombre único con el nuevo ID.
+                    const newImageUrl = await uploadImage(imageFile, entityName);
+                    // 3. Hacemos la segunda llamada para añadir la URL de la imagen.
+                    await productService.updateProduct(newProduct.id, {image_url: newImageUrl});
+                }
             }
+            const successMessage = editingProduct ? 'Producto actualizado con éxito.' : 'Producto creado con éxito.';
+            showNotification({message: successMessage, type: 'success'});
             setIsFormModalOpen(false);
             setEditingProduct(null);
             await fetchData();
         } catch (err: any) {
-            showNotification({message: err.message || 'Error al guardar el producto.', type: 'error'});
+            const errorMessage = err.response?.errors ? JSON.stringify(err.response.errors) : (err.message || 'Error al guardar el producto.');
+            showNotification({message: errorMessage, type: 'error'});
         } finally {
             setIsSubmitting(false);
         }

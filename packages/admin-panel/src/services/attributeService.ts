@@ -1,73 +1,52 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-
-// --- Interfaces de Tipos para Atributos ---
-
-export interface AttributeValue {
-    id: number;
-    attributeId: number;
-    value: string;
-}
-
-export interface Attribute {
-    id: number;
-    name: string;
-    values: AttributeValue[];
-}
-// --- Tipos para Creación y Actualización ---
-export type AttributeCreationData = Pick<Attribute, 'name'>;
-export type AttributeUpdateData = Partial<AttributeCreationData>;
-export type AttributeValueCreationData = Pick<AttributeValue, 'value' | 'attributeId'>;
-export type AttributeValueUpdateData = Partial<Pick<AttributeValue, 'value'>>;
-
-/**
- * NOTA: Esta función es idéntica a la de otros servicios.
- * A futuro, podría moverse a un archivo `lib/api.ts` compartido.
- */
-async function apiFetch(endpoint: string, options: RequestInit = {}) {
-    const defaultOptions: RequestInit = {
-        credentials: 'include',
-        headers: {
-            'Content-Type': 'application/json',
-            ...options.headers,
-        },
-    };
-
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, { ...defaultOptions, ...options });
-
-    if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ error: 'Error de red o respuesta no válida.' }));
-        throw new Error(errorData.error || 'Ocurrió un error desconocido.');
-    }
-    if (response.status === 204 || response.headers.get('content-length') === '0') {
-        return { success: true };
-    }
-    return response.json();
-}
+import type {
+    Attribute,
+    AttributeCreationData,
+    AttributeUpdateData,
+    AttributeValueCreationData,
+    AttributeValueUpdateData,
+    AttributeValue
+} from "../types";
+import {apiFetch} from "./api";
 
 // --- Funciones del Servicio de Atributos ---
-
 export const attributeService = {
-    getAttributesWithValues: async (): Promise<{ attributes: Attribute[] }> => {
-        return apiFetch('/api/admin/attributes');
+        getAttributesWithValues: async (): Promise<Attribute[]> => {
+            const response = await apiFetch('/api/admin/attributes');
+            return response.attributes;
     },
-    createAttribute: async (data: AttributeCreationData): Promise<{ attribute: Attribute }> => {
-        return apiFetch('/api/admin/attributes', { method: 'POST', body: JSON.stringify(data) });
+
+    createAttribute: async (data: AttributeCreationData): Promise<Attribute> => {
+        const response = await apiFetch('/api/admin/attributes', {method: 'POST', body: JSON.stringify(data)});
+        return response.attribute;
     },
-    updateAttribute: async (id: number, data: AttributeUpdateData): Promise<{ attribute: Attribute }> => {
-        return apiFetch(`/api/admin/attributes/${id}`, { method: 'PUT', body: JSON.stringify(data) });
+
+    updateAttribute: async (id: number, data: AttributeUpdateData): Promise<Attribute> => {
+        const response = await apiFetch(`/api/admin/attributes/${id}`, {method: 'PUT', body: JSON.stringify(data)});
+        return response.attribute;
     },
+
     deleteAttribute: async (id: number): Promise<{ success: boolean }> => {
-        return apiFetch(`/api/admin/attributes/${id}`, { method: 'DELETE' });
+        return apiFetch(`/api/admin/attributes/${id}`, {method: 'DELETE'});
     },
 
     // --- Valores de Atributos ---
-    createAttributeValue: async (data: AttributeValueCreationData): Promise<{ value: AttributeValue }> => {
-        return apiFetch(`/api/admin/attributes/${data.attributeId}/values`, { method: 'POST', body: JSON.stringify({ value: data.value }) });
+    createAttributeValue: async (data: AttributeValueCreationData): Promise<AttributeValue> => {
+        const response = await apiFetch(`/api/admin/attributes/${data.attributeId}/values`, {
+            method: 'POST',
+            body: JSON.stringify({value: data.value})
+        });
+        return response.value;
     },
-    updateAttributeValue: async (attributeId: number, valueId: number, data: AttributeValueUpdateData): Promise<{ value: AttributeValue }> => {
-        return apiFetch(`/api/admin/attributes/${attributeId}/values/${valueId}`, { method: 'PUT', body: JSON.stringify(data) });
+
+    updateAttributeValue: async (attributeId: number, valueId: number, data: AttributeValueUpdateData): Promise<AttributeValue> => {
+        const response = await apiFetch(`/api/admin/attributes/${attributeId}/values/${valueId}`, {
+            method: 'PUT',
+            body: JSON.stringify(data)
+        });
+        return response.value;
     },
+
     deleteAttributeValue: async (attributeId: number, valueId: number): Promise<{ success: boolean }> => {
-        return apiFetch(`/api/admin/attributes/${attributeId}/values/${valueId}`, { method: 'DELETE' });
+        return apiFetch(`/api/admin/attributes/${attributeId}/values/${valueId}`, {method: 'DELETE'});
     },
 };

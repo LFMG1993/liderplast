@@ -1,6 +1,6 @@
 import * as React from "react";
 import {type JSX, useEffect, useState} from 'react';
-import type {Category, CategoryCreationData, CategoryUpdateData} from '../../services/categoryService';
+import type {Category, CategoryCreationData, CategoryUpdateData} from "../../types";
 import {Button} from '../general/Button';
 import {X} from 'lucide-react';
 import {ImageUploader} from "../general/ImageUploader";
@@ -23,9 +23,15 @@ interface CategoryFormData {
     imageFile: File | null;
 }
 
-const initialState: CategoryFormData = {id: null, name: '', description: '', parentId: null, imageUrl: null, imageFile: null};
+const initialState: CategoryFormData = {
+    id: null,
+    name: '',
+    description: '',
+    parentId: null,
+    imageUrl: null,
+    imageFile: null
+};
 
-// ✅ MEJORA: Función recursiva para aplanar y renderizar las opciones del selector de padre.
 // Muestra la jerarquía visualmente para que el usuario entienda dónde está colocando la nueva categoría.
 const renderCategoryOptions = (categories: Category[], level = 0, categoryToEditId: number | null) => {
     let options: JSX.Element[] = [];
@@ -45,9 +51,7 @@ const renderCategoryOptions = (categories: Category[], level = 0, categoryToEdit
     return options;
 };
 
-// ✅ MEJORA: Se añade una función de búsqueda recursiva.
 // Esta función puede encontrar una categoría por su ID en cualquier nivel de la jerarquía,
-// solucionando el bug que mostraba el nombre incorrecto del padre.
 const findCategoryById = (categories: Category[], id: number): Category | undefined => {
     for (const category of categories) {
         if (category.id === id) {
@@ -118,7 +122,6 @@ export function CategoryForm({
             <div className="bg-white rounded-lg shadow-xl w-full max-w-3xl" onClick={(e) => e.stopPropagation()}>
                 <form onSubmit={handleSubmit} className="flex flex-col h-full">
                     <div className="flex justify-between items-center p-6 border-b">
-                        {/* ✅ MEJORA: Título dinámico y más claro */}
                         <h3 className="text-lg font-medium text-gray-900">
                             {categoryToEdit ? `Editando "${categoryToEdit.name}"` : 'Crear Nueva Categoría'}
                         </h3>
@@ -126,7 +129,6 @@ export function CategoryForm({
                             <X className="h-8 w-8"/>
                         </button>
                     </div>
-                    {/* ✅ MEJORA: Se implementa un layout de 2 columnas para una mejor UX. */}
                     <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-8 flex-grow">
                         {/* --- Columna Izquierda: Imagen --- */}
                         <div className="flex flex-col items-center">

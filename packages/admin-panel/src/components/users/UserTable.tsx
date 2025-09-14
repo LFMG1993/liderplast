@@ -1,4 +1,4 @@
-import type { User } from '../../services/userService';
+import type { User } from '../../types';
 import { Button } from '../general/Button';
 import { Edit, Trash2 } from 'lucide-react';
 

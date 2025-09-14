@@ -1,5 +1,6 @@
 import {useState, useEffect, useCallback} from 'react';
-import {userService, type User, type UserCreationData} from '../services/userService';
+import {userService} from '../services/userService';
+import type {User, UserCreationData} from '../types'
 import {UserTable} from '../components/users/UserTable';
 import {UserForm} from '../components/users/UserForm';
 import {ConfirmationModal} from '../components/general/ConfirmationModal';
@@ -20,7 +21,7 @@ export default function UsersPage() {
         try {
             setIsLoading(true);
             const data = await userService.getUsers();
-            setUsers(data.users);
+            setUsers(data);
             setError(null);
         } catch (err: any) {
             setError(err.message || 'Error al cargar los usuarios.');

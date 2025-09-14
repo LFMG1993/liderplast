@@ -1,7 +1,5 @@
 import {createContext, useState, type ReactNode, useEffect, useContext} from 'react';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-
 // Definimos la forma de los datos del usuario
 interface User {
     id: number;
@@ -42,7 +40,7 @@ export const AuthProvider = ({children}: { children: ReactNode }) => {
         let isMounted = true;
         const verifyAuth = async () => {
             try {
-                const response = await fetch(`${API_BASE_URL}/api/admin/profile`, {
+                const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/admin/profile`, {
                     credentials: 'include'
                 });
 
@@ -70,7 +68,7 @@ export const AuthProvider = ({children}: { children: ReactNode }) => {
     // Función para iniciar sesión
     const login = async (email: string, password: string) => {
         try {
-            const response = await fetch(`${API_BASE_URL}/api/admin/login`, {
+            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/admin/login`, {
                 credentials: 'include', // Aseguramos que las cookies se envíen con la solicitud
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
@@ -98,7 +96,7 @@ export const AuthProvider = ({children}: { children: ReactNode }) => {
 
     // Función para cerrar sesión
     const logout = async () => {
-        fetch(`${API_BASE_URL}/api/admin/logout`, {method: 'POST', credentials: 'include'})
+        fetch(`${import.meta.env.VITE_API_BASE_URL}/api/admin/logout`, {method: 'POST', credentials: 'include'})
             .catch(error => console.error("La llamada de logout al backend falló (esto es informativo):", error));
 
         setAuthState({isAuthenticated: false, isLoading: false, user: null});

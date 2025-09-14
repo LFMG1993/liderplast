@@ -1,5 +1,6 @@
 import {useEffect, useState} from 'react';
-import {attributeService, type Attribute} from '../services/attributeService';
+import {attributeService} from '../services/attributeService';
+import type {Attribute} from "../types";
 import {useNotification} from '../providers/NotificationProvider';
 import {Button} from '../components/general/Button';
 import {ConfirmationModal} from '../components/general/ConfirmationModal';
@@ -25,7 +26,7 @@ const AttributesPage = () => {
         try {
             setIsLoading(true);
             const data = await attributeService.getAttributesWithValues();
-            setAttributes(data.attributes);
+            setAttributes(data);
         } catch (err: any) {
             showNotification({message: err.message, type: 'error'});
         } finally {

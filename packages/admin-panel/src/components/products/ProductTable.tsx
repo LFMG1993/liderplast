@@ -1,6 +1,6 @@
-import type {Product, ProductVariant} from '../../services/productService';
+import type {Product, ProductVariant} from '../../types';
 import {Button} from '../general/Button';
-import {Edit, Trash2} from 'lucide-react';
+import {Edit, Trash2, ImageIcon} from 'lucide-react';
 
 interface ProductTableProps {
     products: Product[];
@@ -52,6 +52,9 @@ export function ProductTable({products, onEdit, onDelete}: ProductTableProps) {
                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Variantes
                     </th>
                     <th scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    </th>
+                    <th scope="col"
                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones
                     </th>
                 </tr>
@@ -67,6 +70,19 @@ export function ProductTable({products, onEdit, onDelete}: ProductTableProps) {
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{product.category.name}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{getPriceDisplay(product.variants)}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{product.variants.length}</td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                            {product.image_url ? (
+                                <img
+                                    src={product.image_url}
+                                    alt={product.name}
+                                    className="h-12 w-12 rounded-md object-cover"
+                                />
+                            ) : (
+                                <div className="h-12 w-12 rounded-md bg-gray-100 flex items-center justify-center">
+                                    <ImageIcon className="h-6 w-6 text-gray-400"/>
+                                </div>
+                            )}
+                        </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                             <div className="flex items-center gap-2">
                                 <Button size="sm" variant="secondary" onClick={() => onEdit(product.id)}><Edit

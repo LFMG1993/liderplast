@@ -1,10 +1,6 @@
 import {useEffect, useState} from 'react';
-import {
-    categoryService,
-    type Category,
-    type CategoryCreationData,
-    type CategoryUpdateData
-} from '../services/categoryService';
+import {categoryService} from '../services/categoryService';
+import type {Category, CategoryCreationData, CategoryUpdateData} from "../types";
 import {useNotification} from '../providers/NotificationProvider';
 import {Button} from '../components/general/Button';
 import {CategoryTable} from '../components/categories/CategoryTable';
@@ -27,7 +23,7 @@ const CategoriesPage = () => {
             try {
                 setIsLoading(true);
                 const data = await categoryService.getCategories();
-                setCategories(data.categories);
+                setCategories(data);
             } catch (err: any) {
                 setError(err.message);
                 showNotification({message: err.message, type: 'error'});
