@@ -26,10 +26,12 @@ export class ApiError extends Error {
  * @throws {ApiError} Si la respuesta de la red no es OK.
  */
 export async function apiFetch(endpoint: string, options: RequestInit = {}) {
+    const token = localStorage.getItem('authToken');
     const defaultOptions: RequestInit = {
         credentials: 'include',
         headers: {
             'Content-Type': 'application/json',
+            ...(token && {Authorization: `Bearer ${token}`}),
             ...options.headers,
         },
     };

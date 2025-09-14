@@ -1,4 +1,5 @@
 import {createContext, useState, type ReactNode, useEffect, useContext} from 'react';
+import {apiFetch} from "../services/api";
 
 // Definimos la forma de los datos del usuario
 interface User {
@@ -40,20 +41,12 @@ export const AuthProvider = ({children}: { children: ReactNode }) => {
         let isMounted = true;
         const verifyAuth = async () => {
             try {
-                const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/admin/profile`, {
-                    credentials: 'include'
-                });
+                const data = await apiFetch('/api/admin/profile');
 
                 if (!isMounted) return; // Si el componente se desmontó, no hacemos nada.
 
-                if (response.ok) {
-                    const data = await response.json();
-                    setAuthState({isAuthenticated: true, isLoading: false, user: data.profile});
-                } else {
-                    setAuthState({isAuthenticated: false, isLoading: false, user: null});
-                }
-            } catch (error) {
-                console.error("Error al verificar la sesión:", error);
+                setAuthState({isAuthenticated: true, isLoading: false, user: data.profile});
+            } catch (error: any) {
                 if (isMounted) {
                     setAuthState({isAuthenticated: false, isLoading: false, user: null});
                 }
@@ -68,38 +61,32 @@ export const AuthProvider = ({children}: { children: ReactNode }) => {
     // Función para iniciar sesión
     const login = async (email: string, password: string) => {
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/admin/login`, {
-                credentials: 'include', // Aseguramos que las cookies se envíen con la solicitud
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({email, password}),
+            const data = await apiFetch('/api/admin/login', {
+                method: 'POST', body: JSON.stringify({email, password})
             });
-            if (response.ok) {
-                const data = await response.json();
+
+            if (data.token && data.user) {
+                // ✅ CORRECCIÓN CRÍTICA: Guardamos el token en localStorage.
+                // Ahora, todas las futuras llamadas con `apiFetch` estarán autenticadas.
+                localStorage.setItem('authToken', data.token);
                 setAuthState({isAuthenticated: true, isLoading: false, user: data.user});
                 return {success: true};
-            } else {
-                const data = await response.json();
-                let errorMessage = 'Credenciales inválidas o error desconocido.';
-                if (data.error) {
-                    errorMessage = data.error;
-                } else if (data.errors) {
-                    errorMessage = Object.values(data.errors).flat().join(' ');
-                }
-                return {success: false, error: errorMessage};
             }
-        } catch (error) {
-            console.error("Error en el login:", error);
-            return {success: false, error: 'No se pudo conectar con el servidor.'};
+            return {success: false, error: 'Respuesta inesperada del servidor.'};
+        } catch (error: any) {
+            return {success: false, error: error.message || 'No se pudo conectar con el servidor.'};
         }
     };
 
     // Función para cerrar sesión
     const logout = async () => {
-        fetch(`${import.meta.env.VITE_API_BASE_URL}/api/admin/logout`, {method: 'POST', credentials: 'include'})
-            .catch(error => console.error("La llamada de logout al backend falló (esto es informativo):", error));
-
+        localStorage.removeItem('authToken');
         setAuthState({isAuthenticated: false, isLoading: false, user: null});
+        try {
+            await apiFetch('/api/admin/logout', {method: 'POST'});
+        } catch (error) {
+            // No hacer nada. El logout en el frontend es lo más importante.
+        }
     };
 
     return <AuthContext.Provider value={{authState, login, logout}}>{children}</AuthContext.Provider>;
