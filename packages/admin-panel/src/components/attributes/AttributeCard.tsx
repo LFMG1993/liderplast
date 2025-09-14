@@ -1,4 +1,4 @@
-import type { Attribute } from '../../services/attributeService';
+import type { Attribute} from "../../types";
 import { Button } from '../general/Button';
 import { Plus, Edit, Trash2 } from 'lucide-react';
 

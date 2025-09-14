@@ -1,4 +1,4 @@
-import type {Category} from '../../services/categoryService';
+import type {Category} from "../../types";
 import {Button} from '../general/Button';
 import {Edit, Trash2, ImageIcon} from 'lucide-react';
 
