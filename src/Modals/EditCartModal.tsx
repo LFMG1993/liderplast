@@ -1,6 +1,5 @@
-// src/components/EditCartItemModal.tsx
 import {useState, useEffect} from "react";
-import type {Product} from "../../packages/app-react/src/types.ts";
+import type {ProductStatic as Product} from "../types";
 import {ImagesProducts} from "../utils/images.ts";
 
 type Props = {

@@ -1,4 +1,4 @@
-import {ImagesProducts, ProductImageKey} from "../../utils/images.ts";
+import {ImagesProducts, type ProductImageKey} from "../../utils/images.ts";
 
 type Product = {
     id: number;
