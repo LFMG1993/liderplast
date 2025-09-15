@@ -24,15 +24,11 @@ interface AuthState {
 export const useAuthStore = create<AuthState>((set, get) => ({
     user: null,
     isAuthenticated: false,
-    isLoading: true, // Empezamos en `true` para mostrar un loader mientras se verifica la sesión
+    isLoading: true,
 
     login: async (email, password) => {
         try {
             const response = await api.post<LoginResponse>('/api/admin/login', {email, password});
-
-            // ✅ DEBUG: Esto te mostrará en la consola del navegador la respuesta exacta del backend.
-            console.log("Respuesta de la API de login:", response.data);
-
             const { user, profile} = response.data;
             const userData = user || profile; // ✅ MEJORA: Aceptamos 'user' o 'profile' para ser robustos.
 
@@ -46,11 +42,17 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         }
     },
 
-    logout: () => {
-        set({user: null, isAuthenticated: false});
-        // Opcional: Informar al backend. No es crítico si falla.
-        api.post('/api/admin/logout').catch(() => {
-        });
+    logout: async () => {
+        try {
+            // Esperamos a que el backend confirme el cierre de sesión.
+            await api.post('/api/admin/logout');
+        } catch (error) {
+            // Aunque la llamada falle, procedemos a limpiar el estado del frontend.
+            console.error("La llamada de logout al backend falló, pero se cerrará la sesión localmente:", error);
+        } finally {
+            // Esta lógica se ejecuta siempre, garantizando que el usuario vea el logout.
+            set({user: null, isAuthenticated: false});
+        }
     },
 
     verifyAuth: async () => {

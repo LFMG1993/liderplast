@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useAuthStore} from "../store/authStore.ts";
+import { useAuthStore} from "../../store/authStore.ts";
 import { User, LogOut } from 'lucide-react';
 
 const ProfilePopover = () => {

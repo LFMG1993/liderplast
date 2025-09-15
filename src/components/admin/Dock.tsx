@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { dockItems } from '../models/navigations.ts';
+import { dockItems } from '../../models/navigations.ts';
 
 const Dock = () => {
     return (
