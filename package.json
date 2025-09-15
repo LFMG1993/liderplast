@@ -1,43 +1,44 @@
 {
-  "name": "liderplast-monorepo",
+  "name": "liderplast-app",
   "private": true,
+  "version": "0.0.0",
+  "type": "module",
   "scripts": {
-    "//--- Comandos de Desarrollo (corren en paralelo) ---": "",
-    "dev:landing": "pnpm --filter @liderplast/landing-static dev",
-    "dev:app": "pnpm --filter @liderplast/app-react dev",
-    "dev:admin": "pnpm --filter @liderplast/admin-panel dev",
-    "dev:backend": "pnpm --filter @liderplast/backend dev:remote",
-    "dev": "npm-run-all --parallel dev:*",
-    "//--- Comandos de Base de Datos ---": "",
-    "db:remote:ls": "npx wrangler d1 execute liderplast --remote --command='SELECT name FROM sqlite_master WHERE type=\"table\";'",
-    "db:migrate:remote": "npx wrangler d1 migrations apply liderplast --remote",
-    "//--- Comandos de Producción ---": "",
-    "build:landing": "pnpm --filter @liderplast/landing-static build",
-    "build:app": "pnpm --filter @liderplast/app-react build",
-    "build:admin": "pnpm --filter @liderplast/admin-panel build",
-    "build": "npm-run-all --serial build:landing build:app build:admin",
-    "//--- ✅ Scripts para el despliegue en Cloudflare Pages ---": "",
-    "deploy:prepare-dist": "rm -rf dist && mkdir dist && cp -R packages/landing-static/dist/* dist/ && mkdir -p dist/tienda && cp -R packages/app-react/dist/* dist/tienda/ && mkdir -p dist/admin && cp -R packages/admin-panel/dist/* dist/admin/",
-    "deploy": "npm run build && npm run deploy:prepare-dist"
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint packages/admin-panel",
+    "preview": "vite preview"
   },
-  "overrides": {
-    "vite": "6.3.5",
-    "typescript": "5.7.2",
-    "react": "19.1.0",
-    "react-dom": "19.1.0",
-    "tailwindcss": "4.1.11"
+  "dependencies": {
+    "@headlessui/react": "^2.2.8",
+    "axios": "^1.12.2",
+    "browser-image-compression": "^2.0.2",
+    "i18next": "^25.5.2",
+    "i18next-browser-languagedetector": "^8.2.0",
+    "i18next-http-backend": "^3.0.2",
+    "lucide-react": "^0.539.0",
+    "react": "^19.1.0",
+    "react-bootstrap-icons": "^1.11.6",
+    "react-dom": "^19.1.0",
+    "react-helmet-async": "^2.0.5",
+    "react-i18next": "^15.7.3",
+    "react-router-dom": "^7.7.1",
+    "zustand": "^5.0.8"
   },
   "devDependencies": {
-    "cross-env": "^7.0.3",
-    "npm-run-all": "^4.1.5"
-  },
-  "pnpm": {
-    "allowed-build-scripts": [
-      "@swc/core",
-      "@tailwindcss/oxide",
-      "esbuild",
-      "sharp",
-      "workerd"
-    ]
+    "@eslint/js": "^9.30.1",
+    "@tailwindcss/vite": "^4.1.11",
+    "@types/node": "^22.14.0",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "@vitejs/plugin-react-swc": "^3.8.0",
+    "eslint": "^9.30.1",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.20",
+    "globals": "^15.15.0",
+    "tailwindcss": "^4.1.11",
+    "typescript": "~5.7.2",
+    "typescript-eslint": "^8.35.1",
+    "vite": "^6.3.5"
   }
 }

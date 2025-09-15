@@ -6,8 +6,9 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
-**/node_modules
-packages/app-react/dist
+
+node_modules
+dist
 dist-ssr
 *.local
 
@@ -21,21 +22,3 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-/packages/backend/wrangler.jsonc
-wrangler.toml
-
-# Build output para el panel de administración
-dist
- packages/admin-panel/dist
-
- # Caché de herramientas de desarrollo
- .vite/
- .wrangler/
-
- # Variables de entorno y secretos - ¡NUNCA SUBIR A GIT!
- .env
- .env*.local
- .dev.vars
-
- # Reportes de cobertura de pruebas
- coverage/
