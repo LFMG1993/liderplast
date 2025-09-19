@@ -1,44 +1,63 @@
-import {ImagesProducts, type ProductImageKey} from "../../utils/images.ts";
+import type {Product} from '../../types';
+import {FileImage} from 'react-bootstrap-icons';
 
-type Product = {
-    id: number;
-    name: string;
-    title: string;
-    price?: number;
-    image: ProductImageKey;
-    category: string;
-};
-
-type Props = {
+interface Props {
     product: Product;
-    onAdd: (p: Product) => void;
-};
+    onAdd: () => void;
+    onViewDetails: () => void;
+}
 
-export default function ProductCard({product, onAdd}: Props) {
+export default function ProductCard({product, onAdd, onViewDetails}: Props) {
+    const displayVariant = product.variants?.[0];
+    const displayPrice = displayVariant?.salePrice || displayVariant?.price;
+    // Si el producto tiene más de una variante, el padre abrirá el modal.
+    const hasMultipleVariants = product.variants && product.variants.length > 1;
+    const addButtonText = hasMultipleVariants ? 'Ver Opciones' : 'Añadir al Carrito';
+
     return (
-        // ANTES: card shadow-sm rounded-3 overflow-hidden h-100
         <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden h-full flex flex-col">
-            {/* ANTES: bg-info d-flex align-items-center justify-content-center ratio ratio-1x1 */}
             <div className="bg-gray-100 flex items-center justify-center aspect-square">
-                {/* ANTES: img-fluid */}
-                <img
-                    src={ImagesProducts[product.image]}
-                    alt={product.name}
-                    className="w-full h-full object-cover" // object-cover es clave para que no se deforme
-                />
+                {/* Renderiza la imagen desde la URL de la base de datos, con un fallback. */}
+                {product.image_url ? (
+                    <img
+                        src={product.image_url}
+                        alt={product.name}
+                        className="w-full h-full object-cover"
+                    />
+                ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-gray-200">
+                        <FileImage className="w-12 h-12 text-gray-400"/>
+                    </div>
+                )}
             </div>
-            {/* ANTES: card-body text-center d-flex flex-column */}
             <div className="p-4 text-center flex flex-col flex-grow">
-                {/* ANTES: card-title */}
-                <h6 className="font-semibold text-gray-800">{product.title}</h6>
-                <p className="text-gray-600 text-lg font-medium my-2">${product.price}</p>
-                {/* ANTES: btn background-liderplast text-white mt-auto */}
-                <button
-                    className="bg-liderplast-primary text-white px-4 py-2 rounded-md mt-auto transition-colors hover:bg-liderplast-hover"
-                    onClick={() => onAdd(product)}
-                >
-                    Añadir al carrito
-                </button>
+                <h6 className="font-semibold text-gray-800">{product.name}</h6>
+                <div className="text-lg font-medium my-2 h-8 flex items-center justify-center gap-2">
+                    {displayVariant && displayVariant.salePrice ? (
+                        <>
+                            <span
+                                className="text-gray-400 line-through">${displayVariant.price.toLocaleString('es-CO')}</span>
+                            <span
+                                className="text-red-400 font-bold">${displayVariant.salePrice.toLocaleString('es-CO')}</span>
+                        </>
+                    ) : (
+                        <span className="text-gray-600">${displayPrice?.toLocaleString('es-CO')}</span>
+                    )}
+                </div>
+                <div className="mt-auto pt-4 grid grid-cols-2 gap-2">
+                    <button
+                        className="bg-gray-200 text-gray-800 px-3 py-2 text-sm rounded-md transition-colors hover:bg-gray-300"
+                        onClick={onViewDetails}
+                    >
+                        Ver detalles
+                    </button>
+                    <button
+                        className="background-lider text-white px-3 py-2 text-sm rounded-md transition-colors hover:bg-liderplast-hover disabled:bg-gray-300 disabled:cursor-not-allowed"
+                        onClick={onAdd}
+                    >
+                        {addButtonText}
+                    </button>
+                </div>
             </div>
         </div>
     );

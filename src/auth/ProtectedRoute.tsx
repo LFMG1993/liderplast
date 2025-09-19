@@ -1,9 +1,13 @@
+import { useEffect } from 'react';
 import {Navigate, Outlet} from 'react-router-dom';
 import {useAuthStore} from "../store/authStore.ts";
 
 const ProtectedRoute = () => {
-    const { isAuthenticated, isLoading } = useAuthStore();
+    const { isAuthenticated, isLoading, verifyAuth } = useAuthStore();
 
+    useEffect(() => {
+        verifyAuth();
+    }, [verifyAuth]);
     // Esto previene el "parpadeo" a la página de login al recargar.
     if (isLoading) {
         return <div>Verificando sesión...</div>;

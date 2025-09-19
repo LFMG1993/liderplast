@@ -13,7 +13,7 @@ const categories = [
     { key: "catering", label: "Catering", img: ImagesCategory.Catering },
 ];
 
-export default function Category() {
+export default function CategoryPage() {
     return (
         <section className="product-category section">
             <div className="container">

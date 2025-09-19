@@ -2,8 +2,7 @@ import {Fragment} from "react";
 import {Link} from "react-router-dom";
 import {Menu, Transition} from "@headlessui/react";
 import {useCart} from "../../context/CardContext.tsx";
-import {ImagesProducts} from "../../utils/images.ts";
-import {Cart, Trash3Fill} from "react-bootstrap-icons";
+import {Cart, Trash3Fill, FileImage} from "react-bootstrap-icons";
 
 interface CartDropdownProps {
     isTransparent: boolean;
@@ -11,7 +10,7 @@ interface CartDropdownProps {
 
 export default function CardDropdown({isTransparent}: CartDropdownProps) {
     const {items, removeItem} = useCart();
-    const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
+    const uniqueItemsCount = items.length;
     const buttonClasses = `relative p-2 rounded-full transition-colors ${isTransparent ? 'text-white hover:bg-white/20' : 'text-gray-700 hover:bg-gray-100'}`;
 
     return (
@@ -20,10 +19,10 @@ export default function CardDropdown({isTransparent}: CartDropdownProps) {
                 className={buttonClasses}>
                 <span className="sr-only">Ver carrito</span>
                 <Cart className="w-6 h-6"/>
-                {totalItems > 0 && (
+                {uniqueItemsCount > 0 && (
                     <span
                         className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">
-                        {totalItems}
+                        {uniqueItemsCount}
                     </span>
                 )}
             </Menu.Button>
@@ -48,17 +47,25 @@ export default function CardDropdown({isTransparent}: CartDropdownProps) {
                             <>
                                 <ul className="max-h-80 overflow-y-auto divide-y divide-gray-200">
                                     {items.map(item => (
-                                        <li key={item.id} className="flex items-center py-3 px-2">
-                                            <img src={ImagesProducts[item.image as keyof typeof ImagesProducts]}
-                                                 alt={item.title}
-                                                 className="h-16 w-16 object-cover rounded-md"/>
+                                        <li key={item.variantId} className="flex items-center py-3 px-2">
+                                            {/* ✅ MEJORA: Renderizamos la imagen desde la URL y usamos un fallback. */}
+                                            <div
+                                                className="h-16 w-16 bg-gray-100 rounded-md flex-shrink-0 flex items-center justify-center">
+                                                {item.image_url ? (
+                                                    <img src={item.image_url} alt={item.name}
+                                                         className="h-full w-full object-cover rounded-md"/>
+                                                ) : (
+                                                    <FileImage className="h-8 w-8 text-gray-400"/>
+                                                )}
+                                            </div>
                                             <div className="ml-4 flex-1">
-                                                <p className="font-medium text-gray-900 text-sm">{item.title}</p>
+                                                <p className="font-medium text-gray-900 text-sm">{item.name}</p>
+                                                <p className="text-xs text-gray-500">{item.variantDescription}</p>
                                                 <p className="text-gray-500 text-sm">Cantidad: {item.quantity}</p>
                                             </div>
-                                            <button onClick={() => removeItem(item.id)}
+                                            <button onClick={() => removeItem(item.variantId)}
                                                     className="ml-4 p-1 text-gray-400 rounded-full hover:bg-red-100 hover:text-red-600 transition-colors"
-                                                    aria-label={`Eliminar ${item.title} del carrito`}
+                                                    aria-label={`Eliminar ${item.name} del carrito`}
                                             >
                                                 <Trash3Fill className="h-5 w-5"/>
                                             </button>
@@ -66,8 +73,8 @@ export default function CardDropdown({isTransparent}: CartDropdownProps) {
                                     ))}
                                 </ul>
                                 <div className="mt-4 border-t pt-4">
-                                    <Link to="/cart"
-                                          className="w-full flex justify-center items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-liderplast-primary hover:bg-liderplast-hover">
+                                    <Link to="/carrito"
+                                          className="w-full flex justify-center items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white background-lider hover:bg-liderplast-hover">
                                         Ir al Carrito
                                     </Link>
                                 </div>

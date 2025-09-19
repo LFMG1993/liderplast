@@ -67,7 +67,7 @@ export const ImageUploader = ({onFileChange, initialImageUrl, isUploading}: Imag
                             className="h-8 w-8 animate-spin text-primary"/></div>}
             </div>
             <input type="file" ref={fileInputRef} onChange={handleFileSelect} className="hidden"
-                   accept="image/png, image/jpeg, image/webp"/>
+                   accept="image/png, image/jpeg, image/webp, image/avif"/>
         </div>
     );
 };

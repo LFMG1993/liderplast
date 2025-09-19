@@ -42,6 +42,25 @@ body {
     pointer-events: none;
 }
 
+/* Definimos la animación de marquee globalmente. */
+@keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-55%); }
+}
 
+.animate-marquee-infinite {
+    animation: marquee 25s linear infinite;
+}
+
+/* Ocultar la barra de scroll en navegadores Webkit (Chrome, Safari) */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+/* Ocultar barra de scroll para IE, Edge y Firefox */
+.no-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
 
 

@@ -29,7 +29,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     login: async (email, password) => {
         try {
             const response = await api.post<LoginResponse>('/api/admin/login', {email, password});
-            const { user, profile} = response.data;
+            const {user, profile} = response.data;
             const userData = user || profile; // ✅ MEJORA: Aceptamos 'user' o 'profile' para ser robustos.
 
             if (userData) {
@@ -69,14 +69,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
                 get().logout();
                 set({isLoading: false});
             }
-        } catch (error) {
-            // Si el token es inválido, la API devolverá un 401, que el interceptor capturará.
-            // Aquí simplemente nos aseguramos de limpiar el estado.
-            get().logout();
-            set({isLoading: false});
+        } catch (error: any) {
+            set({user: null, isAuthenticated: false, isLoading: false});
         }
     },
 }));
-
-// Inicializamos la verificación de la sesión en cuanto se carga la app.
-useAuthStore.getState().verifyAuth();

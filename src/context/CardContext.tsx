@@ -1,63 +1,114 @@
-import { createContext, useContext, useState, type  ReactNode } from "react";
-import type {ProductStatic as Product} from "../types";
+import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import type { Product } from '../types';
 
-export  type CartItem = Product & { quantity: number };
+// ✅ MEJORA: El tipo CartItem ahora refleja la estructura real de los datos.
+export interface CartItem {
+    productId: number;
+    variantId: number;
+    name: string;
+    variantDescription: string;
+    price: number;
+    image_url: string | null;
+    quantity: number;
+}
 
-type CartContextType = {
+interface CartContextType {
     items: CartItem[];
-    addItem: (p: Product) => void;
-    removeItem: (id: number) => void;
+    addItem: (product: Product, quantity?: number, variantId?: number) => void;
+    removeItem: (variantId: number) => void;
+    updateQuantity: (variantId: number, quantity: number) => void;
     clearCart: () => void;
-    updateItemQuantity: (product: Product, quantity: number) => void;
-};
+}
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
-export function CartProvider({ children }: { children: ReactNode }) {
-    const [items, setItems] = useState<CartItem[]>([]);
+export const CartProvider = ({ children }: { children: ReactNode }) => {
+    // Usamos una función para que esta lógica se ejecute solo una vez, al montar el componente.
+    const [items, setItems] = useState<CartItem[]>(() => {
+        try {
+            const localData = localStorage.getItem('liderplast-cart');
+            return localData ? JSON.parse(localData) : [];
+        } catch (error) {
+            console.error("Error al cargar el carrito desde localStorage", error);
+            return [];
+        }
+    });
 
-    const addItem = (product: Product) => {
-        setItems((prev) => {
-            const idx = prev.findIndex((i) => i.id === product.id);
-            if (idx > -1) {
-                const copy = [...prev];
-                copy[idx].quantity += 1;
-                return copy;
+    // Efecto sincroniza el estado del carrito con localStorage cada vez que cambia.
+    useEffect(() => {
+        localStorage.setItem('liderplast-cart', JSON.stringify(items));
+    }, [items]);
+
+    const addItem = (product: Product, quantity: number = 1, variantId?: number) => {
+        // Si se proporciona un variantId, lo buscamos. Si no, usamos la primera como fallback.
+        const variantToAdd = variantId
+            ? product.variants.find(v => v.id === variantId)
+            : product.variants?.[0];
+
+        if (!variantToAdd) {
+            console.error("El producto no tiene variantes para añadir al carrito.");
+            return;
+        }
+
+        setItems(prevItems => {
+            const existingItem = prevItems.find(item => item.variantId === variantToAdd.id);
+
+            if (existingItem) {
+                return prevItems.map(item =>
+                    item.variantId === variantToAdd.id
+                        ? { ...item, quantity: item.quantity + quantity }
+                        : item
+                );
             }
-            return [...prev, { ...product, quantity: 1 }];
+
+            // Construimos la descripción de la variante a partir de sus atributos.
+            const variantDescription = variantToAdd.variantValues
+                ?.map(vv => vv.attributeValue.value)
+                .join(' / ') || '';
+
+            const newItem: CartItem = {
+                productId: product.id,
+                variantId: variantToAdd.id,
+                name: product.name,
+                variantDescription,
+                price: variantToAdd.salePrice || variantToAdd.price,
+                image_url: variantToAdd.imageUrl || product.image_url,
+                quantity,
+            };
+            return [...prevItems, newItem];
         });
     };
 
-    const removeItem = (id: number) =>
-        setItems((prev) => prev.filter((i) => i.id !== id));
+    const removeItem = (variantId: number) => {
+        setItems(prevItems => prevItems.filter(item => item.variantId !== variantId));
+    };
 
-    const clearCart = () => setItems([]);
-    const updateItemQuantity = (product: Product, quantity: number) => {
-        setItems((prev) => {
-            const idx = prev.findIndex((i) => i.id === product.id);
-            if (quantity <= 0) {
-                // si ponen 0 o menos, elimina del carrito
-                return prev.filter((i) => i.id !== product.id);
-            }
-            if (idx > -1) {
-                const copy = [...prev];
-                copy[idx].quantity = quantity;
-                return copy;
-            }
-            // si no existía, lo añade con la cantidad indicada
-            return [...prev, { ...product, quantity }];
-        });
+    const updateQuantity = (variantId: number, quantity: number) => {
+        // Si la cantidad es 0 o menos, eliminamos el ítem.
+        if (quantity <= 0) {
+            removeItem(variantId);
+        } else {
+            setItems(prevItems => prevItems.map(item =>
+                item.variantId === variantId ? { ...item, quantity } : item
+            ));
+        }
+    };
+
+    const clearCart = () => {
+        setItems([]);
     };
 
     return (
-        <CartContext.Provider value={{ items, addItem, removeItem, clearCart, updateItemQuantity }}>
+        <CartContext.Provider value={{ items, addItem, removeItem, updateQuantity, clearCart }}>
             {children}
         </CartContext.Provider>
     );
-}
+};
 
-export function useCart() {
-    const ctx = useContext(CartContext);
-    if (!ctx) throw new Error("useCart must be inside CartProvider");
-    return ctx;
-}
+export const useCart = () => {
+    const context = useContext(CartContext);
+    if (context === undefined) {
+        throw new Error('useCart must be used within a CartProvider');
+    }
+    return context;
+};

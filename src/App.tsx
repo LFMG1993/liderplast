@@ -15,6 +15,7 @@ import ContactPage from "./pages/ContactPage.tsx";
 import {NotificationProvider} from "./providers/NotificationProvider.tsx";
 import {CartProvider} from "./context/CardContext.tsx";
 import MainLayout from "./components/general/MainLayout.tsx";
+import CartPage from "./pages/shop/CartPage.tsx";
 
 function App() {
     return (
@@ -27,6 +28,7 @@ function App() {
                         <Route element={<MainLayout/>}>
                             <Route path="/contacto" element={<ContactPage/>}/>
                             <Route path="/tienda" element={<AllProductsPage/>}/>
+                            <Route path="/carrito" element={<CartPage/>}/>
                         </Route>
                         <Route path="/admin/login" element={<LoginPage/>}/>
                         {/* --- Rutas Protegidas del Admin --- */}
