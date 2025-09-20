@@ -8,7 +8,7 @@ interface CartDropdownProps {
     isTransparent: boolean;
 }
 
-export default function CardDropdown({isTransparent}: CartDropdownProps) {
+export default function CartDropdown({isTransparent}: CartDropdownProps) {
     const {items, removeItem} = useCart();
     const uniqueItemsCount = items.length;
     const buttonClasses = `relative p-2 rounded-full transition-colors ${isTransparent ? 'text-white hover:bg-white/20' : 'text-gray-700 hover:bg-gray-100'}`;
@@ -61,7 +61,23 @@ export default function CardDropdown({isTransparent}: CartDropdownProps) {
                                             <div className="ml-4 flex-1">
                                                 <p className="font-medium text-gray-900 text-sm">{item.name}</p>
                                                 <p className="text-xs text-gray-500">{item.variantDescription}</p>
-                                                <p className="text-gray-500 text-sm">Cantidad: {item.quantity}</p>
+                                                <div className="flex items-center justify-between mt-1">
+                                                    <p className="text-gray-500 text-sm">Cant: {item.quantity}</p>
+                                                    {/*  Lógica de precios dinámicos en el dropdown. */}
+                                                    <div className="text-sm font-medium">
+                                                        {(() => {
+                                                            const applicableDiscount = item.volumeDiscounts
+                                                                ?.sort((a, b) => b.minQuantity - a.minQuantity)
+                                                                .find(d => item.quantity >= d.minQuantity);
+                                                            const effectivePrice = applicableDiscount ? applicableDiscount.price : item.price;
+
+                                                            return effectivePrice < item.price ? (
+                                                                <span
+                                                                    className="text-green-600">${effectivePrice.toLocaleString('es-CO')}</span>
+                                                            ) : <span>${item.price.toLocaleString('es-CO')}</span>
+                                                        })()}
+                                                    </div>
+                                                </div>
                                             </div>
                                             <button onClick={() => removeItem(item.variantId)}
                                                     className="ml-4 p-1 text-gray-400 rounded-full hover:bg-red-100 hover:text-red-600 transition-colors"

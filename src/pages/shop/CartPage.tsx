@@ -17,7 +17,13 @@ export default function CartPage() {
         return `https://api.whatsapp.com/send?phone=${phone}&text=${header + body}`;
     };
 
-    const subtotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const subtotal = items.reduce((sum, item) => {
+        const applicableDiscount = item.volumeDiscounts
+            ?.sort((a, b) => b.minQuantity - a.minQuantity)
+            .find(d => item.quantity >= d.minQuantity);
+        const effectivePrice = applicableDiscount ? applicableDiscount.price : item.price;
+        return sum + (effectivePrice * item.quantity);
+    }, 0);
 
     return (
         <>
@@ -60,8 +66,22 @@ export default function CartPage() {
                                         </div>
                                         <div className="ml-4 flex-grow">
                                             <p className="font-semibold text-gray-800">{item.name}</p>
-                                            <p className="text-sm text-gray-500">{item.variantDescription}</p>
-                                            <p className="text-sm text-gray-500">${item.price.toLocaleString('es-CO')}</p>
+                                            {/*  Lógica de precios dinámicos. */}
+                                            <div className="text-sm">
+                                                {(() => {
+                                                    const applicableDiscount = item.volumeDiscounts
+                                                        ?.sort((a, b) => b.minQuantity - a.minQuantity)
+                                                        .find(d => item.quantity >= d.minQuantity);
+                                                    const effectivePrice = applicableDiscount ? applicableDiscount.price : item.price;
+
+                                                    return effectivePrice < item.price ? (
+                                                        <p>
+                                                            <span className="text-gray-400 line-through mr-2">${item.price.toLocaleString('es-CO')}</span>
+                                                            <span className="font-bold text-green-600">${effectivePrice.toLocaleString('es-CO')}</span>
+                                                        </p>
+                                                    ) : <p>${item.price.toLocaleString('es-CO')}</p>
+                                                })()}
+                                            </div>
                                             {/* ✅ MEJORA: Controles de cantidad en línea. */}
                                             <div className="flex items-center mt-2">
                                                 <button
@@ -78,8 +98,15 @@ export default function CartPage() {
                                             </div>
                                         </div>
                                         <div className="text-right">
-                                            {/* ✅ MEJORA: Muestra el total por ítem. */}
-                                            <p className="font-semibold text-lg">${(item.price * item.quantity).toLocaleString('es-CO')}</p>
+                                            {/* El total por ítem usa el precio efectivo. */}
+                                            <p className="font-semibold text-lg">
+                                                ${(() => {
+                                                const applicableDiscount = item.volumeDiscounts
+                                                    ?.sort((a, b) => b.minQuantity - a.minQuantity)
+                                                    .find(d => item.quantity >= d.minQuantity);
+                                                return ((applicableDiscount?.price || item.price) * item.quantity).toLocaleString('es-CO');
+                                            })()}
+                                            </p>
                                             <button
                                                 className="mt-2 text-red-500 hover:text-red-700 text-sm inline-flex items-center gap-1"
                                                 onClick={() => removeItem(item.variantId)}>

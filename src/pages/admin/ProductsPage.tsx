@@ -11,6 +11,7 @@ import {categoryService} from "../../services/categoryService.ts";
 import type {Attribute, Category} from "../../types";
 import {uploadImage} from "../../services/imageService.ts";
 import {slugify} from "../../utils/utils.ts";
+import {Spinner} from "../../components/general/Spinner.tsx";
 
 const ProductsPage = () => {
     const [products, setProducts] = useState<Product[]>([]);
@@ -101,7 +102,7 @@ const ProductsPage = () => {
                 description: formData.description,
                 categoryId: formData.categoryId,
                 isFeatured: formData.isFeatured,
-                image_url: mainImageUrl,
+                imageUrl: mainImageUrl,
                 variants: formData.variants.map((v, index) => ({
                     id: v.id,
                     sku: v.sku,
@@ -161,7 +162,11 @@ const ProductsPage = () => {
                 }}>Crear Producto</Button>
             </div>
 
-            {isLoading && <p>Cargando productos...</p>}
+            {isLoading && (
+                <div className="flex justify-center items-center py-16">
+                    <Spinner/>
+                </div>
+            )}
             {error && !isLoading && <p className="text-red-500">{error}</p>}
             {!isLoading && !error && <ProductTable products={products} onEdit={handleEdit} onDelete={handleDelete}/>}
 
@@ -175,15 +180,13 @@ const ProductsPage = () => {
                 isSubmitting={isSubmitting}
             />
 
-            <ConfirmationModal isOpen={!!productToDelete} onClose={() => setProductToDelete(null)}
-                               title="Confirmar Eliminación">
-                <p>¿Estás seguro de que deseas eliminar el producto <strong>"{productToDelete?.name}"</strong>?</p>
-                <p className="text-sm text-gray-500 mt-2">Esta acción no se puede deshacer.</p>
-                <div className="flex justify-end gap-4 mt-6">
-                    <Button variant="secondary" onClick={() => setProductToDelete(null)}>Cancelar</Button>
-                    <Button variant="danger" onClick={handleConfirmDelete}>Eliminar</Button>
-                </div>
-            </ConfirmationModal>
+            <ConfirmationModal
+                isOpen={!!productToDelete}
+                onClose={() => setProductToDelete(null)}
+                onConfirm={handleConfirmDelete}
+                title="Confirmar Eliminación"
+                message={`¿Estás seguro de que deseas eliminar el producto "${productToDelete?.name}"? Esta acción no se puede deshacer.`}
+            />
         </div>
     );
 };

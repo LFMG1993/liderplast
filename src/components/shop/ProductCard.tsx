@@ -18,9 +18,9 @@ export default function ProductCard({product, onAdd, onViewDetails}: Props) {
         <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden h-full flex flex-col">
             <div className="bg-gray-100 flex items-center justify-center aspect-square">
                 {/* Renderiza la imagen desde la URL de la base de datos, con un fallback. */}
-                {product.image_url ? (
+                {product.imageUrl ? (
                     <img
-                        src={product.image_url}
+                        src={product.imageUrl}
                         alt={product.name}
                         className="w-full h-full object-cover"
                     />
@@ -42,6 +42,15 @@ export default function ProductCard({product, onAdd, onViewDetails}: Props) {
                         </>
                     ) : (
                         <span className="text-gray-600">${displayPrice?.toLocaleString('es-CO')}</span>
+                    )}
+                </div>
+                {/* Mostramos el primer nivel de descuento por volumen si existe. */}
+                <div className="h-6 text-xs text-green-700 font-medium flex items-center justify-center">
+                    {displayVariant?.volumeDiscounts && displayVariant.volumeDiscounts.length > 0 && (
+                        <span>
+                             Desde ${displayVariant.volumeDiscounts[0].price.toLocaleString('es-CO')}
+                            (min. {displayVariant.volumeDiscounts[0].minQuantity} {displayVariant.unitOfMeasure || 'unid.'})
+                         </span>
                     )}
                 </div>
                 <div className="mt-auto pt-4 grid grid-cols-2 gap-2">

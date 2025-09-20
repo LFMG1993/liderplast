@@ -15,7 +15,7 @@ interface VariantAccordionItemProps {
     onAttributeChange: (variantIndex: number, attributeId: number, valueId: string) => void;
     onAddVolumeDiscount: (variantIndex: number) => void;
     onRemoveVolumeDiscount: (variantIndex: number, discountIndex: number) => void;
-    onDiscountChange: (variantIndex: number, discountIndex: number, field: 'quantity' | 'price', value: number) => void;
+    onDiscountChange: (variantIndex: number, discountIndex: number, field: 'minQuantity' | 'price', value: number) => void;
     onRemoveVariant: (index: number) => void;
     canBeRemoved: boolean;
     unitOfMeasureAttribute: Attribute | undefined;
@@ -148,8 +148,8 @@ export const VariantAccordionItem = (props: VariantAccordionItemProps) => {
                         <div className="space-y-2 mt-2">
                             {variant.volumeDiscounts.map((discount, dIndex) => (
                                 <div key={discount.id || dIndex} className="flex items-center gap-2">
-                                    <input type="number" placeholder="Cantidad Mín." value={discount.quantity}
-                                           onChange={(e) => onDiscountChange(index, dIndex, 'quantity', parseInt(e.target.value))}
+                                    <input type="number" placeholder="Cantidad Mín." value={discount.minQuantity}
+                                           onChange={(e) => onDiscountChange(index, dIndex, 'minQuantity', parseInt(e.target.value))}
                                            className="w-full p-2 border rounded-md text-black"/>
                                     <input type="number" placeholder="Precio" value={discount.price}
                                            onChange={(e) => onDiscountChange(index, dIndex, 'price', parseFloat(e.target.value))}

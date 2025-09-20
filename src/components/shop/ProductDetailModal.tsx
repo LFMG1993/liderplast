@@ -72,7 +72,7 @@ export const ProductDetailModal = ({product, onClose}: ProductDetailModalProps) 
 
     if (!product) return null;
 
-    const displayImage = selectedVariant?.imageUrl || product.image_url;
+    const displayImage = selectedVariant?.imageUrl || product.imageUrl;
 
     const handleOptionClick = (attributeName: string, value: string) => {
         setSelectedOptions(prev => ({
@@ -195,7 +195,7 @@ export const ProductDetailModal = ({product, onClose}: ProductDetailModalProps) 
                                                 <div className="mt-2">
                                                     {selectedVariant.volumeDiscounts?.map(d => (
                                                         <p key={d.id} className="text-xs text-green-700">
-                                                            Lleva {d.quantity} o más a
+                                                            Lleva {d.minQuantity} o más a
                                                             ${d.price.toLocaleString('es-CO')} c/u
                                                         </p>
                                                     ))}

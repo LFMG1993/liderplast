@@ -21,6 +21,6 @@ export const dockItems: NavItem[] = [
     {name: 'Categorías', href: 'categories', icon: Archive},
     {name: 'Atributos', href: 'attributes', icon: Cylinder},
     {name: 'Productos', href: 'products', icon: Package},
-    {name: 'Proveedores', href: 'suppliers', icon: Truck},
+    {name: 'Proveedores', href: 'providers', icon: Truck},
     {name: 'Inventario', href: 'inventory', icon: Warehouse},
 ];

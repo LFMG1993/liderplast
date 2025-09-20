@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
-import type { Product } from '../types';
+import type { Product, VolumeDiscount } from '../types';
 
 // ✅ MEJORA: El tipo CartItem ahora refleja la estructura real de los datos.
 export interface CartItem {
@@ -7,6 +7,7 @@ export interface CartItem {
     variantId: number;
     name: string;
     variantDescription: string;
+    volumeDiscounts: VolumeDiscount[];
     price: number;
     image_url: string | null;
     quantity: number;
@@ -71,8 +72,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
                 variantId: variantToAdd.id,
                 name: product.name,
                 variantDescription,
+                volumeDiscounts: variantToAdd.volumeDiscounts || [],
                 price: variantToAdd.salePrice || variantToAdd.price,
-                image_url: variantToAdd.imageUrl || product.image_url,
+                image_url: variantToAdd.imageUrl || product.imageUrl,
                 quantity,
             };
             return [...prevItems, newItem];

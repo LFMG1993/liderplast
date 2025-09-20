@@ -1,6 +1,6 @@
 export interface VolumeDiscount {
     id?: number;
-    quantity: number;
+    minQuantity: number;
     price: number;
 }
 
@@ -31,7 +31,7 @@ export interface Product {
     name: string;
     description?: string | null;
     isFeatured: boolean;
-    image_url: string | null;
+    imageUrl: string | null;
     category: {
         id: number;
         name: string;
@@ -44,7 +44,7 @@ export interface ProductCreationData {
     description?: string;
     categoryId: number;
     isFeatured?: boolean;
-    image_url?: string | null;
+    imageUrl?: string | null;
     variants: {
         id?: number;
         sku: string;

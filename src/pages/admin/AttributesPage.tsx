@@ -7,6 +7,7 @@ import {ConfirmationModal} from '../../components/general/ConfirmationModal.tsx'
 import {Plus} from 'lucide-react';
 import {AttributeCard} from '../../components/attributes/AttributeCard.tsx';
 import {AttributeForm} from "../../components/attributes/AttributeForm.tsx";
+import {Spinner} from "../../components/general/Spinner.tsx";
 
 const AttributesPage = () => {
     const [attributes, setAttributes] = useState<Attribute[]>([]);
@@ -74,8 +75,7 @@ const AttributesPage = () => {
             setIsSubmitting(false);
         }
     };
-// ✅ MEJORA: Se añade la lógica de borrado que faltaba.
-    // Esto hace que el `ConfirmationModal` y el estado `deletingAttribute` se usen.
+
     const handleConfirmDelete = async () => {
         if (!deletingAttribute) return;
         try {
@@ -90,9 +90,6 @@ const AttributesPage = () => {
     };
 
     // --- Funciones para controlar los modales ---
-
-    // ✅ MEJORA: Se definen las funciones que faltaban para cerrar los modales.
-    // Cada función se encarga de restablecer el estado específico de su modal.
     const closeAttributeModal = () => {
         setIsAttributeModalOpen(false);
         setEditingAttribute(null);
@@ -128,7 +125,11 @@ const AttributesPage = () => {
                 <Button onClick={openNewAttributeModal}><Plus className="h-4 w-4 mr-2"/>Crear Atributo</Button>
             </div>
 
-            {isLoading && <p>Cargando...</p>}
+            {isLoading && (
+                <div className="flex justify-center items-center py-16">
+                    <Spinner/>
+                </div>
+            )}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {!isLoading && attributes.map(attr => (
                     <AttributeCard key={attr.id} attribute={attr} onEdit={openEditAttributeModal}
@@ -159,16 +160,10 @@ const AttributesPage = () => {
             <ConfirmationModal
                 isOpen={!!deletingAttribute}
                 onClose={() => setDeletingAttribute(null)}
+                onConfirm={handleConfirmDelete}
                 title="Confirmar Eliminación"
-            >
-                <p>¿Estás seguro de que deseas eliminar el atributo <strong>"{deletingAttribute?.name}"</strong>?</p>
-                <p className="text-sm text-gray-500 mt-2">Esta acción también eliminará todos sus valores asociados y no
-                    se puede deshacer.</p>
-                <div className="flex justify-end gap-4 mt-6">
-                    <Button variant="secondary" onClick={() => setDeletingAttribute(null)}>Cancelar</Button>
-                    <Button variant="danger" onClick={handleConfirmDelete}>Eliminar</Button>
-                </div>
-            </ConfirmationModal>
+                message={`¿Estás seguro de que deseas eliminar el atributo "${deletingAttribute?.name}"? Esta acción también eliminará todos sus valores asociados y no se puede deshacer.`}
+            />
         </div>
     );
 };

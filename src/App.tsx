@@ -5,7 +5,7 @@ import DashboardPage from './pages/admin/DashboardPage.tsx';
 import DashboardLayout from "./components/admin/DashboardLayout.tsx";
 import UsersPage from "./pages/admin/UsersPage.tsx";
 import ProductsPage from "./pages/admin/ProductsPage.tsx";
-import SuppliersPage from "./pages/admin/SuppliersPage.tsx";
+import ProvidersPage from "./pages/admin/ProvidersPage.tsx";
 import InventoryPage from "./pages/admin/InventoryPage.tsx";
 import CategoriesPage from "./pages/admin/CategoriesPage.tsx";
 import AttributesPage from "./pages/admin/AttributesPage.tsx";
@@ -39,7 +39,7 @@ function App() {
                                 <Route path="categories" element={<CategoriesPage/>}/>
                                 <Route path="attributes" element={<AttributesPage/>}/>
                                 <Route path="products" element={<ProductsPage/>}/>
-                                <Route path="suppliers" element={<SuppliersPage/>}/>
+                                <Route path="providers" element={<ProvidersPage/>}/>
                                 <Route path="inventory" element={<InventoryPage/>}/>
                                 <Route path="*" element={<Navigate to="/dashboard" replace/>}/>
                             </Route>

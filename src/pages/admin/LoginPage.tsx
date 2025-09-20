@@ -1,6 +1,7 @@
 import {useState, useEffect, type FormEvent} from 'react';
 import {useAuthStore} from "../../store/authStore.ts";
 import {useNavigate} from 'react-router-dom';
+import {Spinner} from "../../components/general/Spinner.tsx";
 
 const LoginPage = () => {
     const [email, setEmail] = useState('');
@@ -24,11 +25,17 @@ const LoginPage = () => {
 
         if (!result.success) {
             setError(result.error || 'Ocurrió un error inesperado.');
+            setIsSubmitting(false);
         }
     };
 
     if (isLoading) {
-        return <div className="flex items-center justify-center min-h-screen">Cargando...</div>;
+        return (
+            <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+                <Spinner/>
+                <p className="mt-4 text-lg text-gray-600">Iniciando sesión...</p>
+            </div>
+        );
     }
 
     return (

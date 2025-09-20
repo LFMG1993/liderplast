@@ -103,13 +103,11 @@ export function ProductForm({
                     description: productToEdit.description || '',
                     categoryId: productToEdit.category.id,
                     isFeatured: productToEdit.isFeatured,
-                    image_url: productToEdit.image_url || null,
+                    image_url: productToEdit.imageUrl || null,
                     imageFile: null,
                     variants: productToEdit.variants.map(v => ({ // Para cada variante que viene de la API...
                         ...v, // ...copiamos todas sus propiedades (id, sku, price, imageUrl, etc.)
-                        imageFile: null, // ✅ CORRECCIÓN 1: Añadimos la propiedad 'imageFile' que faltaba.
-                        // ✅ CORRECCIÓN 2: La función `reduce` ahora solo se encarga de construir `selectedAttributes`.
-                        // Se eliminó la sintaxis incorrecta que causaba el error TS2695.
+                        imageFile: null, //
                         selectedAttributes: (v.variantValues ?? []).reduce((acc: Record<number, number>, vv) => {
                             // La API nos da vv.attributeValue = { id, value, attributeId }
                             if (vv.attributeValue && vv.attributeValue.attributeId) {
@@ -212,7 +210,7 @@ export function ProductForm({
 
     const addVolumeDiscount = (variantIndex: number) => {
         const newVariants = [...formData.variants];
-        newVariants[variantIndex].volumeDiscounts.push({quantity: 0, price: 0});
+        newVariants[variantIndex].volumeDiscounts.push({minQuantity: 0, price: 0});
         setFormData(prev => ({...prev, variants: newVariants}));
     };
 
@@ -222,7 +220,7 @@ export function ProductForm({
         setFormData(prev => ({...prev, variants: newVariants}));
     };
 
-    const handleDiscountChange = (variantIndex: number, discountIndex: number, field: 'quantity' | 'price', value: number) => {
+    const handleDiscountChange = (variantIndex: number, discountIndex: number, field: 'minQuantity' | 'price', value: number) => {
         const newVariants = [...formData.variants];
         newVariants[variantIndex].volumeDiscounts[discountIndex][field] = value;
         setFormData(prev => ({...prev, variants: newVariants}));

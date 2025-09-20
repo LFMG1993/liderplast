@@ -30,9 +30,9 @@ export const FeaturedProducts = ({products}: FeaturedProductsProps) => {
         }
     };
 
-    const handleOpenDetailsModal = async (product: Product) => {
+    const handleOpenDetailsModal = async (productId: number) => {
         try {
-            const fullProduct = await shopService.getPublicProductById(product.id);
+            const fullProduct = await shopService.getPublicProductById(productId);
             setViewingProduct(fullProduct);
         } catch (error) {
             console.error("Error al cargar detalles del producto:", error);
@@ -64,7 +64,7 @@ export const FeaturedProducts = ({products}: FeaturedProductsProps) => {
                                 <ProductCard
                                     product={product}
                                     onAdd={() => handleAddOrSelect(product)}
-                                    onViewDetails={() => handleOpenDetailsModal(product)}
+                                    onViewDetails={() => handleOpenDetailsModal(product.id)}
                                 />
                             </div>
                         ))}
