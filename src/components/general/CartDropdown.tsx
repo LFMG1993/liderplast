@@ -60,7 +60,7 @@ export default function CartDropdown({isTransparent}: CartDropdownProps) {
                                             </div>
                                             <div className="ml-4 flex-1">
                                                 <p className="font-medium text-gray-900 text-sm">{item.name}</p>
-                                                <p className="text-xs text-gray-500">{item.variantDescription}</p>
+                                                <p className="text-xs text-gray-500">{item.variantDescription} {item.unitOfMeasure ? `(${item.unitOfMeasure})` : ''}</p>
                                                 <div className="flex items-center justify-between mt-1">
                                                     <p className="text-gray-500 text-sm">Cant: {item.quantity}</p>
                                                     {/*  Lógica de precios dinámicos en el dropdown. */}

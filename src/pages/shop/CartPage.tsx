@@ -1,20 +1,36 @@
+import {useState} from "react";
 import {useCart} from "../../context/CardContext.tsx";
 import {FileImage, Plus, Trash, Dash, Whatsapp} from "react-bootstrap-icons";
 import {SEO} from "../../components/general/SEO.tsx";
 import {Link} from "react-router-dom";
+import {ConfirmationModal} from "../../components/general/ConfirmationModal.tsx";
 
 export default function CartPage() {
     const {items, removeItem, clearCart, updateQuantity} = useCart();
+    const [isConfirmingClear, setIsConfirmingClear] = useState(false);
     const phone = "573242940464";
 
     // Genera el link de WhatsApp
     const whatsappLink = () => {
         const header = "🛒 *Hola, Deseo hacer el siguiente pedido*%0A%0A";
         const lines = items.map((it, idx) => {
-            return `${idx + 1}. ${it.quantity}× *${it.name}* (${it.variantDescription})`;
+            const applicableDiscount = it.volumeDiscounts
+                ?.sort((a, b) => b.minQuantity - a.minQuantity)
+                .find(d => it.quantity >= d.minQuantity);
+            const effectivePrice = applicableDiscount ? applicableDiscount.price : it.price;
+            const lineTotal = (effectivePrice * it.quantity).toLocaleString('es-CO');
+            const fullDescription = [it.variantDescription, it.unitOfMeasure].filter(Boolean).join(' - ');
+
+            return `${idx + 1}. ${it.quantity}x *${it.name}* (${fullDescription}) = *$${lineTotal}*`;
         });
-        const body = lines.join("%0A");
-        return `https://api.whatsapp.com/send?phone=${phone}&text=${header + body}`;
+        const body = lines.join("%0A%0A");
+        const footer = `%0A%0A--------------------%0A*Total del Pedido: $${subtotal.toLocaleString('es-CO')}*`;
+        return `https://api.whatsapp.com/send?phone=${phone}&text=${header + body + footer}`;
+    };
+
+    const handleConfirmClearCart = () => {
+        clearCart();
+        setIsConfirmingClear(false);
     };
 
     const subtotal = items.reduce((sum, item) => {
@@ -66,6 +82,7 @@ export default function CartPage() {
                                         </div>
                                         <div className="ml-4 flex-grow">
                                             <p className="font-semibold text-gray-800">{item.name}</p>
+                                            <p className="text-sm text-gray-500">{item.variantDescription} {item.unitOfMeasure ? `(${item.unitOfMeasure})` : ''}</p>
                                             {/*  Lógica de precios dinámicos. */}
                                             <div className="text-sm">
                                                 {(() => {
@@ -76,8 +93,10 @@ export default function CartPage() {
 
                                                     return effectivePrice < item.price ? (
                                                         <p>
-                                                            <span className="text-gray-400 line-through mr-2">${item.price.toLocaleString('es-CO')}</span>
-                                                            <span className="font-bold text-green-600">${effectivePrice.toLocaleString('es-CO')}</span>
+                                                            <span
+                                                                className="text-gray-400 line-through mr-2">${item.price.toLocaleString('es-CO')}</span>
+                                                            <span
+                                                                className="font-bold text-green-600">${effectivePrice.toLocaleString('es-CO')}</span>
                                                         </p>
                                                     ) : <p>${item.price.toLocaleString('es-CO')}</p>
                                                 })()}
@@ -118,7 +137,7 @@ export default function CartPage() {
                                 ))}
                                 <div className="pt-4 border-t mt-4">
                                     <button className="text-sm text-gray-500 hover:text-red-600 transition-colors"
-                                            onClick={clearCart}>
+                                            onClick={() => setIsConfirmingClear(true)}>
                                         Vaciar Carrito
                                     </button>
                                 </div>
@@ -160,6 +179,13 @@ export default function CartPage() {
                     )}
                 </div>
             </div>
+            <ConfirmationModal
+                isOpen={isConfirmingClear}
+                onClose={() => setIsConfirmingClear(false)}
+                onConfirm={handleConfirmClearCart}
+                title="Confirmar Acción"
+                message="¿Estás seguro de que deseas vaciar tu carrito? Todos los productos serán eliminados."
+            />
         </>
     );
 }
