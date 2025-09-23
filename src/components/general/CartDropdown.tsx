@@ -9,9 +9,9 @@ interface CartDropdownProps {
 }
 
 export default function CartDropdown({isTransparent}: CartDropdownProps) {
-    const {items, removeItem} = useCart();
+    const {items, removeItem, isShaking} = useCart();
     const uniqueItemsCount = items.length;
-    const buttonClasses = `relative p-2 rounded-full transition-colors ${isTransparent ? 'text-white hover:bg-white/20' : 'text-gray-700 hover:bg-gray-100'}`;
+    const buttonClasses = `relative p-2 rounded-full transition-colors ${isTransparent ? 'text-white hover:bg-white/20' : 'text-gray-700 hover:bg-gray-100'} ${isShaking ? 'shake' : ''}`;
 
     return (
         <Menu as="div" className="relative">

@@ -22,7 +22,7 @@ export const useAuthStore = create<AuthState>((set) => ({
             const {token, user: userData} = response.data;
 
             if (token && userData) {
-                localStorage.setItem('authToken', token);
+                localStorage.setItem('liderplast-admin-token', token);
                 set({user: userData, isAuthenticated: true, isLoading: false});
                 return {success: true};
             }
@@ -41,7 +41,7 @@ export const useAuthStore = create<AuthState>((set) => ({
             // Aunque la llamada falle, procedemos a limpiar el estado del frontend.
             console.error("La llamada de logout al backend falló, pero se cerrará la sesión localmente:", error);
         } finally {
-            localStorage.removeItem('authToken');
+            localStorage.removeItem('liderplast-admin-token');
             set({user: null, isAuthenticated: false});
         }
     },
@@ -50,7 +50,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 
         try {
             // Verificamos si hay un token antes de hacer la llamada.
-            const token = localStorage.getItem('authToken');
+            const token = localStorage.getItem('liderplast-admin-token');
             if (!token) {
                 set({isAuthenticated: false, isLoading: false});
                 return;
@@ -67,7 +67,7 @@ export const useAuthStore = create<AuthState>((set) => ({
             }
         } catch (error: any) {
             // Si la API devuelve un error (ej. 401 por token inválido), limpiamos el estado.
-            localStorage.removeItem('authToken');
+            localStorage.removeItem('liderplast-admin-token');
             set({user: null, isAuthenticated: false, isLoading: false});
         }
     },

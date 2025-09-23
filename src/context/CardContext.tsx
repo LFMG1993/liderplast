@@ -1,5 +1,5 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
-import type { Product, VolumeDiscount } from '../types';
+import {createContext, useContext, useState, useEffect, type ReactNode, useCallback} from 'react';
+import type {Product, VolumeDiscount} from '../types';
 
 // El tipo CartItem refleja la estructura real de los datos.
 export interface CartItem {
@@ -20,12 +20,13 @@ interface CartContextType {
     removeItem: (variantId: number) => void;
     updateQuantity: (variantId: number, quantity: number) => void;
     clearCart: () => void;
+    isShaking: boolean;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
-export const CartProvider = ({ children }: { children: ReactNode }) => {
-    // Usamos una función para que esta lógica se ejecute solo una vez, al montar el componente.
+export const CartProvider = ({children}: { children: ReactNode }) => {
+    const [isShaking, setIsShaking] = useState(false);
     const [items, setItems] = useState<CartItem[]>(() => {
         try {
             const localData = localStorage.getItem('liderplast-cart');
@@ -41,7 +42,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         localStorage.setItem('liderplast-cart', JSON.stringify(items));
     }, [items]);
 
-    const addItem = (product: Product, quantity: number = 1, variantId?: number) => {
+    const addItem = useCallback((product: Product, quantity: number = 1, variantId?: number) => {
         // Si se proporciona un variantId, lo buscamos. Si no, usamos la primera como fallback.
         const variantToAdd = variantId
             ? product.variants.find(v => v.id === variantId)
@@ -58,7 +59,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
             if (existingItem) {
                 return prevItems.map(item =>
                     item.variantId === variantToAdd.id
-                        ? { ...item, quantity: item.quantity + quantity }
+                        ? {...item, quantity: item.quantity + quantity}
                         : item
                 );
             }
@@ -81,7 +82,13 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
             };
             return [...prevItems, newItem];
         });
-    };
+
+        setIsShaking(true);
+        setTimeout(() => {
+            setIsShaking(false);
+        }, 500); // La duración debe coincidir con la animación CSS
+
+    }, []);
 
     const removeItem = (variantId: number) => {
         setItems(prevItems => prevItems.filter(item => item.variantId !== variantId));
@@ -93,7 +100,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
             removeItem(variantId);
         } else {
             setItems(prevItems => prevItems.map(item =>
-                item.variantId === variantId ? { ...item, quantity } : item
+                item.variantId === variantId ? {...item, quantity} : item
             ));
         }
     };
@@ -103,7 +110,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     };
 
     return (
-        <CartContext.Provider value={{ items, addItem, removeItem, updateQuantity, clearCart }}>
+        <CartContext.Provider value={{items, addItem, removeItem, updateQuantity, clearCart, isShaking}}>
             {children}
         </CartContext.Provider>
     );

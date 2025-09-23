@@ -2,12 +2,17 @@ import {useState} from "react";
 import {useCart} from "../../context/CardContext.tsx";
 import {FileImage, Plus, Trash, Dash, Whatsapp} from "react-bootstrap-icons";
 import {SEO} from "../../components/general/SEO.tsx";
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import {ConfirmationModal} from "../../components/general/ConfirmationModal.tsx";
+import {useUserAuth} from "../../context/UserAuthContext.tsx";
+import {AuthModal} from "../../components/auth/AuthModal.tsx";
 
 export default function CartPage() {
     const {items, removeItem, clearCart, updateQuantity} = useCart();
+    const {isAuthenticated} = useUserAuth();
+    const navigate = useNavigate();
     const [isConfirmingClear, setIsConfirmingClear] = useState(false);
+    const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
     const phone = "573242940464";
 
     // Genera el link de WhatsApp
@@ -165,6 +170,15 @@ export default function CartPage() {
                                 </div>
                                 <div className="mt-6 space-y-3">
                                     <button
+                                        onClick={() => {
+                                            if (isAuthenticated) {
+                                                // Si está autenticado, lo llevamos a la página de checkout (aún por crear)
+                                                navigate('/checkout');
+                                            } else {
+                                                // Si no, abrimos el modal para que inicie sesión.
+                                                setIsAuthModalOpen(true);
+                                            }
+                                        }}
                                         className="w-full px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white background-lider hover:bg-liderplast-hover">
                                         Proceder al Pago
                                     </button>
@@ -179,6 +193,11 @@ export default function CartPage() {
                     )}
                 </div>
             </div>
+            <AuthModal
+                isOpen={isAuthModalOpen}
+                onClose={() => setIsAuthModalOpen(false)}
+                onSuccess={() => navigate('/checkout')} // Al loguearse, lo llevamos al checkout.
+            />
             <ConfirmationModal
                 isOpen={isConfirmingClear}
                 onClose={() => setIsConfirmingClear(false)}

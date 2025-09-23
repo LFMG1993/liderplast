@@ -30,7 +30,7 @@ export default function Footer() {
                             </li>
                             {/* Enlace a la sección "nosotros" de la landing page */}
                             <li>
-                                <SmartLink to="/#nosotros" className="text-gray-400 hover:text-white transition-colors">
+                                <SmartLink to="/nosotros" className="text-gray-400 hover:text-white transition-colors">
                                     Nosotros
                                 </SmartLink>
                             </li>

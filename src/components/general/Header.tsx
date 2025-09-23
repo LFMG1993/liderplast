@@ -8,9 +8,12 @@ import SearchDropdown from "./SearchDropdown.tsx";
 import LanguageSelector from "./LanguageSelector.tsx";
 import SocialDropdown from './SocialDropdown.tsx';
 import {List, X} from 'react-bootstrap-icons';
+import UserMenu from "./UserMenu.tsx";
+import {AuthModal} from "../auth/AuthModal.tsx";
 
 export const Header = () => {
     const {t} = useTranslation();
+    const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
     const location = useLocation();
     const isHomePage = location.pathname === '/';
 
@@ -62,6 +65,7 @@ export const Header = () => {
                 {/* Acciones para Desktop */}
                 <div className="hidden md:flex items-center space-x-1 md:space-x-2">
                     <SearchDropdown isTransparent={isTransparent}/>
+                    <UserMenu isTransparent={isTransparent} onLoginClick={() => setIsAuthModalOpen(true)}/>
                     <CartDropdown isTransparent={isTransparent}/>
                     <LanguageSelector isTransparent={isTransparent}/>
                     <div className="h-6 border-l border-gray-400/50 mx-1"></div>
@@ -85,6 +89,7 @@ export const Header = () => {
                         <hr className="w-full border-gray-200 my-2"/>
                         <div className="flex items-center space-x-4">
                             <SearchDropdown isTransparent={isTransparent}/>
+                            <UserMenu isTransparent={isTransparent} onLoginClick={() => setIsAuthModalOpen(true)}/>
                             <CartDropdown isTransparent={isTransparent}/>
                             <LanguageSelector isTransparent={isTransparent}/>
                             <SocialDropdown isTransparent={isTransparent}/>
@@ -92,6 +97,10 @@ export const Header = () => {
                     </nav>
                 </div>
             )}
+            <AuthModal
+                isOpen={isAuthModalOpen}
+                onClose={() => setIsAuthModalOpen(false)}
+            />
         </header>
     );
 };

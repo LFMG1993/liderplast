@@ -1,5 +1,5 @@
 import type {Product} from '../../types';
-import {FileImage} from 'react-bootstrap-icons';
+import {FileImage, Cart} from 'react-bootstrap-icons';
 
 interface Props {
     product: Product;
@@ -12,7 +12,7 @@ export default function ProductCard({product, onAdd, onViewDetails}: Props) {
     const displayPrice = displayVariant?.salePrice || displayVariant?.price;
     // Si el producto tiene más de una variante, el padre abrirá el modal.
     const hasMultipleVariants = product.variants && product.variants.length > 1;
-    const addButtonText = hasMultipleVariants ? 'Ver Opciones' : 'Añadir al Carrito';
+    const addButtonText = hasMultipleVariants ? 'Ver Opciones' : 'Añadir';
 
     return (
         <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden h-full flex flex-col">
@@ -58,13 +58,14 @@ export default function ProductCard({product, onAdd, onViewDetails}: Props) {
                         className="bg-gray-200 text-gray-800 px-3 py-2 text-sm rounded-md transition-colors hover:bg-gray-300"
                         onClick={onViewDetails}
                     >
-                        Ver detalles
+                        Detalles
                     </button>
                     <button
-                        className="background-lider text-white px-3 py-2 text-sm rounded-md transition-colors hover:bg-liderplast-hover disabled:bg-gray-300 disabled:cursor-not-allowed"
+                        className="background-lider text-white flex items-center gap-2 px-3 py-2 text-sm rounded-md transition-colors hover:bg-liderplast-hover disabled:bg-gray-300 disabled:cursor-not-allowed"
                         onClick={onAdd}
                     >
                         {addButtonText}
+                        <Cart className="w-4 h-4"/>
                     </button>
                 </div>
             </div>
