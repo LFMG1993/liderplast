@@ -25,6 +25,7 @@ export const productService = {
     },
 
     deleteProduct: async (id: number): Promise<{ success: boolean }> => {
-        return api.delete(`/api/admin/products/${id}`);
+        const response = await api.delete(`/api/admin/products/${id}`);
+        return response.data;
     },
 };

@@ -5,12 +5,13 @@ import {Button} from '../../components/general/Button.tsx';
 import {ConfirmationModal} from '../../components/general/ConfirmationModal.tsx';
 import {ProductTable} from '../../components/products/ProductTable.tsx';
 import {useNotification} from '../../providers/NotificationProvider.tsx';
-import {ProductForm} from '../../components/products/ProductForm.tsx';
+import {ProductForm, type ProductFormData} from '../../components/products/ProductForm.tsx';
 import {attributeService} from "../../services/attributeService.ts";
 import {categoryService} from "../../services/categoryService.ts";
 import type {Attribute, Category} from "../../types";
 import {uploadImage} from "../../services/imageService.ts";
 import {slugify} from "../../utils/utils.ts";
+import {Spinner} from "../../components/general/Spinner.tsx";
 
 const ProductsPage = () => {
     const [products, setProducts] = useState<Product[]>([]);
@@ -47,11 +48,18 @@ const ProductsPage = () => {
         fetchData();
     }, []);
 
-    const handleEdit = (id: number) => {
-        const product = products.find(p => p.id === id);
-        if (product) {
-            setEditingProduct(product);
+    const handleEdit = async (id: number) => {
+        // ✅ MEJORA: Hacemos la función asíncrona para obtener los datos completos del producto.
+        try {
+            setIsLoading(true); // Opcional: mostrar un indicador de carga
+            // Obtenemos la versión detallada del producto, incluyendo `variantValues`.
+            const productDetails = await productService.getProductById(id);
+            setEditingProduct(productDetails);
             setIsFormModalOpen(true);
+        } catch (err: any) {
+            showNotification({message: `Error al cargar los detalles del producto: ${err.message}`, type: 'error'});
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -59,49 +67,72 @@ const ProductsPage = () => {
         setProductToDelete(product);
     };
 
-    const handleSaveProduct = async (
-        data: ProductCreationData & { id?: number | null },
-        imageFile: File | null
-    ) => {
+    const handleSaveProduct = async (formData: ProductFormData) => {
         setIsSubmitting(true);
         try {
-            if (editingProduct) {
-                let finalImageUrl = data.image_url;
+            // ✅ MEJORA: Lógica de subida de imágenes centralizada y transaccional.
+            // 1. Subir todas las imágenes (principal y de variantes) en paralelo.
+            const slug = slugify(formData.name);
 
-                // Si hay un nuevo archivo, lo subimos y obtenemos la nueva URL.
-                if (imageFile) {
-                    const slug = slugify(editingProduct.name); // Usamos el nombre original para estabilidad.
-                    const entityName = `product/${slug}-${editingProduct.id}`; // Hacemos el nombre único con el ID.
-                    finalImageUrl = await uploadImage(imageFile, entityName);
-                }
-                // Construimos el payload final con TODOS los datos y la URL correcta.
-                const payload: ProductCreationData = {
-                    ...data,
-                    image_url: finalImageUrl,
-                };
+            const uploadPromises: Promise<string | null>[] = [];
 
-                // Hacemos UNA SOLA llamada a la API con el objeto completo.
-                await productService.updateProduct(editingProduct.id, payload);
+            // Promesa para la imagen principal
+            if (formData.imageFile) {
+                const entityName = `product/${slug}-${editingProduct?.id || 'new'}`;
+                uploadPromises.push(uploadImage(formData.imageFile, entityName));
             } else {
-                // 1. Creamos el producto SIN la URL de la imagen.
-                const newProduct = await productService.createProduct(data);
-                // 2. Si hay un archivo de imagen, lo subimos y actualizamos el producto recién creado.
-                if (imageFile) {
-                    const slug = slugify(newProduct.name);
-                    const entityName = `product/${slug}-${newProduct.id}`; // Hacemos el nombre único con el nuevo ID.
-                    const newImageUrl = await uploadImage(imageFile, entityName);
-                    // 3. Hacemos la segunda llamada para añadir la URL de la imagen.
-                    await productService.updateProduct(newProduct.id, {image_url: newImageUrl});
-                }
+                uploadPromises.push(Promise.resolve(formData.image_url));
             }
+
+            // Promesas para las imágenes de las variantes
+            formData.variants.forEach((variant, index) => {
+                if (variant.imageFile) {
+                    const entityName = `product/${slug}/${variant.sku || `variant-${index}`}`;
+                    uploadPromises.push(uploadImage(variant.imageFile, entityName));
+                } else {
+                    uploadPromises.push(Promise.resolve(variant.imageUrl));
+                }
+            });
+
+            const [mainImageUrl, ...variantImageUrls] = await Promise.all(uploadPromises);
+
+            // 2. Construir el payload final con las URLs de las imágenes ya subidas.
+            const finalPayload: ProductCreationData = {
+                name: formData.name,
+                description: formData.description,
+                categoryId: formData.categoryId,
+                isFeatured: formData.isFeatured,
+                imageUrl: mainImageUrl,
+                variants: formData.variants.map((v, index) => ({
+                    id: v.id,
+                    sku: v.sku,
+                    price: v.price,
+                    stock: v.stock,
+                    salePrice: v.salePrice === null ? undefined : v.salePrice,
+                    imageUrl: variantImageUrls[index],
+                    unitOfMeasure: v.unitOfMeasure,
+                    unitsPerItem: v.unitsPerItem,
+                    volumeDiscounts: v.volumeDiscounts,
+                    attributeValueIds: Object.values(v.selectedAttributes).filter(id => !isNaN(id)),
+                })),
+            };
+
+            // 3. Guardar el producto con todos los datos y URLs.
+            if (editingProduct) {
+                await productService.updateProduct(editingProduct.id, finalPayload);
+            } else {
+                await productService.createProduct(finalPayload);
+            }
+
             const successMessage = editingProduct ? 'Producto actualizado con éxito.' : 'Producto creado con éxito.';
             showNotification({message: successMessage, type: 'success'});
             setIsFormModalOpen(false);
             setEditingProduct(null);
             await fetchData();
         } catch (err: any) {
-            const errorMessage = err.response?.errors ? JSON.stringify(err.response.errors) : (err.message || 'Error al guardar el producto.');
-            showNotification({message: errorMessage, type: 'error'});
+            const errorInfo = err.info?.errors ? Object.values(err.info.errors).flat().join(', ') : err.message;
+            const finalMessage = `Error al guardar: ${errorInfo || 'Error desconocido.'}`;
+            showNotification({message: finalMessage, type: 'error'});
         } finally {
             setIsSubmitting(false);
         }
@@ -131,7 +162,11 @@ const ProductsPage = () => {
                 }}>Crear Producto</Button>
             </div>
 
-            {isLoading && <p>Cargando productos...</p>}
+            {isLoading && (
+                <div className="flex justify-center items-center py-16">
+                    <Spinner/>
+                </div>
+            )}
             {error && !isLoading && <p className="text-red-500">{error}</p>}
             {!isLoading && !error && <ProductTable products={products} onEdit={handleEdit} onDelete={handleDelete}/>}
 
@@ -145,15 +180,13 @@ const ProductsPage = () => {
                 isSubmitting={isSubmitting}
             />
 
-            <ConfirmationModal isOpen={!!productToDelete} onClose={() => setProductToDelete(null)}
-                               title="Confirmar Eliminación">
-                <p>¿Estás seguro de que deseas eliminar el producto <strong>"{productToDelete?.name}"</strong>?</p>
-                <p className="text-sm text-gray-500 mt-2">Esta acción no se puede deshacer.</p>
-                <div className="flex justify-end gap-4 mt-6">
-                    <Button variant="secondary" onClick={() => setProductToDelete(null)}>Cancelar</Button>
-                    <Button variant="danger" onClick={handleConfirmDelete}>Eliminar</Button>
-                </div>
-            </ConfirmationModal>
+            <ConfirmationModal
+                isOpen={!!productToDelete}
+                onClose={() => setProductToDelete(null)}
+                onConfirm={handleConfirmDelete}
+                title="Confirmar Eliminación"
+                message={`¿Estás seguro de que deseas eliminar el producto "${productToDelete?.name}"? Esta acción no se puede deshacer.`}
+            />
         </div>
     );
 };

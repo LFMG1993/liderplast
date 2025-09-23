@@ -2,16 +2,6 @@ import {create} from 'zustand';
 import {api} from '../services/api';
 import type {User} from '../types';
 
-interface LoginResponse {
-    token: string;
-    user?: User;
-    profile?: User;
-}
-
-interface ProfileResponse {
-    profile: User;
-}
-
 interface AuthState {
     user: User | null;
     isAuthenticated: boolean;
@@ -21,23 +11,24 @@ interface AuthState {
     verifyAuth: () => Promise<void>;
 }
 
-export const useAuthStore = create<AuthState>((set, get) => ({
+export const useAuthStore = create<AuthState>((set) => ({
     user: null,
     isAuthenticated: false,
     isLoading: true,
 
     login: async (email, password) => {
         try {
-            const response = await api.post<LoginResponse>('/api/admin/login', {email, password});
-            const { user, profile} = response.data;
-            const userData = user || profile; // ✅ MEJORA: Aceptamos 'user' o 'profile' para ser robustos.
+            const response = await api.post<{ token: string; user: User }>('/api/admin/login', {email, password});
+            const {token, user: userData} = response.data;
 
-            if (userData) {
-                set({user: userData, isAuthenticated: true});
+            if (token && userData) {
+                localStorage.setItem('liderplast-admin-token', token);
+                set({user: userData, isAuthenticated: true, isLoading: false});
                 return {success: true};
             }
-            return {success: false, error: 'Respuesta inesperada del servidor (token o usuario no encontrados).'};
+            return {success: false, error: 'Respuesta inesperada del servidor'};
         } catch (error: any) {
+            set({isLoading: false});
             return {success: false, error: error.message};
         }
     },
@@ -50,7 +41,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
             // Aunque la llamada falle, procedemos a limpiar el estado del frontend.
             console.error("La llamada de logout al backend falló, pero se cerrará la sesión localmente:", error);
         } finally {
-            // Esta lógica se ejecuta siempre, garantizando que el usuario vea el logout.
+            localStorage.removeItem('liderplast-admin-token');
             set({user: null, isAuthenticated: false});
         }
     },
@@ -58,25 +49,26 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     verifyAuth: async () => {
 
         try {
-            // El interceptor de axios ya añade el token a la cabecera.
-            const response = await api.get<ProfileResponse>('/api/admin/profile');
-            const userData = response.data.profile;
+            // Verificamos si hay un token antes de hacer la llamada.
+            const token = localStorage.getItem('liderplast-admin-token');
+            if (!token) {
+                set({isAuthenticated: false, isLoading: false});
+                return;
+            }
+
+            const response = await api.get<any>('/api/admin/profile');
+            const userData = response.data.user || response.data.profile;
 
             if (userData) {
                 set({user: userData, isAuthenticated: true, isLoading: false});
             } else {
-                // Si la respuesta es válida pero no tiene el perfil, cerramos sesión.
-                get().logout();
-                set({isLoading: false});
+                // Si la respuesta es 200 pero no viene el usuario, es un estado invalido.
+                set({isAuthenticated: false, isLoading: false});
             }
-        } catch (error) {
-            // Si el token es inválido, la API devolverá un 401, que el interceptor capturará.
-            // Aquí simplemente nos aseguramos de limpiar el estado.
-            get().logout();
-            set({isLoading: false});
+        } catch (error: any) {
+            // Si la API devuelve un error (ej. 401 por token inválido), limpiamos el estado.
+            localStorage.removeItem('liderplast-admin-token');
+            set({user: null, isAuthenticated: false, isLoading: false});
         }
     },
 }));
-
-// Inicializamos la verificación de la sesión en cuanto se carga la app.
-useAuthStore.getState().verifyAuth();

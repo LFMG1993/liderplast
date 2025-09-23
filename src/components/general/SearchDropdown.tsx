@@ -1,9 +1,8 @@
-import {Fragment, useState, useEffect} from "react";
+import {Fragment, useState, useMemo} from "react";
 import {useNavigate} from "react-router-dom";
 import {Menu, Transition} from "@headlessui/react";
 import {useProductFilter} from "../../hooks/useProductFilter.ts";
-import {ImagesProducts} from "../../utils/images";
-import {Search} from "react-bootstrap-icons";
+import {Search, FileImage} from "react-bootstrap-icons";
 
 interface SearchDropdownProps {
     isTransparent: boolean;
@@ -12,34 +11,30 @@ interface SearchDropdownProps {
 export default function SearchDropdown({isTransparent}: SearchDropdownProps) {
     const navigate = useNavigate();
     const [searchQuery, setSearchQuery] = useState("");
+    const {filteredProducts: allProducts} = useProductFilter();
 
-    // 2. Usamos el hook para obtener la lista filtrada y la función para actualizar el texto de búsqueda
-    const {filteredProducts, setSearchText} = useProductFilter("", "");
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const suggestedProducts = useMemo(() => {
+        if (!searchQuery.trim()) return [];
+        const normalizedQuery = searchQuery.toLowerCase().trim();
+        return allProducts
+            .filter(p => p.name.toLowerCase().includes(normalizedQuery))
+            .slice(0, 5); // Mostramos solo los primeros 5 resultados.
+    }, [searchQuery, allProducts]);
 
-    // Sincronizamos el filtro del hook con nuestro estado local.
-    useEffect(() => {
-        setSearchText(searchQuery);
-    }, [searchQuery, setSearchText]);
-    const handleSelectProduct = (productTitle: string) => {
-        // Navegamos a la página de productos con el término de búsqueda exacto
-        navigate(`/all-products?search=${encodeURIComponent(productTitle)}`);
-        setIsMenuOpen(false);
+    const handleSelectProduct = (productName: string) => {
+        navigate(`/tienda?search=${encodeURIComponent(productName)}`);
         setSearchQuery("");
     };
     const buttonClasses = `p-2 rounded-full transition-colors ${isTransparent ? 'text-white hover:bg-white/20' : 'text-gray-700 hover:bg-gray-100'}`;
+
     return (
         <Menu as="div" className="relative">
-            <Menu.Button
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className={buttonClasses}
-            >
+            <Menu.Button className={buttonClasses}>
                 <span className="sr-only">Buscar productos</span>
                 <Search className="w-6 h-6"/>
             </Menu.Button>
 
             <Transition
-                show={isMenuOpen}
                 as={Fragment}
                 enter="transition ease-out duration-100"
                 enterFrom="transform opacity-0 scale-95"
@@ -49,7 +44,6 @@ export default function SearchDropdown({isTransparent}: SearchDropdownProps) {
                 leaveTo="transform opacity-0 scale-95"
             >
                 <Menu.Items
-                    static
                     className="absolute right-0 mt-2 w-80 origin-top-right bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
                 >
                     <div className="p-2">
@@ -68,19 +62,25 @@ export default function SearchDropdown({isTransparent}: SearchDropdownProps) {
                     {/*    La lista solo se muestra si el usuario ha escrito algo. */}
                     {searchQuery.trim() !== "" && (
                         <ul className="max-h-80 overflow-y-auto">
-                            {filteredProducts.length > 0 ? (
-                                filteredProducts.slice(0, 5).map((product) => (
-                                    <Menu.Item key={product.id}>
+                            {suggestedProducts.length > 0 ? (
+                                suggestedProducts.map(product => (
+                                    <Menu.Item key={product.id} as="li">
                                         {({active}) => (
-                                            <li
-                                                onClick={() => handleSelectProduct(product.title)}
-                                                className={`${active ? 'bg-gray-100' : ''} flex items-center p-3 cursor-pointer`}
+                                            <button
+                                                onClick={() => handleSelectProduct(product.name)}
+                                                className={`${active ? 'bg-gray-100' : ''} w-full text-left flex items-center p-3`}
                                             >
-                                                <img src={ImagesProducts[product.image as keyof typeof ImagesProducts]}
-                                                     alt={product.title}
-                                                     className="h-12 w-12 object-cover rounded-md"/>
-                                                <span className="ml-3 text-sm text-gray-800">{product.title}</span>
-                                            </li>
+                                                <div
+                                                    className="h-12 w-12 bg-gray-100 rounded-md flex-shrink-0 flex items-center justify-center">
+                                                    {product.imageUrl ? (
+                                                        <img src={product.imageUrl} alt={product.name}
+                                                             className="h-full w-full object-cover rounded-md"/>
+                                                    ) : (
+                                                        <FileImage className="h-6 w-6 text-gray-400"/>
+                                                    )}
+                                                </div>
+                                                <span className="ml-3 text-sm text-gray-800">{product.name}</span>
+                                            </button>
                                         )}
                                     </Menu.Item>
                                 ))

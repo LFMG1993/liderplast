@@ -1,12 +1,12 @@
 import {useState, useEffect} from "react";
-import type {ProductStatic as Product} from "../types";
-import {ImagesProducts} from "../utils/images.ts";
+import type { CartItem} from "../../context/CardContext.tsx";
+import {FileImage} from 'react-bootstrap-icons';
 
 type Props = {
     show: boolean;
-    item: Product & { quantity: number } | null;
+    item: CartItem | null;
     onClose: () => void;
-    onSave: (product: Product, quantity: number) => void;
+    onSave: (variantId: number, quantity: number) => void;
 };
 
 export default function EditCartItemModal({
@@ -15,14 +15,20 @@ export default function EditCartItemModal({
                                               onClose,
                                               onSave,
                                           }: Props) {
-    const [qty, setQty] = useState(1);
+    const [quantity, setQuantity] = useState(1);
 
     // Cada vez que cambie el item, resetea el qty
     useEffect(() => {
-        if (item) setQty(item.quantity);
+        if (item) {
+            setQuantity(item.quantity);
+        }
     }, [item]);
 
     if (!show || !item) return null;
+    const handleSave = () => {
+        onSave(item.variantId, quantity);
+        onClose();
+    };
 
     return (
         // Contenedor principal del modal que ocupa toda la pantalla
@@ -36,7 +42,7 @@ export default function EditCartItemModal({
                 {/* ANTES: modal-header */}
                 <div className="flex justify-between items-center p-4 border-b border-gray-200">
                     {/* ANTES: modal-title */}
-                    <h5 className="text-xl font-semibold text-gray-800">{item.title}</h5>
+                    <h5 className="text-xl font-semibold text-gray-800">{item.name}</h5>
                     {/* ANTES: btn-close */}
                     <button
                         type="button"
@@ -51,13 +57,18 @@ export default function EditCartItemModal({
                 </div>
                 {/* ANTES: modal-body */}
                 <div className="p-6">
-                    <img
-                        src={ImagesProducts[item.image]}
-                        alt={item.name}
-                        className="w-full h-48 object-cover rounded-md mb-4"
-                    />
+                    <div className="w-full h-48 bg-gray-100 rounded-md mb-4 flex items-center justify-center">
+                        {item.image_url ? (
+                            <img
+                                src={item.image_url}
+                                alt={item.name}
+                                className="w-full h-full object-cover"
+                            />
+                        ) : (
+                            <FileImage className="w-12 h-12 text-gray-400"/>
+                        )}
+                    </div>
                     <p className="font-bold text-lg">{item.name}</p>
-                    {item.description && <p className="text-gray-600 mb-4">{item.description}</p>}
 
                     <label htmlFor="editQty" className="block text-sm font-medium text-gray-700 mb-1">
                         Cantidad
@@ -68,8 +79,8 @@ export default function EditCartItemModal({
                         id="editQty"
                         className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-liderplast-primary focus:border-liderplast-primary"
                         min={1}
-                        value={qty}
-                        onChange={(e) => setQty(Number(e.target.value))}
+                        value={quantity}
+                        onChange={(e) => setQuantity(Number(e.target.value))}
                     />
                 </div>
                 {/* ANTES: modal-footer */}
@@ -81,11 +92,8 @@ export default function EditCartItemModal({
                     </button>
                     {/* ANTES: btn btn-primary */}
                     <button
-                        className="px-4 py-2 bg-liderplast-primary text-white rounded-md hover:bg-liderplast-hover"
-                        onClick={() => {
-                            onSave(item, qty);
-                            onClose();
-                        }}
+                        className="px-4 py-2 background-lider text-white rounded-md hover:bg-liderplast-hover"
+                        onClick={handleSave}
                     >
                         Guardar
                     </button>

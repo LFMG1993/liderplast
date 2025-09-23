@@ -8,6 +8,7 @@ import {CategoryForm} from '../../components/categories/CategoryForm.tsx';
 import {ConfirmationModal} from '../../components/general/ConfirmationModal.tsx';
 import {uploadImage} from '../../services/imageService.ts';
 import {slugify} from "../../utils/utils.ts";
+import {Spinner} from "../../components/general/Spinner.tsx";
 
 const CategoriesPage = () => {
         const [categories, setCategories] = useState<Category[]>([]);
@@ -111,7 +112,11 @@ const CategoriesPage = () => {
                     </Button>
                 </div>
 
-                {isLoading && <p>Cargando...</p>}
+                {isLoading && (
+                    <div className="flex justify-center items-center py-16">
+                        <Spinner/>
+                    </div>
+                )}
                 {error && <p className="text-red-500">{error}</p>}
                 {!isLoading && !error &&
                     <CategoryTable categories={categories} onEdit={handleEdit} onDelete={handleDelete}/>}
@@ -125,17 +130,14 @@ const CategoriesPage = () => {
                     isSubmitting={isSubmitting}
                 />
 
-                <ConfirmationModal isOpen={!!categoryToDelete} onClose={() => setCategoryToDelete(null)}
-                                   title="Confirmar Eliminación">
-                    <p>¿Estás seguro de que deseas eliminar la categoría <strong>"{categoryToDelete?.name}"</strong>?
-                    </p>
-                    <p className="text-sm text-gray-500 mt-2">Eliminar una categoría también eliminará todas sus
-                        subcategorías. Esta acción no se puede deshacer.</p>
-                    <div className="flex justify-end gap-4 mt-6">
-                        <Button variant="secondary" onClick={() => setCategoryToDelete(null)}>Cancelar</Button>
-                        <Button variant="danger" onClick={handleConfirmDelete}>Eliminar</Button>
-                    </div>
-                </ConfirmationModal>
+                {/* ✅ CORRECCIÓN: Se pasan las props 'message' y 'onConfirm' en lugar de 'children'. */}
+                <ConfirmationModal
+                    isOpen={!!categoryToDelete}
+                    onClose={() => setCategoryToDelete(null)}
+                    onConfirm={handleConfirmDelete}
+                    title="Confirmar Eliminación"
+                    message={`¿Estás seguro de que deseas eliminar la categoría "${categoryToDelete?.name}"? Eliminar una categoría también eliminará todas sus subcategorías. Esta acción no se puede deshacer.`}
+                />
             </div>
         );
     }
