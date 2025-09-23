@@ -1,5 +1,5 @@
 import {SEO} from '../components/general/SEO';
-import aboutUsImage from '../assets/inicios3.avif';
+import aboutUsImage from '../assets/Inicios3.avif';
 
 export default function AboutUsPage() {
     return (
