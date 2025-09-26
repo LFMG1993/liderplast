@@ -24,6 +24,7 @@
     "react-helmet-async": "^2.0.5",
     "react-i18next": "^15.7.3",
     "react-router-dom": "^7.7.1",
+    "root": "git+https://github.com/tanstack/react-query.git",
     "zustand": "^5.0.8"
   },
   "devDependencies": {

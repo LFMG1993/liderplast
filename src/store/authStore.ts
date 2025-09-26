@@ -14,7 +14,7 @@ interface AuthState {
 export const useAuthStore = create<AuthState>((set) => ({
     user: null,
     isAuthenticated: false,
-    isLoading: true,
+    isLoading: false,
 
     login: async (email, password) => {
         try {
@@ -47,6 +47,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     },
 
     verifyAuth: async () => {
+        set({ isLoading: true });
 
         try {
             // Verificamos si hay un token antes de hacer la llamada.
