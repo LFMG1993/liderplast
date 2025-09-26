@@ -1,11 +1,13 @@
 import {useState} from "react";
 import {useCart} from "../../context/CardContext.tsx";
-import {FileImage, Plus, Trash, Dash, Whatsapp} from "react-bootstrap-icons";
+import {FileImage, Plus, Trash, Dash, Whatsapp, CreditCard} from "react-bootstrap-icons";
 import {SEO} from "../../components/general/SEO.tsx";
 import {Link, useNavigate} from "react-router-dom";
 import {ConfirmationModal} from "../../components/general/ConfirmationModal.tsx";
 import {useUserAuth} from "../../context/UserAuthContext.tsx";
 import {AuthModal} from "../../components/auth/AuthModal.tsx";
+import {orderService} from "../../services/orderService.ts";
+import {useNotification} from "../../providers/NotificationProvider.tsx";
 
 export default function CartPage() {
     const {items, removeItem, clearCart, updateQuantity} = useCart();
@@ -13,6 +15,8 @@ export default function CartPage() {
     const navigate = useNavigate();
     const [isConfirmingClear, setIsConfirmingClear] = useState(false);
     const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+    const [isProcessing, setIsProcessing] = useState(false);
+    const {showNotification} = useNotification();
     const phone = "573242940464";
 
     // Genera el link de WhatsApp
@@ -36,6 +40,29 @@ export default function CartPage() {
     const handleConfirmClearCart = () => {
         clearCart();
         setIsConfirmingClear(false);
+    };
+
+    const handleProceedToCheckout = async () => {
+        if (!isAuthenticated) {
+            setIsAuthModalOpen(true);
+            return;
+        }
+
+        setIsProcessing(true);
+        try {
+            // 1. Preparamos el payload para crear la orden
+            const payload = {
+                items: items.map(item => ({variantId: item.variantId, quantity: item.quantity}))
+            };
+            // 2. Llamamos al servicio para crear la orden
+            const newOrder = await orderService.create(payload);
+            // 3. Navegamos a la página de checkout CON el ID de la nueva orden
+            navigate(`/checkout/${newOrder.id}`);
+        } catch (error: any) {
+            showNotification({message: `Error al crear el pedido: ${error.message}`, type: 'error'});
+        } finally {
+            setIsProcessing(false);
+        }
     };
 
     const subtotal = items.reduce((sum, item) => {
@@ -170,17 +197,11 @@ export default function CartPage() {
                                 </div>
                                 <div className="mt-6 space-y-3">
                                     <button
-                                        onClick={() => {
-                                            if (isAuthenticated) {
-                                                // Si está autenticado, lo llevamos a la página de checkout (aún por crear)
-                                                navigate('/checkout');
-                                            } else {
-                                                // Si no, abrimos el modal para que inicie sesión.
-                                                setIsAuthModalOpen(true);
-                                            }
-                                        }}
-                                        className="w-full px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white background-lider hover:bg-liderplast-hover">
-                                        Proceder al Pago
+                                        onClick={handleProceedToCheckout}
+                                        disabled={isProcessing}
+                                        className="w-full flex items-center justify-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white background-lider hover:bg-liderplast-hover disabled:bg-gray-400">
+                                        <CreditCard className="h-5 w-5 mr-2"/>
+                                        {isProcessing ? 'Procesando Pedido...' : 'Proceder al Pago'}
                                     </button>
                                     <a href={whatsappLink()} target="_blank" rel="noopener noreferrer"
                                        className="w-full flex items-center justify-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-green-600 hover:bg-green-700">
@@ -196,7 +217,7 @@ export default function CartPage() {
             <AuthModal
                 isOpen={isAuthModalOpen}
                 onClose={() => setIsAuthModalOpen(false)}
-                onSuccess={() => navigate('/checkout')} // Al loguearse, lo llevamos al checkout.
+                onSuccess={handleProceedToCheckout} // Al loguearse, intentamos de nuevo proceder al pago.
             />
             <ConfirmationModal
                 isOpen={isConfirmingClear}

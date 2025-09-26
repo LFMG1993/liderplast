@@ -6,7 +6,10 @@ import {
     Truck,
     Warehouse,
     Archive,
-    Cylinder
+    Cylinder,
+    Wallet,
+    Folders,
+    Send
 } from 'lucide-react';
 
 export interface NavItem {
@@ -23,4 +26,7 @@ export const dockItems: NavItem[] = [
     {name: 'Productos', href: 'products', icon: Package},
     {name: 'Proveedores', href: 'providers', icon: Truck},
     {name: 'Inventario', href: 'inventory', icon: Warehouse},
+    {name: 'Pagos', href: 'payment-methods', icon: Wallet},
+    {name: 'Pedidos', href: 'orders', icon: Folders},
+    {name: 'Envios', href: 'shipments', icon: Send},
 ];

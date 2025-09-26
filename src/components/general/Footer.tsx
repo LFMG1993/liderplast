@@ -79,7 +79,7 @@ export default function Footer() {
 
                 {/* Sección de Copyright */}
                 <div className="mt-12 border-t border-gray-700 pt-8 text-center text-gray-500">
-                    <Link to="/admin" className="text-xs text-gray-500 hover:text-white transition-colors pt-4">
+                    <Link to="/admin" className="text-xs text-gray-500 hover:text-white transition-colors pt-4" target="_blank">
                         Acceso Administrador
                     </Link>
                     <p className="mb-2">&copy; {new Date().getFullYear()} Liderplast. Todos los derechos reservados.</p>

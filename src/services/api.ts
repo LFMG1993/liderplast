@@ -29,7 +29,7 @@ export const api = axios.create({
 api.interceptors.request.use(
     (config) => {
         // Obtenemos el token desde localStorage en cada petición.
-        const token = localStorage.getItem('authToken');
+        const token = localStorage.getItem('liderplast-admin-token');
 
         // Si el token existe, lo añadimos a la cabecera 'Authorization'.
         if (token) {

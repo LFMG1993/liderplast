@@ -5,3 +5,4 @@ export * from './attribute.types.ts';
 export * from './productStatic.types.ts'
 export * from './provider.types.ts'
 export * from './inventory.types.ts'
+export * from './orders.types.ts'
