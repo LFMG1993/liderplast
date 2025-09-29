@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import {useEffect, useState, useCallback} from 'react';
 import {productService} from '../../services/productService.ts';
 import type {Product, ProductCreationData} from '../../types';
 import {Button} from '../../components/general/Button.tsx';
@@ -25,33 +25,33 @@ const ProductsPage = () => {
     const [productToDelete, setProductToDelete] = useState<Product | null>(null);
     const {showNotification} = useNotification();
 
-    const fetchData = async () => {
-        try {
-            setIsLoading(true);
-            const [productsData, attributesData, categoriesData] = await Promise.all([
-                productService.getProducts(),
-                attributeService.getAttributesWithValues(),
-                categoryService.getCategories()
-            ]);
-            setProducts(productsData);
-            setAttributes(attributesData);
-            setCategories(categoriesData);
-        } catch (err: any) {
-            setError(err.message || 'Error al cargar los productos.');
-            showNotification({message: err.message || 'Error al cargar los productos.', type: 'error'});
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
+    const fetchData = useCallback(async () => {
+            try {
+                setIsLoading(true);
+                const [productsData, attributesData, categoriesData] = await Promise.all([
+                    productService.getProducts(),
+                    attributeService.getAttributesWithValues(),
+                    categoryService.getCategories()
+                ]);
+                setProducts(productsData);
+                setAttributes(attributesData);
+                setCategories(categoriesData);
+            } catch (err: any) {
+                setError(err.message || 'Error al cargar los productos.');
+                showNotification({message: err.message || 'Error al cargar los productos.', type: 'error'});
+            } finally {
+                setIsLoading(false);
+            }
+        }, [showNotification]
+    );
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [fetchData]);
 
     const handleEdit = async (id: number) => {
-        // ✅ MEJORA: Hacemos la función asíncrona para obtener los datos completos del producto.
+        // Hacemos la función asíncrona para obtener los datos completos del producto.
         try {
-            setIsLoading(true); // Opcional: mostrar un indicador de carga
+            setIsLoading(true);
             // Obtenemos la versión detallada del producto, incluyendo `variantValues`.
             const productDetails = await productService.getProductById(id);
             setEditingProduct(productDetails);
@@ -70,7 +70,6 @@ const ProductsPage = () => {
     const handleSaveProduct = async (formData: ProductFormData) => {
         setIsSubmitting(true);
         try {
-            // ✅ MEJORA: Lógica de subida de imágenes centralizada y transaccional.
             // 1. Subir todas las imágenes (principal y de variantes) en paralelo.
             const slug = slugify(formData.name);
 

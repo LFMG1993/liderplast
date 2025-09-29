@@ -8,7 +8,22 @@ interface ShipmentListProps {
 
 export function ShipmentList({orders, onManageShipment}: ShipmentListProps) {
     if (orders.length === 0) {
-        return <div className="text-center py-10 bg-gray-50 rounded-lg">No hay pedidos pendientes de envío.</div>;
+        return (
+            <div className="text-center py-16 px-6 bg-gray-800 rounded-lg shadow-md">
+                <svg
+                    className="mx-auto h-12 w-12 text-green-500"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    aria-hidden="true"
+                >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                <h3 className="mt-2 text-lg font-medium text-white">¡Todo al día!</h3>
+                <p className="mt-1 text-sm text-gray-400">No hay pedidos pendientes de envío en este momento.</p>
+            </div>
+        );
     }
 
     return (
