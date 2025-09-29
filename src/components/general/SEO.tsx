@@ -5,13 +5,14 @@ interface SEOProps {
     description: string;
     canonicalUrl?: string;
     ogImage?: string;
+    noIndex?: boolean;
 }
 
 /**
  * Componente reutilizable para gestionar las etiquetas de SEO de cada página.
  * Proporciona valores por defecto y permite sobreescribirlos.
  */
-export const SEO = ({title, description, canonicalUrl, ogImage}: SEOProps) => {
+export const SEO = ({title, description, canonicalUrl, ogImage, noIndex}: SEOProps) => {
     const siteName = "Liderplast";
     const fullTitle = `${title} | ${siteName}`;
     const defaultOgImage = "https://distribucioneslider.com.co/og-image.jpg";
@@ -63,6 +64,7 @@ export const SEO = ({title, description, canonicalUrl, ogImage}: SEOProps) => {
 
     return (
         <Helmet>
+            {noIndex && <meta name="robots" content="noindex, nofollow"/>}
             <title>{fullTitle}</title>
             <meta name="description" content={description}/>
             <link rel="canonical" href={finalCanonicalUrl}/>

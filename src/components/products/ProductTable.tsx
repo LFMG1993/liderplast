@@ -71,9 +71,9 @@ export function ProductTable({products, onEdit, onDelete}: ProductTableProps) {
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{getPriceDisplay(product.variants)}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{product.variants.length}</td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                            {product.image_url ? (
+                            {product.imageUrl ? (
                                 <img
-                                    src={product.image_url}
+                                    src={product.imageUrl}
                                     alt={product.name}
                                     className="h-12 w-12 rounded-md object-cover"
                                 />

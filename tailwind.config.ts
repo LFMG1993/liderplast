@@ -2,7 +2,6 @@ import type {Config} from 'tailwindcss';
 
 export default {
     content: [
-        './indexLading.html',
         './src/**/*.{js,ts,jsx,tsx}',
     ],
     theme: {

@@ -70,9 +70,8 @@ export const useNotification = () => {
     if (context === undefined) {
         throw new Error('useNotification debe ser usado dentro de un NotificationProvider');
     }
-    // Adaptamos la llamada para que coincida con la firma esperada en las páginas.
-    const showNotification = ({message, type}: { message: string, type: NotificationType }) => {
+    const showNotification = useCallback(({message, type}: { message: string, type: NotificationType }) => {
         context.addNotification(message, type);
-    };
+    }, [context]);
     return {showNotification};
 };

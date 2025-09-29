@@ -7,6 +7,7 @@ import {ConfirmationModal} from '../../components/general/ConfirmationModal.tsx'
 import {Button} from '../../components/general/Button.tsx';
 import {PlusCircle} from 'lucide-react';
 import {useNotification} from "../../context/NotificationContext.tsx";
+import {Spinner} from "../../components/general/Spinner.tsx";
 
 export default function UsersPage() {
     const [users, setUsers] = useState<User[]>([]);
@@ -14,8 +15,9 @@ export default function UsersPage() {
     const [error, setError] = useState<string | null>(null);
     const {addNotification} = useNotification();
 
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isFormOpen, setIsFormOpen] = useState(false);
     const [userToEdit, setUserToEdit] = useState<User | null>(null);
+    const [userToDelete, setUserToDelete] = useState<User | null>(null);
 
     const fetchUsers = useCallback(async () => {
         try {
@@ -36,28 +38,33 @@ export default function UsersPage() {
 
     const handleOpenCreateModal = () => {
         setUserToEdit(null);
-        setIsModalOpen(true);
+        setIsFormOpen(true);
     };
 
     const handleOpenEditModal = (user: User) => {
         setUserToEdit(user);
-        setIsModalOpen(true);
+        setIsFormOpen(true);
     };
 
     const handleCloseModal = () => {
-        setIsModalOpen(false);
+        setIsFormOpen(false);
         setUserToEdit(null);
     };
 
-    const handleDelete = async (user: User) => {
-        if (window.confirm(`¿Estás seguro de que quieres eliminar a ${user.nombre}?`)) {
-            try {
-                await userService.deleteUser(user.id);
-                addNotification('Usuario eliminado con éxito', 'success');
-                fetchUsers(); // Recargar la lista
-            } catch (err: any) {
-                addNotification(err.message || 'Error al eliminar el usuario.', 'error');
-            }
+    const handleDelete = (user: User) => {
+        setUserToDelete(user);
+    };
+
+    const confirmDelete = async () => {
+        if (!userToDelete) return;
+
+        try {
+            await userService.deleteUser(userToDelete.id);
+            addNotification('Usuario eliminado con éxito', 'success');
+            setUserToDelete(null);
+            fetchUsers(); // Recargar la lista
+        } catch (err: any) {
+            addNotification(err.message || 'Error al eliminar el usuario.', 'error');
         }
     };
 
@@ -90,15 +97,26 @@ export default function UsersPage() {
                 </div>
             </div>
             <div className="mt-8">
-                {isLoading && <p>Cargando...</p>}
+                {isLoading && <div className="flex justify-center items-center py-16">
+                    <Spinner/>
+                </div>}
                 {error && <p className="text-red-500">{error}</p>}
                 {!isLoading && !error &&
                     <UserTable users={users} onEdit={handleOpenEditModal} onDelete={handleDelete}/>}
             </div>
-            <ConfirmationModal isOpen={isModalOpen} onClose={handleCloseModal}
-                               title={userToEdit ? 'Editar Usuario' : 'Crear Nuevo Usuario'}>
-                <UserForm userToEdit={userToEdit} onSubmit={handleFormSubmit} onCancel={handleCloseModal}/>
-            </ConfirmationModal>
+            <UserForm
+                isOpen={isFormOpen}
+                onClose={handleCloseModal}
+                onSubmit={handleFormSubmit}
+                userToEdit={userToEdit}
+            />
+            <ConfirmationModal
+                isOpen={!!userToDelete}
+                onClose={() => setUserToDelete(null)}
+                onConfirm={confirmDelete}
+                title="Confirmar Eliminación"
+                message={`¿Estás seguro de que deseas eliminar al usuario "${userToDelete?.nombre}"? Esta acción no se puede deshacer.`}
+            />
         </div>
     );
 }

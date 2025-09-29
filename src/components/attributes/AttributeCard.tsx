@@ -2,7 +2,6 @@ import type { Attribute} from "../../types";
 import { Button } from '../general/Button.tsx';
 import { Plus, Edit, Trash2 } from 'lucide-react';
 
-// ✅ MEJORA: Componente extraído a su propio archivo para reutilización y claridad.
 interface AttributeCardProps {
     attribute: Attribute;
     onEdit: (attr: Attribute) => void;

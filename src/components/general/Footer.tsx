@@ -19,18 +19,18 @@ export default function Footer() {
                         <h2 className="text-lg font-bold mb-4">Navegación</h2>
                         <ul className="space-y-2">
                             <li>
-                                <SmartLink to="/all-products" className="text-gray-400 hover:text-white transition-colors">
+                                <SmartLink to="/tienda" className="text-gray-400 hover:text-white transition-colors">
                                     Tienda
                                 </SmartLink>
                             </li>
                             <li>
-                                <SmartLink to="/contact" className="text-gray-400 hover:text-white transition-colors">
+                                <SmartLink to="/contacto" className="text-gray-400 hover:text-white transition-colors">
                                     Contacto
                                 </SmartLink>
                             </li>
                             {/* Enlace a la sección "nosotros" de la landing page */}
                             <li>
-                                <SmartLink to="/#nosotros" className="text-gray-400 hover:text-white transition-colors">
+                                <SmartLink to="/nosotros" className="text-gray-400 hover:text-white transition-colors">
                                     Nosotros
                                 </SmartLink>
                             </li>
@@ -42,18 +42,23 @@ export default function Footer() {
                         <h2 className="text-lg font-bold mb-4">Contacto</h2>
                         <ul className="space-y-2">
                             <li>
-                                <SmartLink to="https://www.google.com/maps/search/?api=1&query=plasticos+el+lider" className="text-gray-400 hover:text-white transition-colors">
-                                    Calle 6 # 4 - 18, Cúcuta
+                                <SmartLink to="https://www.google.com/maps/search/?api=1&query=plasticos+el+lider" className="text-gray-400 hover:text-white transition-colors" target="_blank">
+                                    Calle 6 # 4 - 18
                                 </SmartLink>
                             </li>
                             <li>
-                                <SmartLink to="mailto:liderplast@gmail.com" className="text-gray-400 hover:text-white transition-colors">
-                                    liderplast@gmail.com
+                                <SmartLink to="mailto:distribucionesliderjn@gmail.com" className="text-gray-400 hover:text-white transition-colors">
+                                    distribucionesliderjn@gmail.com
                                 </SmartLink>
                             </li>
                             <li>
-                                <SmartLink to="tel:+573242940464" className="text-gray-400 hover:text-white transition-colors">
+                                <SmartLink to="https://wa.me/573242940464" className="text-gray-400 hover:text-white transition-colors" target="_blank">
                                     +57 324 294 0464
+                                </SmartLink>
+                            </li>
+                            <li>
+                                <SmartLink to="https://maps.app.goo.gl/vBNcLBfDCAioF8kS9" className="text-gray-400 hover:text-white transition-colors" target="_blank">
+                                    Cúcuta - Colombia
                                 </SmartLink>
                             </li>
                         </ul>
@@ -74,7 +79,7 @@ export default function Footer() {
 
                 {/* Sección de Copyright */}
                 <div className="mt-12 border-t border-gray-700 pt-8 text-center text-gray-500">
-                    <Link to="/admin" className="text-xs text-gray-500 hover:text-white transition-colors pt-4">
+                    <Link to="/admin" className="text-xs text-gray-500 hover:text-white transition-colors pt-4" target="_blank">
                         Acceso Administrador
                     </Link>
                     <p className="mb-2">&copy; {new Date().getFullYear()} Liderplast. Todos los derechos reservados.</p>

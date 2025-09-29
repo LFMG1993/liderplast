@@ -1,10 +1,29 @@
+export interface VolumeDiscount {
+    id?: number;
+    minQuantity: number;
+    price: number;
+}
+
 export interface ProductVariant {
     id: number;
     sku: string;
     price: number;
     stock: number;
     salePrice?: number | null;
-    // En el futuro, aquí podríamos tener los detalles de los valores de atributo.
+    imageUrl: string | null;
+    unitOfMeasure: string | null; // Ej: "Caja", "Unidad", "Millar"
+    unitsPerItem: number | null; // Ej: 1000 (unidades por caja)
+    volumeDiscounts: VolumeDiscount[];
+    variantValues: {
+        attributeValue: {
+            id: number;
+            value: string;
+            attributeId: number;
+            attribute: {
+                name: string;
+            };
+        };
+    }[];
 }
 
 export interface Product {
@@ -12,13 +31,12 @@ export interface Product {
     name: string;
     description?: string | null;
     isFeatured: boolean;
-    image_url: string | null;
+    imageUrl: string | null;
     category: {
         id: number;
         name: string;
     };
     variants: ProductVariant[];
-    // ... y cualquier otro campo que devuelva la API de getProductById
 }
 
 export interface ProductCreationData {
@@ -26,13 +44,17 @@ export interface ProductCreationData {
     description?: string;
     categoryId: number;
     isFeatured?: boolean;
-    image_url?: string | null;
+    imageUrl?: string | null;
     variants: {
         id?: number;
         sku: string;
         price: number;
         stock: number;
-        salePrice?: number;
+        salePrice?: number | null;
+        imageUrl?: string | null;
+        unitOfMeasure?: string | null;
+        unitsPerItem?: number | null;
+        volumeDiscounts?: VolumeDiscount[];
         attributeValueIds: number[];
     }[];
 }
