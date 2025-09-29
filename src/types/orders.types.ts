@@ -33,6 +33,9 @@ export interface Shipment {
     driverName?: string | null;
     licensePlate?: string | null;
     createdAt: string;
+    order: {
+        shippingStatus: ShippingStatus;
+    };
 }
 
 
@@ -64,9 +67,19 @@ export interface Order {
     shipment?: Shipment | null;
 }
 
+export type ShipmentFormData = {
+    shippingMethod: ShippingMethod;
+    company: string;
+    trackingNumber: string;
+    trackingUrl: string;
+    driverName: string;
+    licensePlate: string;
+};
+
 export type PaymentMethodCreationData = Omit<PaymentMethod, 'id'>;
 export type PaymentMethodUpdateData = Partial<PaymentMethodCreationData>;
-export type ShipmentCreationData = Omit<Shipment, 'id' | 'orderId' | 'createdAt'>;
+export type ShipmentCreationData = ShipmentFormData;
+export type ShipmentUpdateData = Partial<ShipmentFormData>;
 
 export const PaymentStatusLabels: Record<PaymentStatus, string> = {
     pending_payment: "Pendiente de pago",
@@ -82,6 +95,12 @@ export const ShippingStatusLabels: Record<ShippingStatus, string> = {
     shipped: "Enviado",
     delivered: "Entregado"
 };
+
+export const ShippingMethodLabels: Record<ShippingMethod, string> = {
+    local_delivery: "Domicilio",
+    national_shipping: "Envío Nacional"
+};
+
 
 export const PaymentStatusColors: Record<PaymentStatus, string> = {
     pending_payment: "text-yellow-600 bg-yellow-100",

@@ -1,6 +1,6 @@
 import {paymentMethodService} from '../../services/paymentMethodService';
 import {Spinner} from '../../components/general/Spinner';
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useCallback} from 'react';
 import {Button} from '../../components/general/Button';
 import {PlusCircle} from 'lucide-react';
 import {PaymentMethodsTable} from "../../components/paymentMethods/PaymentMethodsTable.tsx";
@@ -20,21 +20,22 @@ export default function PaymentMethodsPage() {
     const [methodToDelete, setMethodToDelete] = useState<PaymentMethod | null>(null);
     const {showNotification} = useNotification();
 
-    const fetchData = async () => {
-        try {
-            setIsLoading(true);
-            const data = await paymentMethodService.listAdmin();
-            setPaymentMethods(data);
-        } catch (err: any) {
-            showNotification({message: `Error al cargar métodos de pago: ${err.message}`, type: 'error'});
-        } finally {
-            setIsLoading(false);
-        }
-    };
+    const fetchData = useCallback(async () => {
+            try {
+                setIsLoading(true);
+                const data = await paymentMethodService.listAdmin();
+                setPaymentMethods(data);
+            } catch (err: any) {
+                showNotification({message: `Error al cargar métodos de pago: ${err.message}`, type: 'error'});
+            } finally {
+                setIsLoading(false);
+            }
+        }, [showNotification]
+    );
 
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [fetchData]);
 
     const handleOpenCreate = () => {
         setEditingMethod(null);

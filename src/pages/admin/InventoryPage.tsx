@@ -1,4 +1,4 @@
-import {useEffect, useState, useMemo} from 'react';
+import {useEffect, useState, useMemo, useCallback} from 'react';
 import type {InventoryItem, InventoryUpdateData} from '../../types';
 import {inventoryService} from '../../services/inventoryService';
 import {useNotification} from '../../providers/NotificationProvider.tsx';
@@ -16,21 +16,22 @@ const InventoryPage = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const {showNotification} = useNotification();
 
-    const fetchData = async () => {
-        try {
-            setIsLoading(true);
-            const data = await inventoryService.getInventory();
-            setInventoryItems(data);
-        } catch (err: any) {
-            showNotification({message: `Error al cargar el inventario: ${err.message}`, type: 'error'});
-        } finally {
-            setIsLoading(false);
-        }
-    };
+    const fetchData = useCallback(async () => {
+            try {
+                setIsLoading(true);
+                const data = await inventoryService.getInventory();
+                setInventoryItems(data);
+            } catch (err: any) {
+                showNotification({message: `Error al cargar el inventario: ${err.message}`, type: 'error'});
+            } finally {
+                setIsLoading(false);
+            }
+        }, [showNotification]
+    );
 
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [fetchData]);
 
     const requestUpdateInventory = (variantId: number, data: InventoryUpdateData) => {
         setUpdateToConfirm({variantId, data});
