@@ -78,9 +78,9 @@ export const AddressFormModal = ({isOpen, onClose, onSave, initialData, isSaving
     };
 
     // Handler específico para los Combobox
-    const handleComboboxChange = (name: 'state' | 'city', value: string) => {
+    const handleComboboxChange = (name: 'state' | 'city', value: string | null) => {
         setFormData(prev => {
-            const newFormData = {...prev, [name]: value};
+            const newFormData = {...prev, [name]: value || ''};
             if (name === 'state') {
                 newFormData.city = ''; // Resetea la ciudad si cambia el departamento
                 setCityQuery(''); // Limpia la búsqueda de ciudad
@@ -147,7 +147,7 @@ export const AddressFormModal = ({isOpen, onClose, onSave, initialData, isSaving
                                 <Combobox.Input
                                     className="w-full rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 shadow-sm focus:border-liderplast-primary focus:outline-none focus:ring-1 focus:ring-liderplast-primary"
                                     onChange={(event) => setDepartmentQuery(event.target.value)}
-                                    displayValue={(department: string | null) => department || ''}
+                                    displayValue={(department: string) => department}
                                     placeholder="Busca un departamento"
                                 />
                                 <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2">
@@ -190,7 +190,7 @@ export const AddressFormModal = ({isOpen, onClose, onSave, initialData, isSaving
                                 <Combobox.Input
                                     className="w-full rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 shadow-sm focus:border-liderplast-primary focus:outline-none focus:ring-1 focus:ring-liderplast-primary disabled:bg-gray-100"
                                     onChange={(event) => setCityQuery(event.target.value)}
-                                    displayValue={(city: string | null) => city || ''}
+                                    displayValue={(city: string) => city}
                                     placeholder="Busca una ciudad"
                                 />
                                 <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2">
