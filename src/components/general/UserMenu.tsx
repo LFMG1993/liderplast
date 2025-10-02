@@ -30,7 +30,7 @@ import {Link} from 'react-router-dom';
                 return (
                 <Menu as="div" className="relative">
                         <Menu.Button className={buttonClasses}>
-                            <div className="h-7 w-7 rounded-full bg-liderplast-primary flex items-center justify-center text-white font-bold text-sm">
+                            <div className="h-7 w-7 rounded-full bg-liderplast-primary flex items-center justify-center text-purple-700 font-bold text-sm">
                                 {/* Muestra la inicial del nombre del cliente */}
                                 {customer?.name?.charAt(0).toUpperCase()}
                             </div>

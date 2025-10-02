@@ -3,7 +3,7 @@ import {Menu, Transition} from '@headlessui/react';
 import {FacebookIcon} from '../icons/FacebookIcon';
 import {InstagramIcon} from '../icons/InstagramIcon';
 import {TiktokIcon} from '../icons/TiktokIcon';
-import {AppIndicator} from "react-bootstrap-icons";
+import {ImagesUI} from "../../utils/images.ts";
 
 interface SocialSelectorProps {
     isTransparent: boolean;
@@ -16,8 +16,8 @@ export default function SocialSelector({isTransparent}: SocialSelectorProps) {
         <Menu as="div" className="relative">
             <Menu.Button
                 className={buttonClasses}>
-                <span className="sr-only">Nuestras redes sociales</span>
-                <AppIndicator className="h-6 w-6"/>
+                <img src={ImagesUI.multiSocialMedia} alt="Nuestras redes sociales"
+                     className="h-10 w-10 [filter:drop-shadow(0_1px_0_rgb(255_255_255/70%))_drop-shadow(0_-1px_0_rgb(255_255_255/70%))_drop-shadow(1px_0_0_rgb(255_255_255/70%))_drop-shadow(-1px_0_0_rgb(255_255_255/70%))]"/>
             </Menu.Button>
 
             <Transition

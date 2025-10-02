@@ -44,9 +44,9 @@ export default function FilterSidebar({
                 </button>
             </div>
 
-            {/* ✅ MEJORA: El contenido de los filtros ahora es scrollable. */}
+            {/* El contenido de los filtros es scrollable. */}
             <div className="flex-grow overflow-y-auto p-4 md:p-0 md:pr-4 no-scrollbar">
-                {/* ✅ MEJORA: Secciones colapsables (Accordion) para una UI más limpia. */}
+                {/*  Secciones colapsables (Accordion) para una UI más limpia. */}
                 <Disclosure as="div" className="mb-6" defaultOpen>
                     {({open}: { open: boolean }) => (
                         <>

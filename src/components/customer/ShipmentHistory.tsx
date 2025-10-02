@@ -4,10 +4,10 @@ import type {Order} from '../../types';
 import {ShippingStatusLabels, ShippingStatusColors} from '../../types';
 import {Spinner} from '../general/Spinner';
 import {useNotification} from '../../providers/NotificationProvider';
-import {Clipboard} from "react-bootstrap-icons";
+import {Clipboard, PinMapFill} from "react-bootstrap-icons";
 
 const ShipmentCard = ({order}: { order: Order }) => {
-    const {shipment, shippingStatus} = order;
+    const {shipment, shippingStatus, shippingAddress} = order;
     const {showNotification} = useNotification();
 
     const copyToClipboard = (text: string) => {
@@ -34,6 +34,19 @@ const ShipmentCard = ({order}: { order: Order }) => {
                                 </span>
                 </div>
             </div>
+            {shippingAddress && (
+                <div className="mt-4 border-t pt-4">
+                    <h4 className="font-semibold text-gray-700 mb-2 flex items-center">
+                        <PinMapFill className="h-5 w-5 mr-2 text-gray-500"/>
+                        Enviado a
+                    </h4>
+                    <div className="text-sm text-gray-600 pl-7">
+                        <p><strong>{shippingAddress.recipientName}</strong></p>
+                        <p>{shippingAddress.street}, {shippingAddress.details}</p>
+                        <p>{shippingAddress.city}, {shippingAddress.state}</p>
+                    </div>
+                </div>
+            )}
             <div className="mt-4 border-t pt-4 space-y-2 text-sm">
                 {shipment ? (
                     <div>
@@ -84,7 +97,7 @@ export const ShipmentHistory = () => {
             .then(setOrders)
             .catch(error => showNotification({message: `Error al cargar envíos: ${error.message}`, type: 'error'}))
             .finally(() => setIsLoading(false));
-    }, [showNotification]);
+    }, []);
 
     if (isLoading) return <div className="flex justify-center items-center h-64"><Spinner/></div>;
     const ordersWithShipmentInfo = orders.filter(order => order.shippingStatus !== 'unfulfilled' || order.shipment);

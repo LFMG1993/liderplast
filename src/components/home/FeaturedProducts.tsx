@@ -55,12 +55,10 @@ export const FeaturedProducts = ({products}: FeaturedProductsProps) => {
 
                 {/* Contenedor del Carrusel */}
                 <div className="relative">
-                    {/* ✅ MEJORA: Usamos flexbox con overflow para crear el carrusel. */}
-                    {/* `scroll-snap` mejora la experiencia de desplazamiento en dispositivos táctiles. */}
-                    <div className="flex space-x-6 overflow-x-auto pb-4 no-scrollbar scroll-snap-x-mandatory">
+                    <div className="grid grid-flow-col auto-cols-[18rem] gap-6 overflow-x-auto pb-4 no-scrollbar scroll-snap-x-mandatory">
                         {featuredProducts.map(product => (
                             // Contenedor de cada tarjeta para controlar su tamaño en el carrusel
-                            <div key={product.id} className="flex-shrink-0 w-72 scroll-snap-start">
+                            <div key={product.id} className=" scroll-snap-start">
                                 <ProductCard
                                     product={product}
                                     onAdd={() => handleAddOrSelect(product)}

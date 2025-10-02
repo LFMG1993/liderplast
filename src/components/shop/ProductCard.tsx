@@ -61,7 +61,7 @@ export default function ProductCard({product, onAdd, onViewDetails}: Props) {
                         Detalles
                     </button>
                     <button
-                        className="background-lider text-white flex items-center gap-2 px-3 py-2 text-sm rounded-md transition-colors hover:bg-liderplast-hover disabled:bg-gray-300 disabled:cursor-not-allowed"
+                        className="background-lider text-white flex items-center justify-center gap-2 px-3 py-2 text-sm rounded-md transition-colors hover:bg-liderplast-hover disabled:bg-gray-300 disabled:cursor-not-allowed"
                         onClick={onAdd}
                     >
                         {addButtonText}

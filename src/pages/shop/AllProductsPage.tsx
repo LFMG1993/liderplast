@@ -114,20 +114,22 @@ export default function AllProductsPage() {
                     {/* ANTES: row */}
                     <div className="flex flex-col md:flex-row gap-8">
                         {/* Sidebar para Desktop */}
-                        <aside
-                            className="hidden md:block w-full md:w-1/4 lg:w-1/5 md:sticky top-24 self-start max-h-[calc(100vh-6rem)]">
-                            <FilterSidebar
-                                searchText={searchText}
-                                onSearch={setSearchText}
-                                selectedCats={selectedCats}
-                                toggleCategory={toggleCategory}
-                                clearFilters={clearFilters}
-                                hierarchicalCategories={hierarchicalCategories}
-                                filterableAttributes={filterableAttributes}
-                                selectedAttributes={selectedAttributes}
-                                toggleAttribute={toggleAttribute}
-                            />
-                        </aside>
+                        <div
+                            className="hidden md:block w-full md:w-1/4 lg:w-1/5 md:sticky top-24 self-start h-[calc(100vh-7rem)]">
+                            <aside className="h-full">
+                                <FilterSidebar
+                                    searchText={searchText}
+                                    onSearch={setSearchText}
+                                    selectedCats={selectedCats}
+                                    toggleCategory={toggleCategory}
+                                    clearFilters={clearFilters}
+                                    hierarchicalCategories={hierarchicalCategories}
+                                    filterableAttributes={filterableAttributes}
+                                    selectedAttributes={selectedAttributes}
+                                    toggleAttribute={toggleAttribute}
+                                />
+                            </aside>
+                        </div>
 
                         <main className="w-full md:w-3/4 lg:w-4/5">
                             {isLoading ? (
@@ -135,7 +137,8 @@ export default function AllProductsPage() {
                                     <Spinner/>
                                 </div>
                             ) : (
-                                <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
+                                <div
+                                    className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
                                     {filteredProducts.map((p) => (
                                         <ProductCard
                                             key={p.id}

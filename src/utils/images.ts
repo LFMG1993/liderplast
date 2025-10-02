@@ -2,6 +2,7 @@
 import logo from "../assets/logo.avif";
 import fachada from "../assets/iniciosLiderplast.avif";
 import slider1 from "../assets/slider1.avif";
+import multiSocialMedia from "../assets/multiSocialMedia.webp";
 // Imagenes de las categorias
 import contenedores from "../assets/category/Contenedores.webp";
 import Bandejas from "../assets/category/Bandejas.webp";
@@ -117,6 +118,7 @@ import VasosVBC from "../assets/products/VasosVBC.avif";
 import VasosVBC12 from "../assets/products/VasosVBC12.avif";
 
 export const ImagesHome = { logo, fachada, slider1 } as const;
+export const ImagesUI = { multiSocialMedia } as const;
 export const ImagesCategory = {
     contenedores,
     Bandejas,

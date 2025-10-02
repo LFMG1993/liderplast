@@ -4,6 +4,7 @@ import {orderService} from '../../services/orderService';
 import {paymentMethodService} from '../../services/paymentMethodService';
 import {uploadCustomerImage} from "../../services/imageCustomerService.ts";
 import type {Order, PaymentMethod} from '../../types';
+import {useCart} from "../../context/CardContext.tsx";
 import {useNotification} from '../../providers/NotificationProvider';
 import {Spinner} from '../../components/general/Spinner';
 import {ImageUploader} from '../../components/general/ImageUploader';
@@ -12,6 +13,7 @@ import {Button} from '../../components/general/Button';
 export default function CheckoutPage() {
     const {orderId} = useParams<{ orderId: string }>();
     const navigate = useNavigate();
+    const {clearCart} = useCart();
     const {showNotification} = useNotification();
 
     const [order, setOrder] = useState<Order | null>(null);
@@ -68,6 +70,7 @@ export default function CheckoutPage() {
             });
 
             showNotification({message: '¡Gracias! Hemos recibido tu comprobante.', type: 'success'});
+            clearCart();
             navigate(`/orden-confirmada/${orderId}`);
 
         } catch (error: any) {

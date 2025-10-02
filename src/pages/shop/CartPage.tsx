@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useState, useCallback, useEffect} from "react";
 import {useCart} from "../../context/CardContext.tsx";
 import {FileImage, Plus, Trash, Dash, Whatsapp, CreditCard} from "react-bootstrap-icons";
 import {SEO} from "../../components/general/SEO.tsx";
@@ -8,6 +8,7 @@ import {useUserAuth} from "../../context/UserAuthContext.tsx";
 import {AuthModal} from "../../components/auth/AuthModal.tsx";
 import {orderService} from "../../services/orderService.ts";
 import {useNotification} from "../../providers/NotificationProvider.tsx";
+import {AddressSelectionModal} from "../../components/customer/AdressSelectionModal.tsx";
 
 export default function CartPage() {
     const {items, removeItem, clearCart, updateQuantity} = useCart();
@@ -16,6 +17,8 @@ export default function CartPage() {
     const [isConfirmingClear, setIsConfirmingClear] = useState(false);
     const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
+    const [isCheckoutIntent, setIsCheckoutIntent] = useState(false);
+    const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
     const {showNotification} = useNotification();
     const phone = "573242940464";
 
@@ -42,17 +45,25 @@ export default function CartPage() {
         setIsConfirmingClear(false);
     };
 
-    const handleProceedToCheckout = async () => {
+    const startCheckoutProcess = useCallback(() => {
         if (!isAuthenticated) {
+            setIsCheckoutIntent(true);
             setIsAuthModalOpen(true);
             return;
         }
+// Si ya está autenticado, abre directamente el modal de direcciones.
+        setIsAddressModalOpen(true);
+    }, [isAuthenticated]);
 
+    // ✅ MEJORA: Nueva función que se ejecuta DESPUÉS de seleccionar una dirección.
+    const handleAddressSelected = useCallback(async (addressId: number) => {
+        setIsAddressModalOpen(false); // Cierra el modal de direcciones
         setIsProcessing(true);
         try {
             // 1. Preparamos el payload para crear la orden
             const payload = {
-                items: items.map(item => ({variantId: item.variantId, quantity: item.quantity}))
+                items: items.map(item => ({variantId: item.variantId, quantity: item.quantity})),
+                shippingAddressId: addressId, // <-- Incluimos el ID de la dirección
             };
             // 2. Llamamos al servicio para crear la orden
             const newOrder = await orderService.create(payload);
@@ -63,7 +74,17 @@ export default function CartPage() {
         } finally {
             setIsProcessing(false);
         }
-    };
+    }, [isAuthenticated, items, navigate, showNotification]);
+
+    useEffect(() => {
+        if (isAuthenticated && isCheckoutIntent) {
+            // Cerramos el modal y reiniciamos la intención...
+            setIsAuthModalOpen(false);
+            setIsCheckoutIntent(false);
+            setIsAddressModalOpen(true);
+        }
+    }, [isAuthenticated, isCheckoutIntent]);
+
 
     const subtotal = items.reduce((sum, item) => {
         const applicableDiscount = item.volumeDiscounts
@@ -83,7 +104,7 @@ export default function CartPage() {
             <div className="container mx-auto py-12 px-4">
                 <h1 className="text-3xl font-bold mb-8 text-gray-800">Tu Carrito</h1>
 
-                {/* ✅ MEJORA: Layout de dos columnas para una mejor organización. */}
+                {/* Layout de dos columnas para una mejor organización. */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 lg:gap-12">
                     {/* Columna Izquierda: Lista de Productos */}
                     <div className="lg:col-span-2">
@@ -133,7 +154,7 @@ export default function CartPage() {
                                                     ) : <p>${item.price.toLocaleString('es-CO')}</p>
                                                 })()}
                                             </div>
-                                            {/* ✅ MEJORA: Controles de cantidad en línea. */}
+                                            {/* Controles de cantidad en línea. */}
                                             <div className="flex items-center mt-2">
                                                 <button
                                                     onClick={() => updateQuantity(item.variantId, item.quantity - 1)}
@@ -147,6 +168,29 @@ export default function CartPage() {
                                                     <Plus className="h-5 w-5"/>
                                                 </button>
                                             </div>
+                                            {/*  Burbuja de sugerencia para descuentos por volumen. */}
+                                            {(() => {
+                                                // Ordenamos los descuentos de menor a mayor cantidad.
+                                                const sortedDiscounts = [...(item.volumeDiscounts || [])].sort((a, b) => a.minQuantity - b.minQuantity);
+                                                // Buscamos el próximo descuento que el usuario aún no ha alcanzado.
+                                                const nextDiscount = sortedDiscounts.find(d => item.quantity < d.minQuantity);
+
+                                                if (nextDiscount) {
+                                                    const needed = nextDiscount.minQuantity - item.quantity;
+                                                    // Mostramos la burbuja solo si le faltan 5 o menos unidades para el descuento.
+                                                    if (needed > 0 && needed <= 100) {
+                                                        return (
+                                                            <div
+                                                                className="mt-2 text-xs bg-yellow-100 text-yellow-800 p-2 rounded-lg">
+                                                                ¡Añade <b>{needed} {needed > 1 ? 'unidades más' : 'unidad más'}</b> y
+                                                                paga <b>${nextDiscount.price.toLocaleString('es-CO')}</b> por
+                                                                cada una!
+                                                            </div>
+                                                        );
+                                                    }
+                                                }
+                                                return null;
+                                            })()}
                                         </div>
                                         <div className="text-right">
                                             {/* El total por ítem usa el precio efectivo. */}
@@ -197,7 +241,7 @@ export default function CartPage() {
                                 </div>
                                 <div className="mt-6 space-y-3">
                                     <button
-                                        onClick={handleProceedToCheckout}
+                                        onClick={startCheckoutProcess}
                                         disabled={isProcessing}
                                         className="w-full flex items-center justify-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white background-lider hover:bg-liderplast-hover disabled:bg-gray-400">
                                         <CreditCard className="h-5 w-5 mr-2"/>
@@ -217,7 +261,6 @@ export default function CartPage() {
             <AuthModal
                 isOpen={isAuthModalOpen}
                 onClose={() => setIsAuthModalOpen(false)}
-                onSuccess={handleProceedToCheckout} // Al loguearse, intentamos de nuevo proceder al pago.
             />
             <ConfirmationModal
                 isOpen={isConfirmingClear}
@@ -225,6 +268,11 @@ export default function CartPage() {
                 onConfirm={handleConfirmClearCart}
                 title="Confirmar Acción"
                 message="¿Estás seguro de que deseas vaciar tu carrito? Todos los productos serán eliminados."
+            />
+            <AddressSelectionModal
+                isOpen={isAddressModalOpen}
+                onClose={() => setIsAddressModalOpen(false)}
+                onAddressSelected={handleAddressSelected}
             />
         </>
     );

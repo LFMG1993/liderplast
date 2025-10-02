@@ -1,4 +1,5 @@
 import type {Product, ProductVariant} from "./product.types.ts";
+import type {Address} from "./adress.types.ts";
 
 export type PaymentStatus =
     'pending_payment'
@@ -65,6 +66,7 @@ export interface Order {
     items: OrderItem[];
     paymentMethod?: PaymentMethod | null;
     shipment?: Shipment | null;
+    shippingAddress?: Address | null;
 }
 
 export type ShipmentFormData = {

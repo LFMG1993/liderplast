@@ -70,7 +70,7 @@ export const OrderHistory = () => {
         };
 
         fetchOrders();
-    }, [showNotification]);
+    }, []);
 
     if (isLoading) {
         return <div className="flex justify-center items-center h-64"><Spinner/></div>;
