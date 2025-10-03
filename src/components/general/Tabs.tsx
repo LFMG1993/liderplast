@@ -15,8 +15,10 @@ export const Tabs: React.FC<TabsProps> = ({tabs}) => {
 
     return (
         <div>
-            <div className="border-b border-gray-200">
-                <nav className="-mb-px flex space-x-8" aria-label="Tabs">
+            {/* 1. Envolvemos la navegación en un div que permitirá el scroll horizontal. */}
+            <div className="overflow-x-auto border-b border-gray-200">
+                {/* 2. Usamos `inline-flex` para que la barra de navegación no ocupe más de lo necesario y pueda desplazarse. */}
+                <nav className="-mb-px inline-flex space-x-8" aria-label="Tabs">
                     {tabs.map((tab, index) => (
                         <button
                             key={tab.label}

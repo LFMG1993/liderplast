@@ -18,8 +18,17 @@ export function AuthModal({isOpen, onClose, onSuccess}: AuthModalProps) {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const handleRequestCode = async (e: React.FormEvent) => {
+    const handleFormSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        // Decide qué acción ejecutar según el paso actual.
+        if (step === 'email') {
+            await handleRequestCode();
+        } else {
+            await handleVerifyCode();
+        }
+    };
+    const handleRequestCode = async () => {
         setError(null);
         setIsLoading(true);
         try {
@@ -36,8 +45,7 @@ export function AuthModal({isOpen, onClose, onSuccess}: AuthModalProps) {
         }
     };
 
-    const handleVerifyCode = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleVerifyCode = async () => {
         setError(null);
         setIsLoading(true);
         try {
@@ -98,45 +106,50 @@ export function AuthModal({isOpen, onClose, onSuccess}: AuthModalProps) {
                                     <X className="h-5 w-5 text-gray-500"/>
                                 </button>
 
-                                {step === 'email' ? (
-                                    <form onSubmit={handleRequestCode} className="mt-4 space-y-4">
-                                        <p className="text-sm text-gray-500 text-center">Te enviaremos un código de
-                                            acceso a tu correo para continuar.</p>
-                                        <div className="relative">
-                                            <Mail
-                                                className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400"/>
-                                            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}
-                                                   placeholder="tu@correo.com" required
-                                                   className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring-liderplast-primary focus:border-liderplast-primary"/>
-                                        </div>
-                                        <button type="submit" disabled={isLoading}
-                                                className="w-full flex justify-center items-center gap-2 background-lider text-white font-bold py-2 px-4 rounded-md hover:bg-liderplast-hover disabled:bg-gray-400">
-                                            {isLoading && <LoaderCircle className="animate-spin h-5 w-5"/>}
-                                            Enviar Código
-                                        </button>
-                                    </form>
-                                ) : (
-                                    <form onSubmit={handleVerifyCode} className="mt-4 space-y-4">
-                                        <p className="text-sm text-gray-500 text-center">
-                                            Enviamos un código a <span className="font-bold">{email}</span>.
-                                            <button onClick={() => setStep('email')}
-                                                    className="text-xs text-liderplast-primary hover:underline ml-1">Cambiar
-                                                correo</button>
-                                        </p>
-                                        <div className="relative">
-                                            <KeyRound
-                                                className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400"/>
-                                            <input type="text" value={code} onChange={(e) => setCode(e.target.value)}
-                                                   placeholder="123456" required inputMode="numeric" pattern="\d{6}"
-                                                   className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring-liderplast-primary focus:border-liderplast-primary"/>
-                                        </div>
-                                        <button type="submit" disabled={isLoading}
-                                                className="w-full flex justify-center items-center gap-2 background-lider text-white font-bold py-2 px-4 rounded-md hover:bg-liderplast-hover disabled:bg-gray-400">
-                                            {isLoading && <LoaderCircle className="animate-spin h-5 w-5"/>}
-                                            Verificar e Ingresar
-                                        </button>
-                                    </form>
-                                )}
+                                {/* Usamos un solo formulario que cambia su contenido. */}
+                                <form onSubmit={handleFormSubmit} className="mt-4 space-y-4">
+                                    {step === 'email' ? (
+                                        <>
+                                            <p className="text-sm text-gray-500 text-center">Te enviaremos un código de
+                                                acceso a tu correo para continuar.</p>
+                                            <div className="relative">
+                                                <Mail
+                                                    className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400"/>
+                                                <input type="email" value={email}
+                                                       onChange={(e) => setEmail(e.target.value)}
+                                                       placeholder="tu@correo.com" required
+                                                       className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring-liderplast-primary focus:border-liderplast-primary"/>
+                                            </div>
+                                            <button type="submit" disabled={isLoading}
+                                                    className="w-full flex justify-center items-center gap-2 background-lider text-white font-bold py-2 px-4 rounded-md hover:bg-liderplast-hover disabled:bg-gray-400">
+                                                {isLoading && <LoaderCircle className="animate-spin h-5 w-5"/>}
+                                                Enviar Código
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <p className="text-sm text-gray-500 text-center">
+                                                Enviamos un código a <span className="font-bold">{email}</span>.
+                                                <button type="button" onClick={() => setStep('email')}
+                                                        className="text-xs text-liderplast-primary hover:underline ml-1">Cambiar
+                                                    correo</button>
+                                            </p>
+                                            <div className="relative">
+                                                <KeyRound
+                                                    className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400"/>
+                                                <input type="text" value={code}
+                                                       onChange={(e) => setCode(e.target.value)}
+                                                       placeholder="123456" required inputMode="numeric" pattern="\d{6}"
+                                                       className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring-liderplast-primary focus:border-liderplast-primary"/>
+                                            </div>
+                                            <button type="submit" disabled={isLoading}
+                                                    className="w-full flex justify-center items-center gap-2 background-lider text-white font-bold py-2 px-4 rounded-md hover:bg-liderplast-hover disabled:bg-gray-400">
+                                                {isLoading && <LoaderCircle className="animate-spin h-5 w-5"/>}
+                                                Verificar e Ingresar
+                                            </button>
+                                        </>
+                                    )}
+                                </form>
 
                                 {error && <p className="mt-3 text-sm text-red-600 text-center">{error}</p>}
                             </Dialog.Panel>
