@@ -8,7 +8,7 @@ export const inventoryService = {
     },
 
     updateVariantInventory: async (variantId: number, data: InventoryUpdateData): Promise<InventoryItem> => {
-        const response = await api.put<{ variant: InventoryItem }>(`/api/admin/inventory/${variantId}`, data);
+        const response = await api.patch<{ variant: InventoryItem }>(`/api/admin/inventory/${variantId}`, data);
         return response.data.variant;
     },
 };

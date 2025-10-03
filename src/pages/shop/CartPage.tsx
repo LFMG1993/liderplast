@@ -51,18 +51,28 @@ export default function CartPage() {
             setIsAuthModalOpen(true);
             return;
         }
-// Si ya está autenticado, abre directamente el modal de direcciones.
+        // Si ya está autenticado, abre directamente el modal de direcciones.
         setIsAddressModalOpen(true);
     }, [isAuthenticated]);
 
-    // ✅ MEJORA: Nueva función que se ejecuta DESPUÉS de seleccionar una dirección.
+    // Se ejecuta DESPUÉS de seleccionar una dirección.
     const handleAddressSelected = useCallback(async (addressId: number) => {
         setIsAddressModalOpen(false); // Cierra el modal de direcciones
         setIsProcessing(true);
         try {
             // 1. Preparamos el payload para crear la orden
             const payload = {
-                items: items.map(item => ({variantId: item.variantId, quantity: item.quantity})),
+                items: items.map(item => {
+                    // Reutilizamos la misma lógica de cálculo de precio que en el resto de la página.
+                    const applicableDiscount = item.volumeDiscounts
+                        ?.sort((a, b) => b.minQuantity - a.minQuantity)
+                        .find(d => item.quantity >= d.minQuantity);
+                    const effectivePrice = applicableDiscount ? applicableDiscount.price : item.price;
+
+                    return {
+                        variantId: item.variantId, quantity: item.quantity, unitPrice: effectivePrice
+                    };
+                }),
                 shippingAddressId: addressId, // <-- Incluimos el ID de la dirección
             };
             // 2. Llamamos al servicio para crear la orden

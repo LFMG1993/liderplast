@@ -97,7 +97,7 @@ export default function CheckoutPage() {
                 <div>
                     <h2 className="text-xl font-semibold mb-4">1. Realiza tu pago</h2>
                     <p className="text-gray-600 mb-4">Total a pagar: <span
-                        className="font-bold text-lg">${order.total.toFixed(2)}</span></p>
+                        className="font-bold text-lg">${(order.total || 0).toLocaleString('es-CO')}</span></p>
                     <div className="space-y-6">
                         {paymentMethods.map((method) => (
                             <div key={method.id}
