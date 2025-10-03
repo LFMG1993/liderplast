@@ -78,7 +78,7 @@ export default function AllProductsPage() {
 
                     {/* Off-canvas para Filtros en Móvil */}
                     <Transition.Root show={isMobileFilterOpen} as={Fragment}>
-                        <Dialog as="div" className="relative z-40 md:hidden" onClose={setIsMobileFilterOpen}>
+                        <Dialog as="div" className="relative z-50 md:hidden" onClose={setIsMobileFilterOpen}>
                             <Transition.Child as={Fragment} enter="transition-opacity ease-linear duration-300"
                                               enterFrom="opacity-0" enterTo="opacity-100"
                                               leave="transition-opacity ease-linear duration-300"
