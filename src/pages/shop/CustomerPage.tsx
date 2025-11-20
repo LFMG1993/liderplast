@@ -42,9 +42,9 @@ export default function CustomerPage() {
                 canonicalUrl="/perfil"
                 noIndex={true}
             />
-            <div className="container mx-auto px-6 py-16">
+            <div className="container mx-auto px-6 py-16 bg-[var(--color-background)] text-[var(--color-foreground)]">
                 <h1 className="text-3xl font-bold mb-2">¡Hola, {customer.name}!</h1>
-                <p className="text-gray-600 mb-8">Bienvenido a tu espacio personal.</p>
+                <p className="text-[var(--color-foreground)]/80 mb-8">Bienvenido a tu espacio personal.</p>
                 <Tabs tabs={tabs}/>
             </div>
         </>

@@ -43,18 +43,17 @@ export const VariantAccordionItem = (props: VariantAccordionItemProps) => {
         .join(' / ');
 
     return (
-        <div className="border rounded-md bg-gray-50">
-            {/* ✅ CORRECCIÓN: Se reemplaza el <button> contenedor por un <div> para evitar anidamiento ilegal. */}
+        <div className="border border-[var(--color-border)] rounded-md bg-[var(--color-card)]">
             <div className="w-full flex justify-between items-center p-4">
                 {/* La parte principal del encabezado ahora es el botón que abre/cierra. */}
                 <button type="button" onClick={() => setIsOpen(!isOpen)}
                         className="flex-grow flex items-center text-left">
                     <div className="flex-grow">
-                        <p className="font-medium text-gray-800">{variant.sku || `Variante #${index + 1}`}</p>
-                        <p className="text-sm text-gray-500">{summary || 'Sin atributos'}</p>
+                        <p className="font-medium text-[var(--color-foreground)]">{variant.sku || `Variante #${index + 1}`}</p>
+                        <p className="text-sm text-[var(--color-foreground)]/60">{summary || 'Sin atributos'}</p>
                     </div>
                     <ChevronDown
-                        className={`h-5 w-5 text-gray-500 transition-transform ${isOpen ? 'rotate-180' : ''} ml-4`}/>
+                        className={`h-5 w-5 text-[var(--color-foreground)]/60 transition-transform ${isOpen ? 'rotate-180' : ''} ml-4`}/>
                 </button>
 
                 {/* El botón de eliminar ahora es un hermano, no un hijo. */}
@@ -62,10 +61,11 @@ export const VariantAccordionItem = (props: VariantAccordionItemProps) => {
                     {canBeRemoved && (
                         <button
                             type="button"
-                            onClick={() => onRemoveVariant(index)}
-                            className="p-2 text-red-500 hover:bg-red-100 rounded-full mr-2"
-                        >
-                            <Trash2 className="h-4 w-4"/>
+                            onClick={() => onRemoveVariant(index)}>
+                            {/* Usamos un Button genérico para consistencia */}
+                            <Button variant="ghost" size="icon" className="text-red-500 hover:bg-red-500/10">
+                                <Trash2 className="h-4 w-4"/>
+                            </Button>
                         </button>
                     )}
                 </div>
@@ -73,38 +73,43 @@ export const VariantAccordionItem = (props: VariantAccordionItemProps) => {
 
             {/* Contenido del Acordeón */}
             {isOpen && (
-                <div className="p-4 border-t space-y-4 text-black">
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-black">
+                <div className="p-4 border-t border-[var(--color-border)] space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <input type="text" placeholder="SKU (auto-generado)" value={variant.sku}
                                onChange={(e) => onVariantChange(index, 'sku', e.target.value)}
-                               className="w-full rounded-md border-gray-300 shadow-sm text-black cursor-not-allowed"
+                               className="w-full rounded-md border-[var(--color-border)] bg-[var(--color-muted)] shadow-sm cursor-not-allowed"
                                readOnly/>
                         <input type="number" placeholder="Precio" value={variant.price}
                                onChange={(e) => onVariantChange(index, 'price', parseFloat(e.target.value))}
-                               className="w-full rounded-md border-gray-300 shadow-sm" step="any" required/>
+                               className="w-full rounded-md border-[var(--color-border)] bg-[var(--color-muted)] shadow-sm"
+                               step="any" required/>
                         <input type="number" placeholder="Precio de Oferta" value={variant.salePrice ?? ''}
                                onChange={(e) => onVariantChange(index, 'salePrice', e.target.value === '' ? null : parseFloat(e.target.value))}
-                               className="w-full rounded-md border-gray-300 shadow-sm" step="any"/>
+                               className="w-full rounded-md border-[var(--color-border)] bg-[var(--color-muted)] shadow-sm"
+                               step="any"/>
                         <input type="number" placeholder="Stock" value={variant.stock}
                                onChange={(e) => onVariantChange(index, 'stock', parseInt(e.target.value, 10))}
-                               className="w-full rounded-md border-gray-300 shadow-sm" required/>
+                               className="w-full rounded-md border-[var(--color-border)] bg-[var(--color-muted)] shadow-sm"
+                               required/>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div className="md:col-span-1">
-                            <label className="block text-xs font-medium text-gray-600 mb-1">Imagen de la
+                            <label className="block text-xs font-medium text-[var(--color-foreground)]/80 mb-1">Imagen
+                                de la
                                 Variante</label>
                             <ImageUploader onFileChange={(file) => onVariantFileChange(index, file)}
                                            initialImageUrl={variant.imageUrl} isUploading={isSubmitting}/>
                         </div>
                         <div className="md:col-span-2 space-y-4">
                             <div>
-                                <label className="block text-xs font-medium text-gray-600">Unidad de Medida</label>
+                                <label className="block text-xs font-medium text-[var(--color-foreground)]/80">Unidad de
+                                    Medida</label>
                                 {unitOfMeasureAttribute ? (
                                     <select
                                         value={variant.unitOfMeasure || ''}
                                         onChange={(e) => onVariantChange(index, 'unitOfMeasure', e.target.value)}
-                                        className="mt-1 w-full rounded-md border-gray-300 shadow-sm"
+                                        className="mt-1 w-full rounded-md border-[var(--color-border)] bg-[var(--color-muted)] shadow-sm"
                                     >
                                         <option value="">Seleccionar...</option>
                                         {unitOfMeasureAttribute.values.map(val => (
@@ -119,41 +124,47 @@ export const VariantAccordionItem = (props: VariantAccordionItemProps) => {
                                 )}
                             </div>
                             <div>
-                                <label className="block text-xs font-medium text-gray-600">Unidades por Ítem</label>
+                                <label className="block text-xs font-medium text-[var(--color-foreground)]/80">Unidades
+                                    por Ítem</label>
                                 <input type="number" placeholder="Ej: 1000" value={variant.unitsPerItem || ''}
                                        onChange={(e) => onVariantChange(index, 'unitsPerItem', e.target.value === '' ? null : parseInt(e.target.value, 10))}
-                                       className="mt-1 w-full rounded-md border-gray-300 shadow-sm"/>
+                                       className="mt-1 w-full rounded-md border-[var(--color-border)] bg-[var(--color-muted)] shadow-sm"/>
                             </div>
                         </div>
                     </div>
 
-                    <p className="text-sm font-medium text-gray-600 pt-2">Atributos de esta Variante:</p>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-black">
+                    <p className="text-sm font-medium text-[var(--color-foreground)]/80 pt-2">Atributos de esta
+                        Variante:</p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {attributes.filter(attr => attr.name.toLowerCase() !== 'unidad de medida')
                             .map(attr => (
-                            <div key={attr.id}>
-                                <label className="block text-xs font-medium text-gray-600">{attr.name}</label>
-                                <select value={variant.selectedAttributes[attr.id] || ''}
-                                        onChange={(e) => onAttributeChange(index, attr.id, e.target.value)}
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
-                                    <option value="">Seleccionar...</option>
-                                    {attr.values.map(val => <option key={val.id} value={val.id}>{val.value}</option>)}
-                                </select>
-                            </div>
-                        ))}
+                                <div key={attr.id}>
+                                    <label
+                                        className="block text-xs font-medium text-[var(--color-foreground)]/80">{attr.name}</label>
+                                    <select value={variant.selectedAttributes[attr.id] || ''}
+                                            onChange={(e) => onAttributeChange(index, attr.id, e.target.value)}
+                                            className="mt-1 block w-full rounded-md border-[var(--color-border)] bg-[var(--color-muted)] shadow-sm">
+                                        <option value="">Seleccionar...</option>
+                                        {attr.values.map(val => <option key={val.id}
+                                                                        value={val.id}>{val.value}</option>)}
+                                    </select>
+                                </div>
+                            ))}
                     </div>
 
                     <div>
-                        <p className="text-sm font-medium text-gray-600 pt-2">Descuentos por Volumen:</p>
+                        <p className="text-sm font-medium text-[var(--color-foreground)]/80 pt-2">Descuentos por
+                            Volumen:</p>
                         <div className="space-y-2 mt-2">
                             {variant.volumeDiscounts.map((discount, dIndex) => (
                                 <div key={discount.id || dIndex} className="flex items-center gap-2">
                                     <input type="number" placeholder="Cantidad Mín." value={discount.minQuantity}
                                            onChange={(e) => onDiscountChange(index, dIndex, 'minQuantity', parseInt(e.target.value))}
-                                           className="w-full p-2 border rounded-md text-black"/>
+                                           className="w-full p-2 border border-[var(--color-border)] bg-[var(--color-muted)] rounded-md"/>
                                     <input type="number" placeholder="Precio" value={discount.price}
                                            onChange={(e) => onDiscountChange(index, dIndex, 'price', parseFloat(e.target.value))}
-                                           className="w-full p-2 border rounded-md" step="any"/>
+                                           className="w-full p-2 border border-[var(--color-border)] bg-[var(--color-muted)] rounded-md"
+                                           step="any"/>
                                     <button type="button" onClick={() => onRemoveVolumeDiscount(index, dIndex)}>
                                         <Trash2 className="h-4 w-4 text-red-500"/>
                                     </button>

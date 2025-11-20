@@ -15,37 +15,37 @@ export default function ProductCard({product, onAdd, onViewDetails}: Props) {
     const addButtonText = hasMultipleVariants ? 'Ver Opciones' : 'Añadir';
 
     return (
-        <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden h-full flex flex-col">
-            <div className="bg-gray-100 flex items-center justify-center aspect-square">
+        <div className="bg-[var(--color-card)] border border-[var(--color-border)] rounded-lg shadow-sm overflow-hidden h-full flex flex-col">
+            <div className="relative bg-[var(--color-muted)] aspect-square">
                 {/* Renderiza la imagen desde la URL de la base de datos, con un fallback. */}
                 {product.imageUrl ? (
                     <img
                         src={product.imageUrl}
                         alt={product.name}
-                        className="w-full h-full object-cover"
+                        className="absolute inset-0 w-full h-full object-contain m-auto p-2"
                     />
                 ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gray-200">
-                        <FileImage className="w-12 h-12 text-gray-400"/>
+                    <div className="w-full h-full flex items-center justify-center">
+                        <FileImage className="w-12 h-12 text-[var(--color-muted-foreground)]/50"/>
                     </div>
                 )}
             </div>
-            <div className="p-4 text-center flex flex-col flex-grow">
-                <h6 className="font-semibold text-gray-800">{product.name}</h6>
+            <div className="p-4 text-center flex flex-col flex-grow text-[var(--color-foreground)]">
+                <h6 className="font-semibold h-12 line-clamp-2" title={product.name}>{product.name}</h6>
                 <div className="text-lg font-medium my-2 h-8 flex items-center justify-center gap-2">
                     {displayVariant && displayVariant.salePrice ? (
                         <>
                             <span
-                                className="text-gray-400 line-through">${displayVariant.price.toLocaleString('es-CO')}</span>
+                                className="text-[var(--color-foreground)]/60 line-through">${displayVariant.price.toLocaleString('es-CO')}</span>
                             <span
-                                className="text-red-400 font-bold">${displayVariant.salePrice.toLocaleString('es-CO')}</span>
+                                className="text-red-500 font-bold">${displayVariant.salePrice.toLocaleString('es-CO')}</span>
                         </>
                     ) : (
-                        <span className="text-gray-600">${displayPrice?.toLocaleString('es-CO')}</span>
+                        <span>${displayPrice?.toLocaleString('es-CO')}</span>
                     )}
                 </div>
                 {/* Mostramos el primer nivel de descuento por volumen si existe. */}
-                <div className="h-6 text-xs text-green-700 font-medium flex items-center justify-center">
+                <div className="h-6 text-xs text-green-600 dark:text-green-400 font-medium flex items-center justify-center">
                     {displayVariant?.volumeDiscounts && displayVariant.volumeDiscounts.length > 0 && (
                         <span>
                              Desde ${displayVariant.volumeDiscounts[0].price.toLocaleString('es-CO')}
@@ -55,7 +55,7 @@ export default function ProductCard({product, onAdd, onViewDetails}: Props) {
                 </div>
                 <div className="mt-auto pt-4 grid grid-cols-2 gap-2">
                     <button
-                        className="bg-gray-200 text-gray-800 px-3 py-2 text-sm rounded-md transition-colors hover:bg-gray-300"
+                        className="bg-[var(--color-muted)] text-[var(--color-muted-foreground)] px-3 py-2 text-sm rounded-md transition-colors hover:bg-[var(--color-muted)]/80"
                         onClick={onViewDetails}
                     >
                         Detalles

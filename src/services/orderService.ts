@@ -1,6 +1,6 @@
 import {api} from './api';
 import {apiClient} from "./apiClient.ts";
-import type {Order, PaymentStatus, ShippingStatus, ShipmentCreationData} from '../types';
+import type {Order, PaymentStatus, ShippingStatus, ShipmentCreationData, PaginatedResponse} from '../types';
 
 // Tipos para la creación y confirmación de pedidos del cliente
 interface CreateOrderPayload {
@@ -12,19 +12,40 @@ interface ConfirmPaymentPayload {
     paymentConfirmationUrl?: string;
 }
 
+interface ApiOrdersResponse {
+    orders: Order[];
+    pagination: {
+        totalPages: number;
+    };
+}
+
 export const orderService = {
     // --- Admin ---
-    listAdmin: async (filters: {
+    listAdmin: async (params: {
+        page: number;
+        pageSize: number,
+        search?: string,
+        sortBy?: string,
+        sortOrder?: 'asc' | 'desc',
         paymentStatus?: PaymentStatus,
         shippingStatus?: ShippingStatus
-    }): Promise<Order[]> => {
-        const response = await api.get<{ orders: Order[] }>('/api/admin/orders', {
+    }): Promise<PaginatedResponse<Order>> => {
+        const {page, pageSize, search, sortBy, sortOrder, paymentStatus, shippingStatus} = params;
+        const response = await api.get<ApiOrdersResponse>('/api/admin/orders', {
             params: {
-                payment_status: filters.paymentStatus,
-                shipping_status: filters.shippingStatus
+                page,
+                pageSize,
+                search,
+                sortBy,
+                sortOrder,
+                payment_status: paymentStatus,
+                shipping_status: shippingStatus
             },
         });
-        return response.data.orders;
+        return {
+            data: response.data.orders,
+            pageCount: response.data.pagination.totalPages,
+        };
     },
 
     getOrderById: async (orderId: number): Promise<Order> => {

@@ -15,7 +15,7 @@ export const ProductDetailModal = ({product, onClose}: ProductDetailModalProps) 
     const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({});
     const [quantity, setQuantity] = useState(1);
 
-    // ✅ MEJORA: Agrupamos los atributos y sus valores disponibles para renderizar los swatches.
+    // Agrupamos los atributos y sus valores disponibles para renderizar los swatches.
     const attributeOptions = useMemo(() => {
         if (!product) return {};
         const options: Record<string, Set<string>> = {};
@@ -116,24 +116,25 @@ export const ProductDetailModal = ({product, onClose}: ProductDetailModalProps) 
                             leaveTo="opacity-0 scale-95"
                         >
                             <Dialog.Panel
-                                className="w-full max-w-3xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                                className="w-full max-w-3xl transform overflow-hidden rounded-2xl bg-[var(--color-card)] text-[var(--color-foreground)] p-6 text-left align-middle shadow-xl transition-all">
                                 <Dialog.Title as="h3"
-                                              className="text-2xl font-bold leading-6 text-gray-900 flex justify-between items-center">
+                                              className="text-2xl font-bold leading-6 flex justify-between items-center">
                                     {product.name}
-                                    <button onClick={onClose} className="p-1 rounded-full hover:bg-gray-200">
-                                        <X className="h-6 w-6 text-gray-600"/>
+                                    <button onClick={onClose}
+                                            className="p-1 rounded-full hover:bg-[var(--color-muted)]">
+                                        <X className="h-6 w-6 text-[var(--color-foreground)]/80"/>
                                     </button>
                                 </Dialog.Title>
 
                                 <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-8">
                                     {/* Columna de Imagen */}
                                     <div
-                                        className="w-full aspect-square bg-gray-100 rounded-lg flex items-center justify-center">
+                                        className="w-full aspect-square bg-[var(--color-muted)] border border-[var(--color-border)] rounded-lg flex items-center justify-center">
                                         {displayImage ? (
                                             <img src={displayImage} alt={product.name}
                                                  className="w-full h-full object-cover rounded-lg"/>
                                         ) : (
-                                            <FileImage className="w-16 h-16 text-gray-400"/>
+                                            <FileImage className="w-16 h-16 text-[var(--color-muted-foreground)]/60"/>
                                         )}
                                     </div>
 
@@ -141,11 +142,11 @@ export const ProductDetailModal = ({product, onClose}: ProductDetailModalProps) 
                                     <div className="flex flex-col">
                                         <p className="text-gray-600 mb-4">{product.description}</p>
 
-                                        {/* ✅ MEJORA: Renderizamos los swatches de atributos. */}
+                                        {/* Renderizamos los swatches de atributos. */}
                                         <div className="space-y-4">
                                             {Object.entries(attributeOptions).map(([attributeName, values]) => (
                                                 <div key={attributeName}>
-                                                    <h4 className="font-semibold text-gray-800 mb-2">{attributeName}</h4>
+                                                    <h4 className="font-semibold mb-2">{attributeName}</h4>
                                                     <div className="flex flex-wrap gap-2">
                                                         {Array.from(values).map(value => (
                                                             <button
@@ -153,8 +154,8 @@ export const ProductDetailModal = ({product, onClose}: ProductDetailModalProps) 
                                                                 onClick={() => handleOptionClick(attributeName, value)}
                                                                 className={`px-4 py-2 border rounded-md text-sm transition-colors ${
                                                                     selectedOptions[attributeName] === value
-                                                                        ? 'bg-liderplast-primary text-black border-green-500'
-                                                                        : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-400'
+                                                                        ? 'bg-primary text-primary-foreground border-primary'
+                                                                        : 'bg-[var(--color-muted)] border-[var(--color-border)] hover:bg-[var(--color-border)]'
                                                                 }`}
                                                             >
                                                                 {value}
@@ -170,31 +171,32 @@ export const ProductDetailModal = ({product, onClose}: ProductDetailModalProps) 
                                             {selectedVariant ? (
                                                 <span>${(selectedVariant.salePrice || selectedVariant.price).toLocaleString('es-CO')}</span>
                                             ) : (
-                                                <span className="text-gray-500">Selecciona una opción</span>
+                                                <span className="text-[var(--color-foreground)]/60">Selecciona una opción</span>
                                             )}
                                         </div>
                                         {/* Sección de añadir al carrito, solo visible si se ha seleccionado una variante. */}
                                         {selectedVariant && (
-                                            <div className="mt-6 border-t pt-4">
-                                                <div className="flex items-center gap-4 text-black">
+                                            <div className="mt-6 border-t border-[var(--color-border)] pt-4">
+                                                <div className="flex items-center gap-4">
                                                     <label htmlFor="quantity"
                                                            className="font-semibold">Cantidad:</label>
                                                     {/*  Controles de cantidad en línea. */}
                                                     <div className="flex items-center">
                                                         <button onClick={() => setQuantity(q => Math.max(1, q - 1))}
-                                                                className="p-2 border rounded-md hover:bg-gray-100">
+                                                                className="p-2 border border-[var(--color-border)] rounded-md hover:bg-[var(--color-muted)]">
                                                             <Dash className="h-5 w-5"/>
                                                         </button>
                                                         <span className="px-4 font-medium text-lg">{quantity}</span>
                                                         <button onClick={() => setQuantity(q => q + 1)}
-                                                                className="p-2 border rounded-md hover:bg-gray-100">
+                                                                className="p-2 border border-[var(--color-border)] rounded-md hover:bg-[var(--color-muted)]">
                                                             <Plus className="h-5 w-5"/>
                                                         </button>
                                                     </div>
                                                 </div>
                                                 <div className="mt-2">
                                                     {selectedVariant.volumeDiscounts?.map(d => (
-                                                        <p key={d.id} className="text-xs text-green-700">
+                                                        <p key={d.id}
+                                                           className="text-xs text-green-600 dark:text-green-400">
                                                             Lleva {d.minQuantity} o más a
                                                             ${d.price.toLocaleString('es-CO')} c/u
                                                         </p>
@@ -209,7 +211,7 @@ export const ProductDetailModal = ({product, onClose}: ProductDetailModalProps) 
                                 <div className="mt-6 flex justify-between items-center">
                                     <button
                                         type="button"
-                                        className="inline-flex justify-center rounded-md border border-transparent bg-gray-200 px-4 py-2 text-sm font-medium text-gray-800 hover:bg-gray-300 focus:outline-none"
+                                        className="inline-flex justify-center rounded-md border border-transparent bg-[var(--color-muted)] px-4 py-2 text-sm font-medium text-[var(--color-muted-foreground)] hover:bg-[var(--color-border)] focus:outline-none"
                                         onClick={onClose}
                                     >
                                         Cerrar
@@ -218,7 +220,7 @@ export const ProductDetailModal = ({product, onClose}: ProductDetailModalProps) 
                                         type="button"
                                         onClick={handleAddToCart}
                                         disabled={!selectedVariant}
-                                        className="inline-flex justify-center rounded-md border border-transparent background-lider px-6 py-2 text-base font-medium text-white shadow-sm hover:bg-liderplast-hover disabled:bg-gray-300 disabled:cursor-not-allowed"
+                                        className="inline-flex justify-center rounded-md border border-transparent bg-[#4a3084] px-6 py-2 text-base font-medium text-white shadow-sm hover:bg-[#3b266a] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                                     >
                                         Añadir al Carrito
                                     </button>

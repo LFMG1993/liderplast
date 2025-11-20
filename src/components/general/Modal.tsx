@@ -52,13 +52,13 @@ export const Modal: React.FC<ModalProps> = ({isOpen, onClose, title, children, s
         >
             <div
                 ref={modalRef}
-                className={`bg-white rounded-lg shadow-xl w-full ${sizeClasses[size]} transform transition-all duration-300`}
+                className={`bg-[var(--color-card)] text-[var(--color-foreground)] rounded-lg shadow-xl w-full ${sizeClasses[size]} transform transition-all duration-300`}
             >
-                <div className="flex justify-between items-center p-4 border-b">
-                    <h3 className="text-lg font-semibold text-gray-800">{title}</h3>
+                <div className="flex justify-between items-center p-4 border-b border-[var(--color-border)]">
+                    <h3 className="text-lg font-semibold">{title}</h3>
                     <button
                         onClick={onClose}
-                        className="text-gray-400 hover:text-gray-600"
+                        className="text-[var(--color-foreground)]/60 hover:text-[var(--color-foreground)]"
                         aria-label="Cerrar modal"
                     >
                         <X className="h-6 w-6"/>

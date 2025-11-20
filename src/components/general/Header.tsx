@@ -1,3 +1,4 @@
+import * as React from 'react';
 import {useState, useEffect} from 'react';
 import {useLocation, Link} from 'react-router-dom';
 import {useTranslation} from "react-i18next";
@@ -12,6 +13,8 @@ import UserMenu from "./UserMenu.tsx";
 import {AuthModal} from "../auth/AuthModal.tsx";
 import {useUserAuth} from "../../context/UserAuthContext.tsx";
 import {useCart} from "../../context/CardContext.tsx";
+import {Moon, Sun} from 'lucide-react';
+import {useTheme} from '../../context/ThemeContext.tsx';
 
 export const Header = () => {
     const {t} = useTranslation();
@@ -22,9 +25,11 @@ export const Header = () => {
 
     // Estado que controla si el header debe ser transparente.
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    // NUEVOS ESTADOS: Controlan los paneles de búsqueda y carrito en móvil.
+
+    // Controlan los paneles de búsqueda y carrito en móvil.
     const [isSearchPanelOpen, setIsSearchPanelOpen] = useState(false);
     const [isCartPanelOpen, setIsCartPanelOpen] = useState(false);
+    const {theme, toggleTheme} = useTheme();
 
     const isHomePage = location.pathname === '/';
     const [isTransparent, setIsTransparent] = useState(isHomePage);
@@ -55,8 +60,8 @@ export const Header = () => {
     }, [location.pathname]);
 
     // Clases dinámicas que cambian según el estado
-    const headerClasses = `transition-all duration-300 ${isTransparent ? 'bg-transparent' : 'bg-white shadow-md'}`;
-    const navLinkClasses = `font-medium transition-colors duration-300 ${isTransparent ? 'text-white hover:text-gray-300' : 'text-gray-700 hover:text-liderplast-primary'}`;
+    const headerClasses = `transition-all duration-300 ${isTransparent ? 'bg-transparent' : 'bg-[var(--color-card)] shadow-md'}`;
+    const navLinkClasses = `font-medium transition-colors duration-300 ${isTransparent ? 'text-white hover:text-gray-300' : 'text-[var(--color-foreground)] hover:text-primary'}`;
 
     return (
         <header className={`${headerClasses} relative`}>
@@ -72,6 +77,13 @@ export const Header = () => {
                 </nav>
                 {/* Acciones para Desktop */}
                 <div className="hidden md:flex items-center space-x-1 md:space-x-2">
+                    <button
+                        onClick={toggleTheme}
+                        className={`flex items-center px-3 py-2 text-sm rounded-md hover:bg-[var(--color-muted)] ${isTransparent ? 'text-white' : 'text-[var(--color-foreground)]'}`}
+                    >
+                        {theme === 'light' ? <Moon className="w-5 h-5"/> : <Sun className="w-5 h-5"/>}
+                        <span className="hidden sm:inline">{theme === 'light' ? '' : ''}</span>
+                    </button>
                     <SearchDropdown isTransparent={isTransparent}/>
                     <UserMenu isTransparent={isTransparent} onLoginClick={() => setIsAuthModalOpen(true)}/>
                     <CartDropdown isTransparent={isTransparent}/>
@@ -82,14 +94,19 @@ export const Header = () => {
                 {/* Acciones para Móvil */}
                 <div className="md:hidden flex items-center gap-2">
                     {/* Botón para abrir panel de búsqueda */}
-                    <button onClick={() => setIsSearchPanelOpen(true)}
-                            className={`p-2 rounded-full ${isTransparent ? 'text-white' : 'text-gray-800'}`}>
+                    <button onClick={() => setIsSearchPanelOpen(true)} className={`p-2 rounded-full ${isTransparent ? 'text-white' : 'text-[var(--color-foreground)]'}`}>
                         <Search size={24}/>
+                    </button>
+                    <button
+                        onClick={toggleTheme}
+                        className={`p-2 rounded-full ${isTransparent ? 'text-white' : 'text-[var(--color-foreground)]'}`}
+                    >
+                        {theme === 'light' ? <Moon size={24}/> : <Sun size={24}/>}
                     </button>
                     {/* Botón para abrir panel de carrito */}
                     <button
                         onClick={() => setIsCartPanelOpen(true)}
-                        className={`p-2 rounded-full relative ${isTransparent ? 'text-white' : 'text-gray-800'} ${isCartShaking ? 'shake' : ''}`}
+                        className={`p-2 rounded-full relative ${isTransparent ? 'text-white' : 'text-[var(--color-foreground)]'} ${isCartShaking ? 'shake' : ''}`}
                     >
                         {cartItems.length > 0 && (
                             <span
@@ -101,7 +118,7 @@ export const Header = () => {
                     </button>
                     {/* Botón de Menú (Hamburger) */}
                     <button onClick={() => setIsMenuOpen(!isMenuOpen)}
-                            className={`p-2 rounded-md focus:outline-none ${isTransparent ? 'text-white' : 'text-gray-800'}`}>
+                            className={`p-2 rounded-md focus:outline-none ${isTransparent ? 'text-white' : 'text-[var(--color-foreground)]'}`}>
                         {isMenuOpen ? <X size={30}/> : <List size={30}/>}
                     </button>
                 </div>
@@ -109,12 +126,11 @@ export const Header = () => {
             {/* Menú Desplegable para Móvil */}
             <MobilePanel isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} title="Menú">
                 <nav className="flex-grow p-4 space-y-2">
-                    <Link to="/"
-                          className="block py-3 px-3 rounded-md hover:bg-gray-100 font-medium text-lg">Inicio</Link>
-                    <Link to="/tienda"
-                          className="block py-3 px-3 rounded-md hover:bg-gray-100 font-medium text-lg">Tienda</Link>
-                    <Link to="/contacto"
-                          className="block py-3 px-3 rounded-md hover:bg-gray-100 font-medium text-lg">Contáctanos</Link>
+                    <Link to="/" className="block py-3 px-3 rounded-md hover:bg-[var(--color-muted)] font-medium text-lg">
+                        Inicio
+                    </Link>
+                    <Link to="/tienda" className="block py-3 px-3 rounded-md hover:bg-[var(--color-muted)] font-medium text-lg">Tienda</Link>
+                    <Link to="/contacto" className="block py-3 px-3 rounded-md hover:bg-[var(--color-muted)] font-medium text-lg">Contáctanos</Link>
                     <hr className="my-4"/>
                     {isAuthenticated ? (
                         <>
@@ -174,10 +190,10 @@ const MobilePanel = ({isOpen, onClose, title, children}: {
             <div className="absolute inset-0 bg-black/50" onClick={onClose}></div>
             {/* Panel */}
             <div
-                className={`absolute top-0 right-0 flex flex-col w-full max-w-md h-full bg-white shadow-xl transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
-                <div className="flex items-center justify-between p-4 border-b sticky top-0 bg-white z-10">
+                className={`absolute top-0 right-0 flex flex-col w-full max-w-md h-full bg-[var(--color-card)] text-[var(--color-foreground)] shadow-xl transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+                <div className="flex items-center justify-between p-4 border-b border-[var(--color-border)] sticky top-0 bg-[var(--color-card)] z-10">
                     <h2 className="font-bold text-lg">{title}</h2>
-                    <button onClick={onClose} className="p-2">
+                    <button onClick={onClose} className="p-2 text-[var(--color-foreground)]/80 hover:text-[var(--color-foreground)]">
                         <X size={24}/>
                     </button>
                 </div>
@@ -187,4 +203,4 @@ const MobilePanel = ({isOpen, onClose, title, children}: {
             </div>
         </div>
     );
-};
+}

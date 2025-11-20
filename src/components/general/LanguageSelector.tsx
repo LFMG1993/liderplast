@@ -7,10 +7,10 @@ interface LanguageSelectorProps {
     isTransparent: boolean;
 }
 
-export default function LanguageSelector({ isTransparent }: LanguageSelectorProps) {
+export default function LanguageSelector({isTransparent}: LanguageSelectorProps) {
     const {i18n} = useTranslation();
     const currentLanguage = i18n.language.toUpperCase();
-    const buttonClasses = `flex items-center p-2 rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 ${isTransparent ? 'text-white hover:bg-white/20' : 'text-gray-700 hover:bg-gray-100'}`;
+    const buttonClasses = `flex items-center p-2 rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 ${isTransparent ? 'text-white hover:bg-white/20' : 'text-[var(--color-foreground)] hover:bg-[var(--color-muted)]'}`;
 
     return (
         <Menu as="div" className="relative">
@@ -30,12 +30,12 @@ export default function LanguageSelector({ isTransparent }: LanguageSelectorProp
                 leaveTo="transform opacity-0 scale-95"
             >
                 <Menu.Items
-                    className="absolute right-0 mt-2 w-32 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                    className="absolute right-0 mt-2 w-32 origin-top-right divide-y divide-[var(--color-border)] rounded-md bg-[var(--color-card)] text-[var(--color-foreground)] shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                     <div className="px-1 py-1">
                         <Menu.Item>
                             {({active}) => (
                                 <button onClick={() => i18n.changeLanguage('es')}
-                                        className={`${active ? 'bg-liderplast-primary text-white' : 'text-gray-900'} group flex w-full items-center rounded-md px-2 py-2 text-sm`}>
+                                        className={`${active ? 'bg-primary text-primary-foreground' : ''} group flex w-full items-center rounded-md px-2 py-2 text-sm`}>
                                     Español (ES)
                                 </button>
                             )}
@@ -43,7 +43,7 @@ export default function LanguageSelector({ isTransparent }: LanguageSelectorProp
                         <Menu.Item>
                             {({active}) => (
                                 <button onClick={() => i18n.changeLanguage('en')}
-                                        className={`${active ? 'bg-liderplast-primary text-white' : 'text-gray-900'} group flex w-full items-center rounded-md px-2 py-2 text-sm`}>
+                                        className={`${active ? 'bg-primary text-primary-foreground' : ''} group flex w-full items-center rounded-md px-2 py-2 text-sm`}>
                                     English (EN)
                                 </button>
                             )}

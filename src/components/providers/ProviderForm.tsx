@@ -57,46 +57,54 @@ export const ProviderForm = ({isOpen, onClose, onSave, providerToEdit, isSubmitt
 
     return (
         <div
-            className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-start pt-10 overflow-y-auto">
-            <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl" onClick={(e) => e.stopPropagation()}>
+            className="fixed inset-0 bg-black/50 z-50 flex justify-center items-start pt-10 overflow-y-auto">
+            <div className="bg-[var(--color-card)] text-[var(--color-foreground)] rounded-lg shadow-xl w-full max-w-2xl"
+                 onClick={(e) => e.stopPropagation()}>
                 <form onSubmit={handleSubmit} className="flex flex-col">
-                    <div className="flex justify-between items-center p-6 border-b">
-                        <h3 className="text-lg font-medium text-gray-900">{providerToEdit ? `Editando Proveedor` : 'Crear Nuevo Proveedor'}</h3>
-                        <button type="button" onClick={onClose} className="text-gray-400 hover:text-gray-600">
+                    <div className="flex justify-between items-center p-6 border-b border-[var(--color-border)]">
+                        <h3 className="text-lg font-medium">{providerToEdit ? `Editando Proveedor` : 'Crear Nuevo Proveedor'}</h3>
+                        <button type="button" onClick={onClose}
+                                className="text-[var(--color-foreground)]/60 hover:text-[var(--color-foreground)]">
                             <X className="h-6 w-6"/>
                         </button>
                     </div>
 
-                    <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6 text-black">
+                    <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* Columna Izquierda */}
                         <div className="space-y-4">
                             <div>
-                                <label htmlFor="name" className="block text-sm font-medium text-gray-700">Nombre del
+                                <label htmlFor="name"
+                                       className="block text-sm font-medium text-[var(--color-foreground)]/80">Nombre
+                                    del
                                     Proveedor</label>
                                 <input type="text" name="name" id="name" value={formData.name}
                                        onChange={handleInputChange}
-                                       className="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required/>
+                                       className="mt-1 block w-full rounded-md border-[var(--color-border)] bg-[var(--color-muted)] text-[var(--color-foreground)] shadow-sm focus:border-liderplast-primary focus:ring-liderplast-primary"
+                                       required/>
                             </div>
                             <div>
-                                <label htmlFor="contactName" className="block text-sm font-medium text-gray-700">Nombre
+                                <label htmlFor="contactName"
+                                       className="block text-sm font-medium text-[var(--color-foreground)]/80">Nombre
                                     de Contacto</label>
                                 <input type="text" name="contactName" id="contactName"
                                        value={formData.contactName || ''} onChange={handleInputChange}
-                                       className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"/>
+                                       className="mt-1 block w-full rounded-md border-[var(--color-border)] bg-[var(--color-muted)] text-[var(--color-foreground)] shadow-sm focus:border-liderplast-primary focus:ring-liderplast-primary"/>
                             </div>
                             <div>
-                                <label htmlFor="contactEmail" className="block text-sm font-medium text-gray-700">Email
+                                <label htmlFor="contactEmail"
+                                       className="block text-sm font-medium text-[var(--color-foreground)]/80">Email
                                     de Contacto</label>
                                 <input type="email" name="contactEmail" id="contactEmail"
                                        value={formData.contactEmail || ''} onChange={handleInputChange}
-                                       className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"/>
+                                       className="mt-1 block w-full rounded-md border-[var(--color-border)] bg-[var(--color-muted)] text-[var(--color-foreground)] shadow-sm focus:border-liderplast-primary focus:ring-liderplast-primary"/>
                             </div>
                             <div>
-                                <label htmlFor="contactPhone" className="block text-sm font-medium text-gray-700">Teléfono
+                                <label htmlFor="contactPhone"
+                                       className="block text-sm font-medium text-[var(--color-foreground)]/80">Teléfono
                                     de Contacto</label>
                                 <input type="tel" name="contactPhone" id="contactPhone"
                                        value={formData.contactPhone || ''} onChange={handleInputChange}
-                                       className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"/>
+                                       className="mt-1 block w-full rounded-md border-[var(--color-border)] bg-[var(--color-muted)] text-[var(--color-foreground)] shadow-sm focus:border-liderplast-primary focus:ring-liderplast-primary"/>
                             </div>
                         </div>
 
@@ -104,29 +112,32 @@ export const ProviderForm = ({isOpen, onClose, onSave, providerToEdit, isSubmitt
                         <div className="space-y-4">
                             <div>
                                 <label htmlFor="address"
-                                       className="block text-sm font-medium text-gray-700">Dirección</label>
+                                       className="block text-sm font-medium text-[var(--color-foreground)]/80">Dirección</label>
                                 <input type="text" name="address" id="address" value={formData.address || ''}
                                        onChange={handleInputChange}
-                                       className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"/>
+                                       className="mt-1 block w-full rounded-md border-[var(--color-border)] bg-[var(--color-muted)] text-[var(--color-foreground)] shadow-sm focus:border-liderplast-primary focus:ring-liderplast-primary"/>
                             </div>
                             <div>
-                                <label htmlFor="website" className="block text-sm font-medium text-gray-700">Sitio
+                                <label htmlFor="website"
+                                       className="block text-sm font-medium text-[var(--color-foreground)]/80">Sitio
                                     Web</label>
                                 <input type="url" name="website" id="website" value={formData.website || ''}
                                        onChange={handleInputChange}
-                                       className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"/>
+                                       className="mt-1 block w-full rounded-md border-[var(--color-border)] bg-[var(--color-muted)] text-[var(--color-foreground)] shadow-sm focus:border-liderplast-primary focus:ring-liderplast-primary"/>
                             </div>
                             <div>
-                                <label htmlFor="notes" className="block text-sm font-medium text-gray-700">Notas
+                                <label htmlFor="notes"
+                                       className="block text-sm font-medium text-[var(--color-foreground)]/80">Notas
                                     Adicionales</label>
                                 <textarea name="notes" id="notes" value={formData.notes || ''}
                                           onChange={handleInputChange} rows={4}
-                                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"></textarea>
+                                          className="mt-1 block w-full rounded-md border-[var(--color-border)] bg-[var(--color-muted)] text-[var(--color-foreground)] shadow-sm focus:border-liderplast-primary focus:ring-liderplast-primary"></textarea>
                             </div>
                         </div>
                     </div>
 
-                    <div className="flex justify-end gap-4 p-6 border-t bg-gray-50 rounded-b-lg">
+                    <div
+                        className="flex justify-end gap-4 p-6 border-t border-[var(--color-border)] bg-[var(--color-card)] rounded-b-lg">
                         <Button type="button" variant="secondary" onClick={onClose}
                                 disabled={isSubmitting}>Cancelar</Button>
                         <Button type="submit" variant="primary" disabled={isSubmitting}>

@@ -29,7 +29,7 @@ export const EditableCell = ({initialValue, onSave, formatter}: EditableCellProp
                 onChange={(e) => setValue(e.target.value === '' ? null : parseFloat(e.target.value))}
                 onBlur={handleSave}
                 onKeyDown={(e) => e.key === 'Enter' && handleSave()}
-                className="w-24 rounded-md border-gray-300 shadow-sm text-sm p-1"
+                className="w-24 rounded-md border-[var(--color-border)] bg-[var(--color-muted)] text-[var(--color-foreground)] shadow-sm text-sm p-1"
                 autoFocus
             />
         );
@@ -38,12 +38,12 @@ export const EditableCell = ({initialValue, onSave, formatter}: EditableCellProp
     return (
         <div
             onClick={() => setIsEditing(true)}
-            className="cursor-pointer hover:bg-gray-100 p-1 rounded-md min-h-[34px] flex items-center"
+            className="cursor-pointer hover:bg-[var(--color-muted)] p-1 rounded-md min-h-[34px] flex items-center"
         >
             {/* Si hay un formateador y un valor, lo usamos. Si no, mostramos el valor o N/A. */}
             {value !== null
                 ? (formatter ? formatter(value) : value)
-                : <span className="text-gray-400">N/A</span>}
+                : <span className="text-[var(--color-foreground)]/50">N/A</span>}
         </div>
     );
 };

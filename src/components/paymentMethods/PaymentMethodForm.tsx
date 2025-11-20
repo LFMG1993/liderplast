@@ -98,13 +98,14 @@ export function PaymentMethodForm({isOpen, onClose, methodToEdit, onSave, isSubm
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-start pt-10"
              onClick={onClose}>
-            <div className="bg-white rounded-lg shadow-xl w-full max-w-3xl"
+            <div className="bg-[var(--color-card)] text-[var(--color-foreground)] rounded-lg shadow-xl w-full max-w-3xl"
                  onClick={(e) => e.stopPropagation()}>
                 <form onSubmit={handleSubmit}>
-                    <div className="flex justify-between items-center p-6 border-b">
+                    <div className="flex justify-between items-center p-6 border-b border-[var(--color-border)]">
                         <h3
-                            className="text-lg font-medium text-gray-900">{isEditing ? `Editando "${methodToEdit.name}"` : 'Nuevo Método de Pago'}</h3>
-                        <button type="button" onClick={onClose} className="text-gray-400 hover:text-gray-600">
+                            className="text-lg font-medium">{isEditing ? `Editando "${methodToEdit.name}"` : 'Nuevo Método de Pago'}</h3>
+                        <button type="button" onClick={onClose}
+                                className="text-[var(--color-foreground)]/60 hover:text-[var(--color-foreground)]">
                             <X className="h-8 w-8"/>
                         </button>
                     </div>
@@ -123,31 +124,30 @@ export function PaymentMethodForm({isOpen, onClose, methodToEdit, onSave, isSubm
                         {/* Columna Derecha: Campos */}
                         <div className="space-y-6">
                             <div>
-                                <label htmlFor="name" className="block text-sm font-medium text-gray-700">Nombre</label>
+                                <label htmlFor="name"
+                                       className="block text-sm font-medium text-[var(--color-foreground)]/80">Nombre</label>
                                 <input type="text" id="name" name="name" value={formData.name}
                                        onChange={handleInputChange}
-                                       className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-liderplast-primary
-                    focus:ring-liderplast-primary p-2.5 text-black"/>
+                                       className="mt-1 block w-full rounded-md border-[var(--color-border)] bg-[var(--color-muted)] shadow-sm focus:border-liderplast-primary focus:ring-liderplast-primary p-2.5"/>
                                 {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name}</p>}
                             </div>
                             <div>
-                                <label htmlFor="instructions" className="block text-sm font-medium text-gray-700">Instrucciones
+                                <label htmlFor="instructions"
+                                       className="block text-sm font-medium text-[var(--color-foreground)]/80">Instrucciones
                                     (Opcional)</label>
                                 <textarea id="instructions" name="instructions" value={formData.instructions || ''}
                                           onChange={handleInputChange} rows={4}
-                                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-liderplast-primary
-                    focus:ring-liderplast-primary p-2.5 text-black"/>
+                                          className="mt-1 block w-full rounded-md border-[var(--color-border)] bg-[var(--color-muted)] shadow-sm focus:border-liderplast-primary focus:ring-liderplast-primary p-2.5"/>
                             </div>
                             <div className="flex items-center pt-2">
                                 <input type="checkbox" id="isActive" name="isActive" checked={formData.isActive}
                                        onChange={handleInputChange}
-                                       className="h-4 w-4 text-liderplast-primary border-gray-300 rounded
-                    focus:ring-liderplast-primary"/>
-                                <label htmlFor="isActive" className="ml-2 block text-sm text-gray-900">Activo</label>
+                                       className="h-4 w-4 text-primary border-[var(--color-border)] bg-[var(--color-muted)] rounded focus:ring-primary"/>
+                                <label htmlFor="isActive" className="ml-2 block text-sm">Activo</label>
                             </div>
                         </div>
                     </div>
-                    <div className="flex justify-end gap-4 p-6 border-t bg-gray-50">
+                    <div className="flex justify-end gap-4 p-6 border-t border-[var(--color-border)]">
                         <Button type="button" variant="secondary" onClick={onClose}
                                 disabled={isSubmitting}>Cancelar</Button>
                         <Button type="submit" disabled={isSubmitting}>

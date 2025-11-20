@@ -35,6 +35,6 @@ export async function uploadImage(file: File, entityName: string): Promise<strin
         throw new Error('La subida del archivo a R2 falló.');
     }
 
-    // 5. Devolver la URL pública y permanente del recurso.
+    // Devolver la URL pública y permanente del recurso.
     return `${import.meta.env.VITE_R2_PUBLIC_URL}/${filename}`;
 }

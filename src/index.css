@@ -1,28 +1,43 @@
 @import 'tailwindcss';
 
+/* Se definen las variables para el tema claro */
+:root {
+    --color-background: theme('colors.gray.100'); /* Fondo principal */
+    --color-foreground: theme('colors.gray.900'); /* Texto principal */
+    --color-card: theme('colors.white'); /* Fondo de tarjetas, modales, etc. */
+    --color-card-foreground: theme('colors.gray.900'); /* Texto en tarjetas */
+    --color-border: theme('colors.gray.200'); /* Bordes */
+    --color-primary: #4a3084; /* Color primario de la marca */
+    --color-primary-dark: #3b266a; /* Variante más oscura para hover */
+    --color-muted: theme('colors.gray.100'); /* Fondos sutiles */
+    --color-muted-foreground: theme('colors.gray.800'); /* Texto sobre fondos sutiles */
+    --color-primary-foreground: theme('colors.white'); /* Texto sobre el color primario */
+}
+
+/*  Se redefinen las variables para el tema oscuro */
+.dark {
+    --color-background: theme('colors.gray.900');
+    --color-foreground: theme('colors.gray.100');
+    --color-card: theme('colors.gray.800');
+    --color-card-foreground: theme('colors.gray.100');
+    --color-border: theme('colors.gray.700');
+    --color-primary-dark: #5a4094; /* Variante más clara para hover en modo oscuro */
+    --color-muted: theme('colors.gray.700');
+    --color-muted-foreground: theme('colors.gray.200');
+}
+
 body {
     font-family: 'Poppins', sans-serif;
-}
-
-/* Estilo para el header al hacer scroll */
-.header-scrolled {
-    background-color: rgba(255, 255, 255, 0.95);
-    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-    backdrop-filter: blur(8px);
-}
-
-.header-scrolled .nav-link {
-    color: #1f2937; /* Gris oscuro para los enlaces */
-}
-
-.header-scrolled .logo-text {
-    color: #1f2937;
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .background-lider {
     background-color: #4a3084;
     transition: background-color 0.3s ease-in-out;
 }
+
 .background-lider:hover {
     /* Cambiamos a un color ligeramente más claro al pasar el cursor */
     background-color: #5a4094;
@@ -44,8 +59,12 @@ body {
 
 /* Definimos la animación de marquee globalmente. */
 @keyframes marquee {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-55%); }
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-55%);
+    }
 }
 
 .animate-marquee-infinite {
@@ -59,8 +78,8 @@ body {
 
 /* Ocultar barra de scroll para IE, Edge y Firefox */
 .no-scrollbar {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
 }
 
 /* Efecto para el carrito de compras */
@@ -81,6 +100,6 @@ body {
 
 .shake {
     /* Aplicamos la animación 'shake' durante 0.5 segundos con una curva de aceleración suave */
-    animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+    animation: shake 0.5s cubic-bezier(.36, .07, .19, .97) both;
 }
 

@@ -1,15 +1,31 @@
 import {api} from './api';
 import {apiPublic} from './apiPublic';
-import type {PaymentMethod} from '../types';
+import type {PaymentMethod, PaginatedResponse} from '../types';
 
 type PaymentMethodInput = Omit<PaymentMethod, 'id'>;
 type PaymentMethodUpdateInput = Partial<PaymentMethodInput>;
 
+interface ApiPaymentMethodsResponse {
+    paymentMethods: PaymentMethod[];
+    pagination: {
+        totalPages: number;
+    };
+}
+
 export const paymentMethodService = {
     // --- Admin ---
-    listAdmin: async (): Promise<PaymentMethod[]> => {
-        const response = await api.get<{ paymentMethods: PaymentMethod[] }>('/api/admin/payment-methods');
-        return response.data.paymentMethods;
+    listAdmin: async (params: {
+        page: number,
+        pageSize: number,
+        search?: string,
+        sortBy?: string,
+        sortOrder?: 'asc' | 'desc'
+    }): Promise<PaginatedResponse<PaymentMethod>> => {
+        const response = await api.get<ApiPaymentMethodsResponse>('/api/admin/payment-methods', {params});
+        return {
+            data: response.data.paymentMethods,
+            pageCount: response.data.pagination.totalPages,
+        };
     },
 
     create: async (data: PaymentMethodInput): Promise<PaymentMethod> => {

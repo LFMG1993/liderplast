@@ -119,13 +119,15 @@ export function CategoryForm({
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-start pt-10">
-            <div className="bg-white rounded-lg shadow-xl w-full max-w-3xl" onClick={(e) => e.stopPropagation()}>
+            <div className="bg-[var(--color-card)] rounded-lg shadow-xl w-full max-w-3xl"
+                 onClick={(e) => e.stopPropagation()}>
                 <form onSubmit={handleSubmit} className="flex flex-col h-full">
-                    <div className="flex justify-between items-center p-6 border-b">
-                        <h3 className="text-lg font-medium text-gray-900">
+                    <div className="flex justify-between items-center p-6 border-b border-[var(--color-border)]">
+                        <h3 className="text-lg font-medium text-[var(--color-foreground)]">
                             {categoryToEdit ? `Editando "${categoryToEdit.name}"` : 'Crear Nueva Categoría'}
                         </h3>
-                        <button type="button" onClick={onClose} className="text-gray-400 hover:text-gray-600">
+                        <button type="button" onClick={onClose}
+                                className="text-[var(--color-foreground)]/60 hover:text-[var(--color-foreground)]">
                             <X className="h-8 w-8"/>
                         </button>
                     </div>
@@ -141,39 +143,42 @@ export function CategoryForm({
                         {/* --- Columna Derecha: Campos de Datos --- */}
                         <div className="space-y-8">
                             <div>
-                                <label htmlFor="name" className="block text-sm font-medium text-gray-700">Nombre de
+                                <label htmlFor="name"
+                                       className="block text-sm font-medium text-[var(--color-foreground)]/80">Nombre de
                                     la Categoría</label>
                                 <input type="text" name="name" id="name" value={formData.name}
                                        onChange={handleInputChange}
-                                       className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-liderplast-primary focus:ring-liderplast-primary text-gray-700 p-2.5"
+                                       className="mt-1 block w-full rounded-md border-[var(--color-border)] shadow-sm focus:border-liderplast-primary focus:ring-liderplast-primary bg-[var(--color-muted)] text-[var(--color-foreground)] p-2.5"
                                        required/>
                             </div>
                             <div>
-                                <label htmlFor="parentId" className="block text-sm font-medium text-gray-700">Ubicación
+                                <label htmlFor="parentId"
+                                       className="block text-sm font-medium text-[var(--color-foreground)]/80">Ubicación
                                     en la Jerarquía</label>
                                 {categoryToEdit?.parentId && (
-                                    <p className="text-xs text-gray-500 mt-1">
+                                    <p className="text-xs text-[var(--color-foreground)]/60 mt-1">
                                         Actualmente es una subcategoría
                                         de: <strong>{findCategoryById(allCategories, categoryToEdit.parentId)?.name || 'Categoría no encontrada'}</strong>
                                     </p>
                                 )}
                                 <select name="parentId" id="parentId" value={formData.parentId || ''}
                                         onChange={handleInputChange}
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-liderplast-primary focus:ring-liderplast-primary p-2.5 text-gray-700">
+                                        className="mt-1 block w-full rounded-md border-[var(--color-border)] shadow-sm focus:border-liderplast-primary focus:ring-liderplast-primary p-2.5 bg-[var(--color-muted)] text-[var(--color-foreground)]">
                                     <option value="">Ninguna (Será una Categoría Principal)</option>
                                     {renderCategoryOptions(allCategories, 0, categoryToEdit?.id || null)}
                                 </select>
                             </div>
                             <div>
                                 <label htmlFor="description"
-                                       className="block text-sm font-medium text-gray-700">Descripción</label>
+                                       className="block text-sm font-medium text-[var(--color-foreground)]/80">Descripción</label>
                                 <textarea name="description" id="description" value={formData.description || ''}
                                           onChange={handleInputChange} rows={4}
-                                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-liderplast-primary focus:ring-liderplast-primary text-gray-700"></textarea>
+                                          className="mt-1 block w-full rounded-md border-[var(--color-border)] shadow-sm focus:border-liderplast-primary focus:ring-liderplast-primary bg-[var(--color-muted)] text-[var(--color-foreground)]"></textarea>
                             </div>
                         </div>
                     </div>
-                    <div className="flex justify-end gap-4 p-6 border-t bg-gray-50">
+                    <div
+                        className="flex justify-end gap-4 p-6 border-t border-[var(--color-border)] bg-[var(--color-card)]">
                         <Button type="button" variant="secondary" onClick={onClose}
                                 disabled={isSubmitting}>Cancelar</Button>
                         <Button type="submit"

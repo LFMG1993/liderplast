@@ -1,10 +1,12 @@
-import {useEffect, useState, useCallback} from 'react';
+import {useState, useMemo, useEffect} from 'react';
+import {useQuery, useMutation, useQueryClient, keepPreviousData} from '@tanstack/react-query';
+import type {PaginationState, SortingState} from "@tanstack/react-table";
 import {productService} from '../../services/productService.ts';
-import type {Product, ProductCreationData} from '../../types';
+import type {Product, ProductCreationData, PaginatedResponse} from '../../types';
 import {Button} from '../../components/general/Button.tsx';
 import {ConfirmationModal} from '../../components/general/ConfirmationModal.tsx';
 import {ProductTable} from '../../components/products/ProductTable.tsx';
-import {useNotification} from '../../providers/NotificationProvider.tsx';
+import {useNotification} from '../../context/NotificationContext.tsx';
 import {ProductForm, type ProductFormData} from '../../components/products/ProductForm.tsx';
 import {attributeService} from "../../services/attributeService.ts";
 import {categoryService} from "../../services/categoryService.ts";
@@ -14,52 +16,67 @@ import {slugify} from "../../utils/utils.ts";
 import {Spinner} from "../../components/general/Spinner.tsx";
 
 const ProductsPage = () => {
-    const [products, setProducts] = useState<Product[]>([]);
-    const [attributes, setAttributes] = useState<Attribute[]>([]);
-    const [categories, setCategories] = useState<Category[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-    const [isSubmitting, setIsSubmitting] = useState(false);
+    const queryClient = useQueryClient();
+    const {addNotification} = useNotification();
     const [isFormModalOpen, setIsFormModalOpen] = useState(false);
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
     const [productToDelete, setProductToDelete] = useState<Product | null>(null);
-    const {showNotification} = useNotification();
 
-    const fetchData = useCallback(async () => {
-            try {
-                setIsLoading(true);
-                const [productsData, attributesData, categoriesData] = await Promise.all([
-                    productService.getProducts(),
-                    attributeService.getAttributesWithValues(),
-                    categoryService.getCategories()
-                ]);
-                setProducts(productsData);
-                setAttributes(attributesData);
-                setCategories(categoriesData);
-            } catch (err: any) {
-                setError(err.message || 'Error al cargar los productos.');
-                showNotification({message: err.message || 'Error al cargar los productos.', type: 'error'});
-            } finally {
-                setIsLoading(false);
-            }
-        }, [showNotification]
-    );
+    // Estados para las tablas
+    const [{pageIndex, pageSize}, setPagination] = useState<PaginationState>({
+        pageIndex: 0,
+        pageSize: 10,
+    });
+    const [sorting, setSorting] = useState<SortingState>([]);
+    const [globalFilter, setGlobalFilter] = useState('');
+    const [debouncedFilter, setDebouncedFilter] = useState('');
+
+    // Debounce para el filtro de búsqueda
     useEffect(() => {
-        fetchData();
-    }, [fetchData]);
+        const timer = setTimeout(() => {
+            setDebouncedFilter(globalFilter);
+        }, 500); // Espera 500ms después de que el usuario deja de escribir
+        return () => clearTimeout(timer);
+    }, [globalFilter]);
+
+    // Query para productos paginados
+    const {
+        data: productsData,
+        isLoading: isLoadingProducts,
+        isError,
+        error
+    } = useQuery<PaginatedResponse<Product>, Error>({
+        queryKey: ['products', pageIndex, pageSize, debouncedFilter, sorting],
+        queryFn: () => productService.getProducts({
+            page: pageIndex + 1,
+            limit: pageSize,
+            search: debouncedFilter,
+            sortBy: sorting[0]?.id,
+            sortOrder: sorting[0] ? (sorting[0].desc ? 'desc' : 'asc') : undefined,
+        }),
+        placeholderData: keepPreviousData,
+    });
+
+    // Queries para datos de soporte (atributos y categorías)
+    const {data: attributes = []} = useQuery<Attribute[], Error>({
+        queryKey: ['attributes'],
+        queryFn: attributeService.getAttributesWithValues,
+    });
+    const {data: categories = []} = useQuery<Category[], Error>({
+        queryKey: ['categories'],
+        queryFn: categoryService.getCategories,
+    });
+
+    const products = useMemo(() => productsData?.data ?? [], [productsData]);
+    const pageCount = useMemo(() => productsData?.pageCount ?? -1, [productsData]);
 
     const handleEdit = async (id: number) => {
-        // Hacemos la función asíncrona para obtener los datos completos del producto.
         try {
-            setIsLoading(true);
-            // Obtenemos la versión detallada del producto, incluyendo `variantValues`.
             const productDetails = await productService.getProductById(id);
             setEditingProduct(productDetails);
             setIsFormModalOpen(true);
         } catch (err: any) {
-            showNotification({message: `Error al cargar los detalles del producto: ${err.message}`, type: 'error'});
-        } finally {
-            setIsLoading(false);
+            addNotification(`Error al cargar los detalles del producto: ${err.message}`, 'error');
         }
     };
 
@@ -67,15 +84,11 @@ const ProductsPage = () => {
         setProductToDelete(product);
     };
 
-    const handleSaveProduct = async (formData: ProductFormData) => {
-        setIsSubmitting(true);
-        try {
-            // 1. Subir todas las imágenes (principal y de variantes) en paralelo.
+    const saveProductMutation = useMutation({
+        mutationFn: async (formData: ProductFormData) => {
             const slug = slugify(formData.name);
-
             const uploadPromises: Promise<string | null>[] = [];
 
-            // Promesa para la imagen principal
             if (formData.imageFile) {
                 const entityName = `product/${slug}-${editingProduct?.id || 'new'}`;
                 uploadPromises.push(uploadImage(formData.imageFile, entityName));
@@ -83,100 +96,120 @@ const ProductsPage = () => {
                 uploadPromises.push(Promise.resolve(formData.image_url));
             }
 
-            // Promesas para las imágenes de las variantes
             formData.variants.forEach((variant, index) => {
                 if (variant.imageFile) {
                     const entityName = `product/${slug}/${variant.sku || `variant-${index}`}`;
                     uploadPromises.push(uploadImage(variant.imageFile, entityName));
                 } else {
-                    uploadPromises.push(Promise.resolve(variant.imageUrl));
+                    uploadPromises.push(Promise.resolve(variant.imageUrl || null));
                 }
             });
 
             const [mainImageUrl, ...variantImageUrls] = await Promise.all(uploadPromises);
 
-            // 2. Construir el payload final con las URLs de las imágenes ya subidas.
             const finalPayload: ProductCreationData = {
                 name: formData.name,
                 description: formData.description,
                 categoryId: formData.categoryId,
                 isFeatured: formData.isFeatured,
                 imageUrl: mainImageUrl,
-                variants: formData.variants.map((v, index) => ({
-                    id: v.id,
-                    sku: v.sku,
-                    price: v.price,
-                    stock: v.stock,
-                    salePrice: v.salePrice === null ? undefined : v.salePrice,
-                    imageUrl: variantImageUrls[index],
-                    unitOfMeasure: v.unitOfMeasure,
-                    unitsPerItem: v.unitsPerItem,
-                    volumeDiscounts: v.volumeDiscounts,
-                    attributeValueIds: Object.values(v.selectedAttributes).filter(id => !isNaN(id)),
-                })),
+                variants: formData.variants.map((v, index) => {
+                    const attributeValueIds = Object.values(v.selectedAttributes).filter(id => id && !isNaN(id));
+                    return {
+                        id: v.id,
+                        sku: v.sku,
+                        price: v.price,
+                        stock: v.stock,
+                        salePrice: v.salePrice === null ? undefined : v.salePrice,
+                        imageUrl: variantImageUrls[index],
+                        unitOfMeasure: v.unitOfMeasure,
+                        unitsPerItem: v.unitsPerItem,
+                        volumeDiscounts: v.volumeDiscounts,
+                        attributeValueIds: attributeValueIds,
+                    };
+                }),
             };
 
-            // 3. Guardar el producto con todos los datos y URLs.
             if (editingProduct) {
-                await productService.updateProduct(editingProduct.id, finalPayload);
+                return productService.updateProduct(editingProduct.id, finalPayload);
             } else {
-                await productService.createProduct(finalPayload);
+                return productService.createProduct(finalPayload);
             }
+        },
 
-            const successMessage = editingProduct ? 'Producto actualizado con éxito.' : 'Producto creado con éxito.';
-            showNotification({message: successMessage, type: 'success'});
+        onSuccess: () => {
+            const successMessage = editingProduct ? 'Producto actualizado.' : 'Producto creado.';
+            addNotification(successMessage, 'success');
+            queryClient.invalidateQueries({queryKey: ['products']});
             setIsFormModalOpen(false);
             setEditingProduct(null);
-            await fetchData();
-        } catch (err: any) {
+        },
+        onError: (err: any) => {
             const errorInfo = err.info?.errors ? Object.values(err.info.errors).flat().join(', ') : err.message;
             const finalMessage = `Error al guardar: ${errorInfo || 'Error desconocido.'}`;
-            showNotification({message: finalMessage, type: 'error'});
-        } finally {
-            setIsSubmitting(false);
+            addNotification(finalMessage, 'error');
+        }
+    });
+
+    const deleteProductMutation = useMutation({
+        mutationFn: (id: number) => productService.deleteProduct(id),
+        onSuccess: () => {
+            addNotification('Producto eliminado con éxito.', 'success');
+            queryClient.invalidateQueries({queryKey: ['products']});
+            setProductToDelete(null);
+        },
+        onError: (err: Error) => {
+            addNotification(`Error al eliminar: ${err.message}`, 'error');
+        }
+    });
+
+    const handleConfirmDelete = () => {
+        if (productToDelete) {
+            deleteProductMutation.mutate(productToDelete.id);
         }
     };
 
-    const handleConfirmDelete = async () => {
-        if (!productToDelete) return;
-
-        try {
-            await productService.deleteProduct(productToDelete.id);
-            showNotification({message: `Producto "${productToDelete.name}" eliminado con éxito.`, type: 'success'});
-            setProductToDelete(null);
-            await fetchData(); // Volvemos a cargar los productos
-        } catch (err: any) {
-            showNotification({message: err.message || 'Error al eliminar el producto.', type: 'error'});
-            setProductToDelete(null);
-        }
-    };
+    const isLoading = isLoadingProducts && productsData === undefined;
 
     return (
         <div className="p-8">
             <div className="flex justify-between items-center mb-6">
-                <h1 className="text-3xl font-bold">Gestión de Productos</h1>
+                <h1 className="text-3xl font-bold text-[var(--color-foreground)]">Gestión de Productos</h1>
                 <Button onClick={() => {
                     setEditingProduct(null);
                     setIsFormModalOpen(true);
                 }}>Crear Producto</Button>
             </div>
 
-            {isLoading && (
+            {isLoading ? (
                 <div className="flex justify-center items-center py-16">
                     <Spinner/>
                 </div>
+            ) : isError ? (
+                <p className="text-red-500 text-center">Error: {error.message}</p>
+            ) : (
+                <ProductTable
+                    products={products}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                    pagination={{pageIndex, pageSize}}
+                    setPagination={setPagination}
+                    sorting={sorting}
+                    setSorting={setSorting}
+                    globalFilter={globalFilter}
+                    setGlobalFilter={setGlobalFilter}
+                    pageCount={pageCount}
+                />
             )}
-            {error && !isLoading && <p className="text-red-500">{error}</p>}
-            {!isLoading && !error && <ProductTable products={products} onEdit={handleEdit} onDelete={handleDelete}/>}
 
             <ProductForm
                 isOpen={isFormModalOpen}
                 onClose={() => setIsFormModalOpen(false)}
-                onSave={handleSaveProduct}
+                onSave={(formData) => saveProductMutation.mutate(formData)}
                 productToEdit={editingProduct}
                 attributes={attributes}
                 categories={categories}
-                isSubmitting={isSubmitting}
+                isSubmitting={saveProductMutation.isPending}
             />
 
             <ConfirmationModal

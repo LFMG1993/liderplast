@@ -1,4 +1,5 @@
-import {useState, useEffect} from 'react';
+import {useEffect} from 'react';
+import {useQuery} from '@tanstack/react-query';
 import {HeroSection} from '../components/home/HeroSection';
 import Footer from '../components/general/Footer';
 import WhatsAppButton from "../components/general/WhatsAppButton";
@@ -6,22 +7,26 @@ import {SEO} from "../components/general/SEO.tsx";
 import {TopBar} from '../components/general/TopBar.tsx'
 import {FeaturedProducts} from '../components/home/FeaturedProducts.tsx';
 import {shopService} from '../services/shopService.ts';
-import type {Product} from '../types';
+import type {Product, PaginatedResponse} from '../types';
+import {Spinner} from '../components/general/Spinner.tsx';
+import {useNotification} from '../context/NotificationContext.tsx';
 
 const HomePage = () => {
-    const [products, setProducts] = useState<Product[]>([]);
+    const {addNotification} = useNotification();
+
+    const {data: featuredProducts = [], isLoading, isError, error} = useQuery({
+        queryKey: ['featuredProducts'],
+        queryFn: () => shopService.getPublicProducts({featured: true, page: 1, limit: 100}),
+        staleTime: 1000 * 60 * 5, // Cachea los datos por 5 minutos
+        select: (data: PaginatedResponse<Product>) => data.data,
+    });
 
     useEffect(() => {
-        const fetchProducts = async () => {
-            try {
-                const publicProducts = await shopService.getPublicProducts();
-                setProducts(publicProducts);
-            } catch (error) {
-                console.error("Error al cargar los productos públicos:", error);
-            }
-        };
-        fetchProducts();
-    }, []);
+        if (isError && error) {
+            addNotification(`Error al cargar productos destacados: ${error.message}`, 'error');
+        }
+    }, [isError, error, addNotification]);
+
     return (
         <>
             <TopBar/>
@@ -32,7 +37,18 @@ const HomePage = () => {
             />
             <main className="-mt-28 relative z-0">
                 <HeroSection/>
-                <FeaturedProducts products={products}/>
+                {isLoading ? (
+                    <section className="py-16 bg-[var(--color-background)] flex flex-col justify-center items-center">
+                        <Spinner/>
+                        <p className="text-[var(--color-foreground)]/80 mt-4">Cargando productos destacados...</p>
+                    </section>
+                ) : isError ? (
+                    <section className="py-16 bg-[var(--color-background)] text-center">
+                        <p className="text-red-500">No se pudieron cargar los productos destacados.</p>
+                    </section>
+                ) : (
+                    <FeaturedProducts products={featuredProducts}/>
+                )}
             </main>
             <Footer/>
             <WhatsAppButton/>

@@ -6,14 +6,15 @@ export default function OrderConfirmationPage() {
     const {orderId} = useParams<{ orderId: string }>();
 
     return (
-        <div className="flex flex-col items-center justify-center text-center p-8 min-h-[60vh]">
+        <div
+            className="flex flex-col items-center justify-center text-center p-8 min-h-[60vh] bg-[var(--color-background)] text-[var(--color-foreground)]">
             <CheckCircle className="h-16 w-16 text-green-500 mb-4"/>
-            <h1 className="text-3xl font-bold text-gray-900">¡Gracias por tu compra!</h1>
-            <p className="mt-2 text-lg text-gray-600">
+            <h1 className="text-3xl font-bold">¡Gracias por tu compra!</h1>
+            <p className="mt-2 text-lg text-[var(--color-foreground)]/80">
                 Hemos recibido la notificación de tu pago para el pedido <span
                 className="font-semibold">#{orderId}</span>.
             </p>
-            <p className="mt-2 text-gray-600">
+            <p className="mt-2 text-[var(--color-foreground)]/80">
                 Lo verificaremos pronto. Puedes ver el estado de tu pedido en tu perfil.
             </p>
 

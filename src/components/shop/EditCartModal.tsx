@@ -1,5 +1,5 @@
 import {useState, useEffect} from "react";
-import type { CartItem} from "../../context/CardContext.tsx";
+import type {CartItem} from "../../context/CardContext.tsx";
 import {FileImage} from 'react-bootstrap-icons';
 
 type Props = {
@@ -38,15 +38,13 @@ export default function EditCartItemModal({
             role="dialog"
         >
             {/* Panel del Modal */}
-            <div className="bg-white rounded-lg shadow-xl w-full max-w-md m-4">
-                {/* ANTES: modal-header */}
-                <div className="flex justify-between items-center p-4 border-b border-gray-200">
-                    {/* ANTES: modal-title */}
-                    <h5 className="text-xl font-semibold text-gray-800">{item.name}</h5>
-                    {/* ANTES: btn-close */}
+            <div
+                className="bg-[var(--color-card)] text-[var(--color-foreground)] rounded-lg shadow-xl w-full max-w-md m-4">
+                <div className="flex justify-between items-center p-4 border-b border-[var(--color-border)]">
+                    <h5 className="text-xl font-semibold">{item.name}</h5>
                     <button
                         type="button"
-                        className="text-gray-400 hover:text-gray-600"
+                        className="text-[var(--color-foreground)]/60 hover:text-[var(--color-foreground)]"
                         onClick={onClose}
                     >
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -55,9 +53,9 @@ export default function EditCartItemModal({
                         </svg>
                     </button>
                 </div>
-                {/* ANTES: modal-body */}
                 <div className="p-6">
-                    <div className="w-full h-48 bg-gray-100 rounded-md mb-4 flex items-center justify-center">
+                    <div
+                        className="w-full h-48 bg-[var(--color-muted)] border border-[var(--color-border)] rounded-md mb-4 flex items-center justify-center">
                         {item.image_url ? (
                             <img
                                 src={item.image_url}
@@ -65,32 +63,30 @@ export default function EditCartItemModal({
                                 className="w-full h-full object-cover"
                             />
                         ) : (
-                            <FileImage className="w-12 h-12 text-gray-400"/>
+                            <FileImage className="w-12 h-12 text-[var(--color-muted-foreground)]/60"/>
                         )}
                     </div>
                     <p className="font-bold text-lg">{item.name}</p>
 
-                    <label htmlFor="editQty" className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor="editQty"
+                           className="block text-sm font-medium text-[var(--color-foreground)]/80 mb-1">
                         Cantidad
                     </label>
-                    {/* ANTES: form-control */}
                     <input
                         type="number"
                         id="editQty"
-                        className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-liderplast-primary focus:border-liderplast-primary"
+                        className="w-full border border-[var(--color-border)] bg-[var(--color-muted)] rounded-md px-3 py-2 focus:ring-2 focus:ring-primary focus:border-primary"
                         min={1}
                         value={quantity}
                         onChange={(e) => setQuantity(Number(e.target.value))}
                     />
                 </div>
-                {/* ANTES: modal-footer */}
-                <div className="flex justify-end items-center p-4 border-t border-gray-200 space-x-2">
-                    {/* ANTES: btn btn-secondary */}
-                    <button className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
-                            onClick={onClose}>
+                <div className="flex justify-end items-center p-4 border-t border-[var(--color-border)] space-x-2">
+                    <button
+                        className="px-4 py-2 bg-[var(--color-muted)] text-[var(--color-muted-foreground)] rounded-md hover:bg-[var(--color-muted)]/80"
+                        onClick={onClose}>
                         Cancelar
                     </button>
-                    {/* ANTES: btn btn-primary */}
                     <button
                         className="px-4 py-2 background-lider text-white rounded-md hover:bg-liderplast-hover"
                         onClick={handleSave}

@@ -86,19 +86,21 @@ export const ShipmentModal = ({
             }
         };
 
-    const modalTitle = shipmentToEdit ? `Editar Envío para Pedido #${orderId}` : `Gestionar Envío para Pedido #${orderId}`;
+        const modalTitle = shipmentToEdit ? `Editar Envío para Pedido #${orderId}` : `Gestionar Envío para Pedido #${orderId}`;
 
         return (
             <Modal isOpen={isOpen} onClose={onClose} title={modalTitle} size="lg">
-                <form onSubmit={handleSubmit} className="space-y-6 text-gray-500">
+                <form onSubmit={handleSubmit} className="space-y-6">
                     <div>
-                        <label htmlFor="shippingMethod" className="text-black">Método de Envío</label>
+                        <label htmlFor="shippingMethod"
+                               className="block text-sm font-medium text-[var(--color-foreground)]/80">Método de
+                            Envío</label>
                         <select
                             id="shippingMethod"
                             name="shippingMethod"
                             value={formData.shippingMethod}
                             onChange={handleInputChange}
-                            className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-liderplast-primary focus:border-liderplast-primary sm:text-sm rounded-md"
+                            className="mt-1 block w-full rounded-md border-[var(--color-border)] bg-[var(--color-muted)] shadow-sm focus:border-primary focus:ring-primary p-2.5"
                         >
                             <option value="national_shipping">Envío Nacional</option>
                             <option value="local_delivery">Entrega Local</option>
@@ -106,27 +108,35 @@ export const ShipmentModal = ({
                     </div>
 
                     {formData.shippingMethod === 'national_shipping' && (
-                        <div className="space-y-4 p-4 border rounded-md bg-gray-50">
-                            <h4 className="font-medium text-black">Detalles de Envío Nacional</h4>
+                        <div
+                            className="space-y-4 p-4 border border-[var(--color-border)] rounded-md bg-[var(--color-muted)]/50">
+                            <h4 className="font-medium">Detalles de Envío Nacional</h4>
                             <div>
-                                <label htmlFor="company">Transportadora: </label>
-                                <input id="company" name="company" className="border border-black rounded-md p-2"
+                                <label htmlFor="company"
+                                       className="block text-sm font-medium text-[var(--color-foreground)]/80">Transportadora</label>
+                                <input id="company" name="company"
+                                       className="mt-1 block w-full rounded-md border-[var(--color-border)] bg-[var(--color-muted)] shadow-sm p-2.5"
                                        value={formData.company || ''}
-                                       onChange={handleInputChange} placeholder="empresa transportadora aqui..."/>
+                                       onChange={handleInputChange} placeholder="Ej: Servientrega, Interrapidísimo..."/>
                                 {errors.company && <p className="text-red-500 text-sm mt-1">{errors.company}</p>}
                             </div>
                             <div>
-                                <label htmlFor="trackingNumber">Número de Guía: </label>
+                                <label htmlFor="trackingNumber"
+                                       className="block text-sm font-medium text-[var(--color-foreground)]/80">Número de
+                                    Guía</label>
                                 <input id="trackingNumber" name="trackingNumber"
-                                       className="border border-black rounded-md p-2"
+                                       className="mt-1 block w-full rounded-md border-[var(--color-border)] bg-[var(--color-muted)] shadow-sm p-2.5"
                                        value={formData.trackingNumber || ''}
-                                       onChange={handleInputChange} placeholder="Numero de guia aqui..."/>
+                                       onChange={handleInputChange} placeholder="Número de seguimiento"/>
                                 {errors.trackingNumber &&
                                     <p className="text-red-500 text-sm mt-1">{errors.trackingNumber}</p>}
                             </div>
                             <div>
-                                <label htmlFor="trackingUrl">URL de Rastreo: </label>
-                                <input id="trackingUrl" name="trackingUrl" className="border border-black rounded-md p-2"
+                                <label htmlFor="trackingUrl"
+                                       className="block text-sm font-medium text-[var(--color-foreground)]/80">URL de
+                                    Rastreo (Opcional)</label>
+                                <input id="trackingUrl" name="trackingUrl"
+                                       className="mt-1 block w-full rounded-md border-[var(--color-border)] bg-[var(--color-muted)] shadow-sm p-2.5"
                                        value={formData.trackingUrl || ''}
                                        onChange={handleInputChange} placeholder="https://..."/>
                             </div>
@@ -134,24 +144,31 @@ export const ShipmentModal = ({
                     )}
 
                     {formData.shippingMethod === 'local_delivery' && (
-                        <div className="space-y-4 p-4 border rounded-md bg-gray-50">
-                            <h4 className="font-medium text-gray-700">Detalles de Entrega Local</h4>
+                        <div
+                            className="space-y-4 p-4 border border-[var(--color-border)] rounded-md bg-[var(--color-muted)]/50">
+                            <h4 className="font-medium">Detalles de Entrega Local</h4>
                             <div>
-                                <label htmlFor="driverName">Nombre del Conductor: </label>
-                                <input id="driverName" name="driverName" className="border border-black rounded-md p-2"
+                                <label htmlFor="driverName"
+                                       className="block text-sm font-medium text-[var(--color-foreground)]/80">Nombre del
+                                    Conductor</label>
+                                <input id="driverName" name="driverName"
+                                       className="mt-1 block w-full rounded-md border-[var(--color-border)] bg-[var(--color-muted)] shadow-sm p-2.5"
                                        value={formData.driverName || ''}
                                        onChange={handleInputChange}/>
                             </div>
                             <div>
-                                <label htmlFor="licensePlate">Placa del Vehículo: </label>
-                                <input id="licensePlate" name="licensePlate" className="border border-black rounded-md p-2"
+                                <label htmlFor="licensePlate"
+                                       className="block text-sm font-medium text-[var(--color-foreground)]/80">Placa del
+                                    Vehículo</label>
+                                <input id="licensePlate" name="licensePlate"
+                                       className="mt-1 block w-full rounded-md border-[var(--color-border)] bg-[var(--color-muted)] shadow-sm p-2.5"
                                        value={formData.licensePlate || ''}
                                        onChange={handleInputChange}/>
                             </div>
                         </div>
                     )}
 
-                    <div className="flex justify-end space-x-3 pt-4">
+                    <div className="flex justify-end space-x-3 pt-4 border-t border-[var(--color-border)] mt-6">
                         <Button type="button" variant="secondary" onClick={onClose} disabled={isSubmitting}>
                             Cancelar
                         </Button>

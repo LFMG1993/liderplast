@@ -1,30 +1,19 @@
 import {type Dispatch, type SetStateAction} from "react";
-import type {Provider} from '../../types';
+import type {Shipment} from "../../types";
+import {ShippingMethodLabels, ShippingStatusColors, ShippingStatusLabels} from "../../types";
+import {StatusBadge} from "../general/StatusBadge.tsx";
 import {Button} from '../general/Button.tsx';
 import {
-    Edit,
-    Trash2,
-    Search,
-    ChevronLeft,
-    ChevronRight,
-    ChevronsLeft,
-    ChevronsRight,
-    ArrowUpDown,
-    ArrowUp,
-    ArrowDown
+    Edit, Search, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight
 } from 'lucide-react';
 import {
-    useReactTable,
-    getCoreRowModel,
-    flexRender,
-    getSortedRowModel,
-    type PaginationState, type SortingState, createColumnHelper
+    useReactTable, getCoreRowModel, flexRender, getSortedRowModel,
+     type PaginationState, type SortingState, createColumnHelper
 } from '@tanstack/react-table';
 
-interface ProviderTableProps {
-    providers: Provider[];
-    onEdit: (provider: Provider) => void;
-    onDelete: (provider: Provider) => void;
+interface ExistingShipmentsTableProps {
+    shipments: Shipment[];
+    onUpdateShipment: (shipment: Shipment) => void;
     pagination: PaginationState;
     setPagination: Dispatch<SetStateAction<PaginationState>>;
     sorting: SortingState;
@@ -34,90 +23,69 @@ interface ProviderTableProps {
     pageCount: number;
 }
 
-const columnHelper = createColumnHelper<Provider>();
+const columnHelper = createColumnHelper<Shipment>();
 
 const columns = [
-    columnHelper.accessor('name', {
-        header: ({column}) => (
-            <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-                Nombre
-                {column.getIsSorted() === 'asc' ?
-                    <ArrowUp className="ml-2 h-4 w-4"/> : column.getIsSorted() === 'desc' ?
-                        <ArrowDown className="ml-2 h-4 w-4"/> : <ArrowUpDown className="ml-2 h-4 w-4"/>}
-            </Button>
-        ),
-        cell: ({row}) => (
-            <div>
-                <div className="font-medium">{row.original.name}</div>
-                {row.original.website &&
-                    <div className="text-sm text-[var(--color-foreground)]/60">{row.original.website}</div>}
-            </div>
-        )
+    columnHelper.accessor('orderId', {
+        header: 'Pedido #',
+        cell: info => `#${info.getValue()}`
     }),
-    columnHelper.accessor('contactName', {
-        header: ({column}) => (
-            <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-                Contacto
-                {column.getIsSorted() === 'asc' ?
-                    <ArrowUp className="ml-2 h-4 w-4"/> : column.getIsSorted() === 'desc' ?
-                        <ArrowDown className="ml-2 h-4 w-4"/> : <ArrowUpDown className="ml-2 h-4 w-4"/>}
-            </Button>
-        ),
-        cell: ({row}) => (
-            <div>
-                <div className="text-sm">{row.original.contactName || '-'}</div>
-                <div className="text-sm text-[var(--color-foreground)]/60">{row.original.contactEmail || '-'}</div>
-            </div>
-        )
+    columnHelper.accessor('shippingMethod', {
+        header: 'Método',
+        cell: info => ShippingMethodLabels[info.getValue()]
     }),
-    columnHelper.accessor('contactPhone', {
-        header: ({column}) => (
-            <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-                Teléfono
-                {column.getIsSorted() === 'asc' ?
-                    <ArrowUp className="ml-2 h-4 w-4"/> : column.getIsSorted() === 'desc' ?
-                        <ArrowDown className="ml-2 h-4 w-4"/> : <ArrowUpDown className="ml-2 h-4 w-4"/>}
-            </Button>
-        ),
-        cell: info => info.getValue() || '-',
+    columnHelper.accessor('company', {
+        header: 'Detalles de Envío',
+        cell: ({row}) => {
+            const shipment = row.original;
+            return shipment.shippingMethod === 'national_shipping' ? (
+                <>
+                    {shipment.company && <p>{shipment.company}</p>}
+                    {shipment.trackingNumber &&
+                        <p className="text-xs text-[var(--color-foreground)]/60">{shipment.trackingNumber}</p>}
+                </>
+            ) : (
+                <>
+                    {shipment.driverName && <p>{shipment.driverName}</p>}
+                    {shipment.licensePlate &&
+                        <p className="text-xs text-[var(--color-foreground)]/60">{shipment.licensePlate}</p>}
+                </>
+            )
+        }
+    }),
+    columnHelper.accessor('order.shippingStatus', {
+        header: 'Estado',
+        cell: ({row}) => (
+            <StatusBadge
+                label={ShippingStatusLabels[row.original.order.shippingStatus]}
+                colorClasses={ShippingStatusColors[row.original.order.shippingStatus]}
+            />
+        )
     }),
 ];
 
-export const ProviderTable = ({
-                                  providers,
-                                  onEdit,
-                                  onDelete,
-                                  pagination,
-                                  setPagination,
-                                  sorting,
-                                  setSorting,
-                                  globalFilter,
-                                  setGlobalFilter,
-                                  pageCount
-                              }: ProviderTableProps) => {
+export const ExistingShipmentsTable = (props: ExistingShipmentsTableProps) => {
+    const {
+        shipments, onUpdateShipment, pagination, setPagination, sorting, setSorting, globalFilter, setGlobalFilter, pageCount
+    } = props;
 
     const table = useReactTable({
-        data: providers,
+        data: shipments,
         columns: [
             ...columns,
             columnHelper.display({
                 id: 'actions',
                 header: () => <div className="text-end">Acciones</div>,
                 cell: ({row}) => (
-                    <div className="flex justify-end items-center gap-2">
-                        <Button size="sm" variant="secondary" onClick={() => onEdit(row.original)}><Edit
-                            className="h-4 w-4"/></Button>
-                        <Button size="sm" variant="danger" onClick={() => onDelete(row.original)}><Trash2
-                            className="h-4 w-4"/></Button>
+                    <div className="flex justify-end">
+                        <Button size="sm" variant="secondary" onClick={() => onUpdateShipment(row.original)}>
+                            <Edit className="h-4 w-4"/>
+                        </Button>
                     </div>
-                ),
-            }),
+                )
+            })
         ],
-        state: {
-            pagination,
-            sorting,
-            globalFilter,
-        },
+        state: {pagination, sorting, globalFilter},
         pageCount: pageCount,
         onPaginationChange: setPagination,
         onSortingChange: setSorting,
@@ -139,7 +107,7 @@ export const ProviderTable = ({
                         type="text"
                         value={globalFilter}
                         onChange={(e) => setGlobalFilter(e.target.value)}
-                        placeholder="Buscar proveedor..."
+                        placeholder="Buscar por # de pedido, transportadora, etc..."
                         className="w-full pl-10 pr-4 py-2 bg-[var(--color-muted)] border border-[var(--color-border)] rounded-md focus:ring-primary focus:border-primary"
                     />
                 </div>
@@ -150,8 +118,7 @@ export const ProviderTable = ({
                     <tr key={headerGroup.id}>
                         {headerGroup.headers.map(header => (
                             <th key={header.id} scope="col"
-                                className="px-6 py-3 text-left text-xs font-medium text-[var(--color-foreground)]/60 uppercase tracking-wider"
-                                style={{width: header.getSize() !== 150 ? header.getSize() : 'auto'}}>
+                                className="px-6 py-3 text-left text-xs font-medium text-[var(--color-foreground)]/60 uppercase tracking-wider">
                                 {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                             </th>
                         ))}
@@ -170,23 +137,18 @@ export const ProviderTable = ({
                 ))}
                 </tbody>
             </table>
-            {/* Controles de Paginación */}
             <div
                 className="flex items-center justify-between p-4 border-t border-[var(--color-border)] flex-wrap gap-4">
                 <div className="flex items-center gap-2 text-sm">
                     <span>Mostrar</span>
-                    <select
-                        value={table.getState().pagination.pageSize}
-                        onChange={e => {
-                            table.setPageIndex(0); // Volver a la primera página
-                            table.setPageSize(Number(e.target.value));
-                        }}
-                        className="p-1 bg-[var(--color-muted)] border border-[var(--color-border)] rounded-md"
-                    >
+                    <select value={table.getState().pagination.pageSize}
+                            onChange={e => {
+                                table.setPageIndex(0);
+                                table.setPageSize(Number(e.target.value));
+                            }}
+                            className="p-1 bg-[var(--color-muted)] border border-[var(--color-border)] rounded-md">
                         {[10, 20, 30, 40, 50].map(pageSize => (
-                            <option key={pageSize} value={pageSize}>
-                                {pageSize}
-                            </option>
+                            <option key={pageSize} value={pageSize}>{pageSize}</option>
                         ))}
                     </select>
                     <span>resultados</span>

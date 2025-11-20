@@ -1,11 +1,21 @@
-import type {User, UserCreationData, UserUpdateData} from "../types";
+import type {User, UserCreationData, UserUpdateData, PaginatedResponse} from "../types";
 import {api} from "./api.ts";
+
+interface ApiUsersResponse {
+    users: User[];
+    pagination: {
+        totalPages: number;
+    };
+}
 
 // --- Funciones del servicio de usuarios ---
 export const userService = {
-    getUsers: async (): Promise<User[]> => {
-        const response = await api.get<{ users: User[] }>('/api/admin/users');
-        return response.data.users;
+    getUsers: async (params: { page: number, limit: number }): Promise<PaginatedResponse<User>> => {
+        const response = await api.get<ApiUsersResponse>('/api/admin/users', {params});
+        return {
+            data: response.data.users,
+            pageCount: response.data.pagination.totalPages,
+        };
     },
 
     getUserById: async (id: number): Promise<User> => {

@@ -2,7 +2,7 @@ export interface User {
     id: number;
     nombre: string;
     email: string;
-    rol: 'admin' | 'user';
+    rol: 'admin' | 'employee' | '';
     created_at: string;
 }
 

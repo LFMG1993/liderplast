@@ -1,5 +1,6 @@
 import {useEffect, useState} from 'react';
 import {Link} from 'react-router-dom';
+import {useQuery} from '@tanstack/react-query';
 import {orderService} from '../../services/orderService';
 import {
     type Order,
@@ -7,7 +8,7 @@ import {
     PaymentStatusColors,
 } from '../../types';
 import {Spinner} from '../general/Spinner';
-import {useNotification} from '../../providers/NotificationProvider';
+import {useNotification} from "../../context/NotificationContext.tsx";
 import {Button} from '../general/Button';
 import {Modal} from '../general/Modal';
 
@@ -36,24 +37,25 @@ const OrderDetailsModal = ({order, onClose}: { order: Order | null; onClose: () 
                         const variantDescription = getVariantDescription(item.variant);
 
                         return (
-                            <div key={item.id} className="flex items-start gap-4 border-b pb-4">
+                            <div key={item.id}
+                                 className="flex items-start gap-4 border-b border-[var(--color-border)] pb-4 last:border-b-0">
                                 <img
                                     // Priorizamos la imagen de la variante, si no, la del producto.
                                     src={item.variant?.imageUrl ?? item.product.imageUrl ?? '/placeholder.png'}
                                     alt={item.product.name}
-                                    className="w-20 h-20 object-cover rounded-md"
+                                    className="w-20 h-20 object-cover rounded-md bg-[var(--color-muted)]"
                                 />
                                 <div className="flex-grow">
-                                    <p className="font-semibold text-gray-800">{item.product.name}</p>
+                                    <p className="font-semibold">{item.product.name}</p>
                                     {/* Mostramos la descripción de la variante si existe */}
                                     {variantDescription &&
-                                        <p className="text-sm text-gray-500">{variantDescription}</p>}
-                                    <p className="text-sm text-gray-600 mt-1">
+                                        <p className="text-sm text-[var(--color-foreground)]/60">{variantDescription}</p>}
+                                    <p className="text-sm text-[var(--color-foreground)]/80 mt-1">
                                         {item.quantity} x ${item.price.toLocaleString('es-CO')}
                                     </p>
                                 </div>
                                 <div className="text-right flex-shrink-0">
-                                    <p className="font-semibold text-gray-800">${lineSubtotal.toLocaleString('es-CO')}</p>
+                                    <p className="font-semibold">${lineSubtotal.toLocaleString('es-CO')}</p>
                                 </div>
                             </div>
                         );
@@ -69,35 +71,35 @@ const OrderDetailsModal = ({order, onClose}: { order: Order | null; onClose: () 
 };
 
 export const OrderHistory = () => {
-    const [orders, setOrders] = useState<Order[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
     const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
-    const {showNotification} = useNotification();
+    const {addNotification} = useNotification();
+
+    const {data: orders = [], isLoading, isError, error} = useQuery<Order[], any>({
+        queryKey: ['customerOrders'],
+        queryFn: orderService.listForCustomer,
+    });
 
     useEffect(() => {
-        const fetchOrders = async () => {
-            try {
-                setIsLoading(true);
-                const customerOrders = await orderService.listForCustomer();
-                setOrders(customerOrders);
-            } catch (error: any) {
-                showNotification({message: `Error al cargar tus pedidos: ${error.message}`, type: 'error'});
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        fetchOrders();
-    }, []);
+        if (isError && error) {
+            addNotification(`Error al cargar tus pedidos: ${error.message}`, 'error');
+        }
+    }, [isError, error, addNotification]);
 
     if (isLoading) {
         return <div className="flex justify-center items-center h-64"><Spinner/></div>;
     }
+
+    if (isError) {
+        return <div className="text-center py-10 px-4 bg-red-500/10 text-red-500 rounded-lg">Error al cargar el
+            historial de pedidos.</div>;
+    }
+
     if (orders.length === 0) {
         return (
-            <div className="text-center py-10 px-4 bg-gray-50 rounded-lg">
-                <h3 className="text-lg font-medium text-gray-800">Aún no tienes pedidos</h3>
-                <p className="text-gray-500 mt-2">¡Explora nuestra tienda y encuentra los mejores productos!</p>
+            <div className="text-center py-10 px-4 bg-[var(--color-card)] text-[var(--color-foreground)] rounded-lg">
+                <h3 className="text-lg font-medium">Aún no tienes pedidos</h3>
+                <p className="text-[var(--color-foreground)]/60 mt-2">¡Explora nuestra tienda y encuentra los mejores
+                    productos!</p>
                 <Link to="/tienda" className="mt-4 inline-block">
                     <Button>Ir a la Tienda</Button>
                 </Link>
@@ -109,28 +111,29 @@ export const OrderHistory = () => {
         <>
             <div className="space-y-4">
                 {orders.map((order) => (
-                    <div key={order.id} className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                    <div key={order.id}
+                         className="bg-[var(--color-card)] text-[var(--color-foreground)] p-4 rounded-lg shadow-sm border border-[var(--color-border)]">
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 items-center">
                             <div>
-                                <p className="font-semibold text-gray-800">Pedido <span
-                                    className="text-liderplast-primary">N. {order.id}</span></p>
-                                <p className="text-sm text-gray-500">
+                                <p className="font-semibold">Pedido <span
+                                    className="text-primary">N. {order.id}</span></p>
+                                <p className="text-sm text-[var(--color-foreground)]/60">
                                     {new Date(order.createdAt).toLocaleDateString()}
                                 </p>
                             </div>
                             <div className="text-left md:text-center">
-                                <p className="text-sm text-gray-500">Total</p>
-                                <p className="font-semibold text-gray-800">${order.total.toLocaleString('es-CO')}</p>
+                                <p className="text-sm text-[var(--color-foreground)]/60">Total</p>
+                                <p className="font-semibold">${order.total.toLocaleString('es-CO')}</p>
                             </div>
                             <div className="text-left md:text-center">
-                                <p className="text-sm text-gray-500">Estado del Pago</p>
+                                <p className="text-sm text-[var(--color-foreground)]/60">Estado del Pago</p>
                                 <span
                                     className={`px-2 py-1 rounded text-xs font-semibold ${PaymentStatusColors[order.paymentStatus]}`}>
                                     {PaymentStatusLabels[order.paymentStatus]}
                                 </span>
                             </div>
                             <div className="text-left md:text-right">
-                                <Button variant="outline" size="sm" onClick={() => setSelectedOrder(order)}>
+                                <Button variant="primary" size="sm" onClick={() => setSelectedOrder(order)}>
                                     Ver Detalles
                                 </Button>
                             </div>

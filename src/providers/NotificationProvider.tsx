@@ -1,4 +1,4 @@
-import {useState, useCallback, type ReactNode, useContext} from 'react';
+import {useState, useCallback, type ReactNode} from 'react';
 import {NotificationContext, type Notification, type NotificationType} from '../context/NotificationContext.tsx';
 import {CheckCircle, XCircle, Info, AlertTriangle} from 'lucide-react';
 
@@ -19,12 +19,12 @@ function NotificationItem({notification, onDismiss}: { notification: Notificatio
     });
 
     return (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 flex items-start space-x-4">
+        <div className="bg-[var(--color-card)] text-[var(--color-foreground)] rounded-lg shadow-lg p-4 flex items-start space-x-4">
             <div>{notificationIcons[notification.type]}</div>
             <div className="flex-1">
-                <p className="font-medium text-gray-900 dark:text-gray-100">{notification.message}</p>
+                <p className="font-medium">{notification.message}</p>
             </div>
-            <button onClick={() => onDismiss(notification.id)} className="text-gray-400 hover:text-gray-600">
+            <button onClick={() => onDismiss(notification.id)} className="text-[var(--color-foreground)]/50 hover:text-[var(--color-foreground)]/80">
                 <XCircle className="h-5 w-5"/>
             </button>
         </div>
@@ -63,15 +63,3 @@ export function NotificationProvider({children}: { children: ReactNode }) {
         </NotificationContext.Provider>
     );
 }
-
-// Este hook es la forma correcta y estandarizada para que los componentes consuman el contexto.
-export const useNotification = () => {
-    const context = useContext(NotificationContext);
-    if (context === undefined) {
-        throw new Error('useNotification debe ser usado dentro de un NotificationProvider');
-    }
-    const showNotification = useCallback(({message, type}: { message: string, type: NotificationType }) => {
-        context.addNotification(message, type);
-    }, [context]);
-    return {showNotification};
-};

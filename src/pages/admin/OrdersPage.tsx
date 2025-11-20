@@ -1,9 +1,11 @@
-import {useState, useEffect} from 'react';
-import type {PaymentStatus, Order} from '../../types';
+import {useState, useEffect, useMemo} from 'react';
+import type {PaymentStatus, Order, PaginatedResponse} from '../../types';
 import {Spinner} from '../../components/general/Spinner';
-import {OrderList} from '../../components/orders/OrderList.tsx';
-import {useNotification} from "../../providers/NotificationProvider.tsx";
+import {OrdersTable} from "../../components/orders/OrdersTable.tsx";
+import {useNotification} from "../../context/NotificationContext.tsx";
 import {orderService} from "../../services/orderService.ts";
+import {useQuery, useMutation, useQueryClient, keepPreviousData} from '@tanstack/react-query';
+import type {PaginationState, SortingState} from "@tanstack/react-table";
 
 const statusTabs: { label: string; status: PaymentStatus | null }[] = [
     {label: 'Todos', status: null},
@@ -14,71 +16,86 @@ const statusTabs: { label: string; status: PaymentStatus | null }[] = [
 ];
 
 export default function OrdersPage() {
-    const [orders, setOrders] = useState<Order[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
+    const queryClient = useQueryClient();
+    const {addNotification} = useNotification();
+
     const [activeStatus, setActiveStatus] = useState<PaymentStatus | null>('pending_confirmation');
-    const [processingOrderId, setProcessingOrderId] = useState<number | null>(null);
-    const {showNotification} = useNotification();
+
+    // --- Estados para TanStack Table ---
+    const [{pageIndex, pageSize}, setPagination] = useState<PaginationState>({
+        pageIndex: 0,
+        pageSize: 10,
+    });
+    const [sorting, setSorting] = useState<SortingState>([]);
+    const [globalFilter, setGlobalFilter] = useState('');
+    const [debouncedFilter, setDebouncedFilter] = useState('');
 
     useEffect(() => {
-        const fetchOrders = async () => {
-            setIsLoading(true);
-            try {
-                const fetchedOrders = await orderService.listAdmin({paymentStatus: activeStatus ?? undefined});
-                setOrders(fetchedOrders);
-            } catch (error) {
-                showNotification({message: 'Error al cargar las órdenes.', type: 'error'});
-                console.error(error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
+        const timer = setTimeout(() => setDebouncedFilter(globalFilter), 500);
+        return () => clearTimeout(timer);
+    }, [globalFilter]);
 
-        fetchOrders();
-    }, [activeStatus, showNotification]);
+    const {
+        data: ordersData,
+        isLoading: isLoadingOrders,
+        isError,
+        error
+    } = useQuery<PaginatedResponse<Order>, Error>({
+        queryKey: ['orders', pageIndex, pageSize, debouncedFilter, sorting, activeStatus],
+        queryFn: () => orderService.listAdmin({
+            page: pageIndex + 1,
+            pageSize: pageSize,
+            search: debouncedFilter,
+            sortBy: sorting[0]?.id,
+            sortOrder: sorting[0] ? (sorting[0].desc ? 'desc' : 'asc') : undefined,
+            paymentStatus: activeStatus ?? undefined,
+        }),
+        placeholderData: keepPreviousData,
+    });
 
-    const handleApprove = async (orderId: number) => {
-        setProcessingOrderId(orderId);
-        try {
-            await orderService.approve(orderId);
-            showNotification({message: `Orden #${orderId} aprobada con éxito.`, type: 'success'});
-            // Actualizamos la lista para reflejar el cambio de estado
-            setOrders(prev => prev.filter(o => o.id !== orderId));
-        } catch (error) {
-            showNotification({message: 'Error al aprobar la orden.', type: 'error'});
-        } finally {
-            setProcessingOrderId(null);
-        }
-    };
 
-    const handleReject = async (orderId: number) => {
-        setProcessingOrderId(orderId);
-        try {
-            await orderService.reject(orderId);
-            showNotification({message: `Orden #${orderId} rechazada.`, type: 'success'});
-            setOrders(prev => prev.filter(o => o.id !== orderId));
-        } catch (error) {
-            showNotification({message: 'Error al rechazar la orden.', type: 'error'});
-        } finally {
-            setProcessingOrderId(null);
-        }
-    };
+    const orders = useMemo(() => ordersData?.data ?? [], [ordersData]);
+    const pageCount = useMemo(() => ordersData?.pageCount ?? -1, [ordersData]);
+
+    const approveMutation = useMutation({
+        mutationFn: (orderId: number) => orderService.approve(orderId),
+        onSuccess: (_, orderId) => {
+            addNotification(`Orden #${orderId} aprobada con éxito.`, 'success');
+            queryClient.invalidateQueries({queryKey: ['orders']});
+        },
+        onError: (err: Error) => {
+            addNotification(`Error al aprobar la orden: ${err.message}`, 'error');
+        },
+    });
+
+    const rejectMutation = useMutation({
+        mutationFn: (orderId: number) => orderService.reject(orderId),
+        onSuccess: (_, orderId) => {
+            addNotification(`Orden #${orderId} rechazada.`, 'success');
+            queryClient.invalidateQueries({queryKey: ['orders']});
+        },
+        onError: (err: Error) => {
+            addNotification(`Error al rechazar la orden: ${err.message}`, 'error');
+        },
+    });
+
+    const isLoading = isLoadingOrders && ordersData === undefined;
 
     return (
         <div className="p-6">
-            <h1 className="text-2xl font-bold text-white mb-4">Gestión de Órdenes</h1>
+            <h1 className="text-3xl font-bold text-[var(--color-foreground)] mb-4">Gestión de Órdenes</h1>
 
-            <div className="border-b border-gray-200 mb-4">
-                <nav className="-mb-px flex space-x-6" aria-="Tabs">
+            <div className="border-b border-[var(--color-border)] mb-4">
+                <nav className="-mb-px flex space-x-6 overflow-x-auto">
                     {statusTabs.map((tab) => (
                         <button
                             key={tab.label}
                             onClick={() => setActiveStatus(tab.status)}
                             className={`${
                                 activeStatus === tab.status
-                                    ? 'border-liderplast-primary text-liderplast-primary'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                            } whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm`}
+                                    ? 'border-primary text-primary'
+                                    : 'border-transparent text-[var(--color-foreground)]/60 hover:text-[var(--color-foreground)] hover:border-[var(--color-foreground)]/30'
+                            } whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm transition-colors`}
                         >
                             {tab.label}
                         </button>
@@ -90,12 +107,21 @@ export default function OrdersPage() {
                 <div className="flex justify-center items-center py-16">
                     <Spinner/>
                 </div>
+            ) : isError ? (
+                <p className="text-red-500 text-center">Error: {error.message}</p>
             ) : (
-                <OrderList
+                <OrdersTable
                     orders={orders}
-                    onApprove={handleApprove}
-                    onReject={handleReject}
-                    processingOrderId={processingOrderId}
+                    onApprove={(id) => approveMutation.mutate(id)}
+                    onReject={(id) => rejectMutation.mutate(id)}
+                    processingOrderId={approveMutation.isPending ? approveMutation.variables : rejectMutation.isPending ? rejectMutation.variables : null}
+                    pagination={{pageIndex, pageSize}}
+                    setPagination={setPagination}
+                    sorting={sorting}
+                    setSorting={setSorting}
+                    globalFilter={globalFilter}
+                    setGlobalFilter={setGlobalFilter}
+                    pageCount={pageCount}
                 />
             )}
         </div>

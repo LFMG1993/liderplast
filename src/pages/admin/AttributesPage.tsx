@@ -1,7 +1,8 @@
-import {useEffect, useState} from 'react';
+import {useState} from 'react';
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {attributeService} from '../../services/attributeService.ts';
-import type {Attribute} from "../../types";
-import {useNotification} from '../../providers/NotificationProvider.tsx';
+import type {Attribute, AttributeValue} from "../../types";
+import {useNotification} from '../../context/NotificationContext.tsx';
 import {Button} from '../../components/general/Button.tsx';
 import {ConfirmationModal} from '../../components/general/ConfirmationModal.tsx';
 import {Plus} from 'lucide-react';
@@ -10,82 +11,91 @@ import {AttributeForm} from "../../components/attributes/AttributeForm.tsx";
 import {Spinner} from "../../components/general/Spinner.tsx";
 
 const AttributesPage = () => {
-    const [attributes, setAttributes] = useState<Attribute[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const {showNotification} = useNotification();
+    const queryClient = useQueryClient();
+    const {addNotification} = useNotification();
 
     // Estados para los modales
     const [isAttributeModalOpen, setIsAttributeModalOpen] = useState(false);
     const [isValueModalOpen, setIsValueModalOpen] = useState(false);
     const [editingAttribute, setEditingAttribute] = useState<Attribute | null>(null);
     const [deletingAttribute, setDeletingAttribute] = useState<Attribute | null>(null);
+    const [deletingValue, setDeletingValue] = useState<{ attribute: Attribute, value: AttributeValue } | null>(null);
     const [addingValueTo, setAddingValueTo] = useState<Attribute | null>(null);
     const [formValue, setFormValue] = useState('');
 
-    const fetchAttributes = async () => {
-        try {
-            setIsLoading(true);
-            const data = await attributeService.getAttributesWithValues();
-            setAttributes(data);
-        } catch (err: any) {
-            showNotification({message: err.message, type: 'error'});
-        } finally {
-            setIsLoading(false);
-        }
-    };
+    const {data: attributes = [], isLoading, isError, error} = useQuery<Attribute[], Error>({
+        queryKey: ['attributes'],
+        queryFn: attributeService.getAttributesWithValues,
+    });
 
-    useEffect(() => {
-        fetchAttributes();
-    }, []);
-
-    const handleSaveAttribute = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setIsSubmitting(true);
-        try {
-            if (editingAttribute?.id) {
-                await attributeService.updateAttribute(editingAttribute.id, {name: formValue});
-            } else {
-                await attributeService.createAttribute({name: formValue});
-            }
-            showNotification({message: 'Atributo guardado con éxito.', type: 'success'});
+    const saveAttributeMutation = useMutation({
+        mutationFn: (data: { name: string, id?: number }) =>
+            data.id
+                ? attributeService.updateAttribute(data.id, {name: data.name})
+                : attributeService.createAttribute({name: data.name}),
+        onSuccess: (_, variables) => {
+            addNotification(`Atributo ${variables.id ? 'actualizado' : 'creado'} con éxito.`, 'success');
+            queryClient.invalidateQueries({queryKey: ['attributes']});
             closeAttributeModal();
-            setFormValue('');
-            await fetchAttributes();
-        } catch (err: any) {
-            showNotification({message: err.message, type: 'error'});
-        } finally {
-            setIsSubmitting(false);
-        }
+        },
+        onError: (err: Error) => addNotification(`Error: ${err.message}`, 'error'),
+    });
+
+    const saveValueMutation = useMutation({
+        mutationFn: (data: { attributeId: number, value: string }) =>
+            attributeService.createAttributeValue(data),
+        onSuccess: () => {
+            addNotification('Valor añadido con éxito.', 'success');
+            queryClient.invalidateQueries({queryKey: ['attributes']});
+            closeValueModal();
+        },
+        onError: (err: Error) => addNotification(`Error: ${err.message}`, 'error'),
+    });
+
+    const deleteAttributeMutation = useMutation({
+        mutationFn: (id: number) => attributeService.deleteAttribute(id),
+        onSuccess: () => {
+            addNotification('Atributo eliminado con éxito.', 'success');
+            queryClient.invalidateQueries({queryKey: ['attributes']});
+            setDeletingAttribute(null);
+        },
+        onError: (err: Error) => addNotification(`Error: ${err.message}`, 'error'),
+    });
+
+    const deleteValueMutation = useMutation({
+        mutationFn: (data: { attributeId: number, valueId: number }) =>
+            attributeService.deleteAttributeValue(data.attributeId, data.valueId),
+        onSuccess: () => {
+            addNotification('Valor eliminado con éxito.', 'success');
+            queryClient.invalidateQueries({queryKey: ['attributes']});
+            setDeletingValue(null);
+        },
+        onError: (err: Error) => addNotification(`Error: ${err.message}`, 'error'),
+    });
+
+    const handleSaveAttribute = (e: React.FormEvent) => {
+        e.preventDefault();
+        saveAttributeMutation.mutate({name: formValue, id: editingAttribute?.id});
     };
 
-    const handleSaveValue = async (e: React.FormEvent) => {
+    const handleSaveValue = (e: React.FormEvent) => {
         e.preventDefault();
         if (!addingValueTo) return;
-        setIsSubmitting(true);
-        try {
-            await attributeService.createAttributeValue({attributeId: addingValueTo.id, value: formValue});
-            showNotification({message: 'Valor añadido con éxito.', type: 'success'});
-            closeAttributeModal();
-            setFormValue('');
-            await fetchAttributes();
-        } catch (err: any) {
-            showNotification({message: err.message, type: 'error'});
-        } finally {
-            setIsSubmitting(false);
+        saveValueMutation.mutate({attributeId: addingValueTo.id, value: formValue});
+    };
+
+    const handleConfirmDeleteAttribute = () => {
+        if (deletingAttribute) {
+            deleteAttributeMutation.mutate(deletingAttribute.id);
         }
     };
 
-    const handleConfirmDelete = async () => {
-        if (!deletingAttribute) return;
-        try {
-            await attributeService.deleteAttribute(deletingAttribute.id);
-            showNotification({message: 'Atributo eliminado con éxito.', type: 'success'});
-            setDeletingAttribute(null);
-            await fetchAttributes();
-        } catch (err: any) {
-            showNotification({message: err.message, type: 'error'});
-            setDeletingAttribute(null);
+    const handleConfirmDeleteValue = () => {
+        if (deletingValue) {
+            deleteValueMutation.mutate({
+                attributeId: deletingValue.attribute.id,
+                valueId: deletingValue.value.id
+            });
         }
     };
 
@@ -93,11 +103,13 @@ const AttributesPage = () => {
     const closeAttributeModal = () => {
         setIsAttributeModalOpen(false);
         setEditingAttribute(null);
+        setFormValue('');
     };
 
     const closeValueModal = () => {
         setIsValueModalOpen(false);
         setAddingValueTo(null);
+        setFormValue('');
     };
 
     const openNewAttributeModal = () => {
@@ -121,7 +133,7 @@ const AttributesPage = () => {
     return (
         <div className="p-8">
             <div className="flex justify-between items-center mb-6">
-                <h1 className="text-3xl font-bold">Gestión de Atributos</h1>
+                <h1 className="text-3xl font-bold text-[var(--color-foreground)]">Gestión de Atributos</h1>
                 <Button onClick={openNewAttributeModal}><Plus className="h-4 w-4 mr-2"/>Crear Atributo</Button>
             </div>
 
@@ -130,39 +142,63 @@ const AttributesPage = () => {
                     <Spinner/>
                 </div>
             )}
+            {isError && <p className="text-red-500 text-center">Error al cargar atributos: {error.message}</p>}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {!isLoading && attributes.map(attr => (
-                    <AttributeCard key={attr.id} attribute={attr} onEdit={openEditAttributeModal}
-                                   onDelete={setDeletingAttribute} onAddValue={openValueModal}/>
+                    <AttributeCard
+                        key={attr.id}
+                        attribute={attr}
+                        onEdit={openEditAttributeModal}
+                        onDelete={setDeletingAttribute}
+                        onAddValue={openValueModal}
+                        onDeleteValue={(value) => setDeletingValue({attribute: attr, value})}
+                    />
                 ))}
             </div>
 
             {/* Modal para Atributos */}
             <AttributeForm title={editingAttribute ? 'Editar Atributo' : 'Crear Atributo'}
                            isOpen={isAttributeModalOpen} onClose={closeAttributeModal}
-                           onSubmit={handleSaveAttribute} isSubmitting={isSubmitting}>
-                <label htmlFor="attributeName" className="block text-sm font-medium text-gray-700">Nombre del
+                           onSubmit={handleSaveAttribute} isSubmitting={saveAttributeMutation.isPending}>
+                <label htmlFor="attributeName" className="block text-sm font-medium text-[var(--color-foreground)]/80">Nombre
+                    del
                     Atributo</label>
-                <input type="text" id="attributeName" value={formValue} onChange={(e) => setFormValue(e.target.value)}
-                       className="mt-1 block w-full rounded-md border-gray-300 shadow-sm text-gray-700 p-2.5" required/>
+                <input type="text" id="attributeName" value={formValue}
+                       onChange={(e) => setFormValue(e.target.value)}
+                       className="mt-1 block w-full rounded-md border-[var(--color-border)] bg-[var(--color-muted)] text-[var(--color-foreground)] shadow-sm focus:border-liderplast-primary focus:ring-liderplast-primary p-2.5"
+                       required/>
             </AttributeForm>
 
             {/* Modal para Valores de Atributos */}
             <AttributeForm title={`Añadir valor a "${addingValueTo?.name}"`} isOpen={isValueModalOpen}
                            onClose={closeValueModal} onSubmit={handleSaveValue}
-                           isSubmitting={isSubmitting}>
-                <label htmlFor="valueName" className="block text-sm font-medium text-gray-700">Nuevo Valor</label>
-                <input type="text" id="valueName" value={formValue} onChange={(e) => setFormValue(e.target.value)}
-                       className="mt-1 block w-full rounded-md border-gray-300 shadow-sm text-gray-700 p-2.5" required/>
+                           isSubmitting={saveValueMutation.isPending}>
+                <label htmlFor="valueName" className="block text-sm font-medium text-[var(--color-foreground)]/80">Nuevo
+                    Valor</label>
+                <input type="text" id="valueName" value={formValue}
+                       onChange={(e) => setFormValue(e.target.value)}
+                       className="mt-1 block w-full rounded-md border-[var(--color-border)] bg-[var(--color-muted)] text-[var(--color-foreground)] shadow-sm focus:border-liderplast-primary focus:ring-liderplast-primary p-2.5"
+                       required/>
             </AttributeForm>
 
-            {/* Modal de Confirmación para eliminar */}
+            {/* Modal de Confirmación para eliminar Atributo */}
             <ConfirmationModal
                 isOpen={!!deletingAttribute}
                 onClose={() => setDeletingAttribute(null)}
-                onConfirm={handleConfirmDelete}
+                onConfirm={handleConfirmDeleteAttribute}
+                isConfirming={deleteAttributeMutation.isPending}
                 title="Confirmar Eliminación"
                 message={`¿Estás seguro de que deseas eliminar el atributo "${deletingAttribute?.name}"? Esta acción también eliminará todos sus valores asociados y no se puede deshacer.`}
+            />
+
+            {/* Modal de Confirmación para eliminar Valor */}
+            <ConfirmationModal
+                isOpen={!!deletingValue}
+                onClose={() => setDeletingValue(null)}
+                onConfirm={handleConfirmDeleteValue}
+                isConfirming={deleteValueMutation.isPending}
+                title="Confirmar Eliminación de Valor"
+                message={`¿Estás seguro de que deseas eliminar el valor "${deletingValue?.value.value}" del atributo "${deletingValue?.attribute.name}"?`}
             />
         </div>
     );

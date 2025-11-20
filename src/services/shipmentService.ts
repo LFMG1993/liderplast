@@ -1,18 +1,29 @@
 import {api} from './api';
-import type {Shipment, ShipmentUpdateData} from '../types';
+import type {Shipment, ShipmentUpdateData, PaginatedResponse} from '../types';
 
-interface ListShipmentsFilters {
-    // Aquí puedes añadir filtros si tu backend los soporta en el futuro
-    // por ejemplo: shippingMethod?: ShippingMethod;
+interface ApiShipmentsResponse {
+    shipments: Shipment[];
+    pagination: {
+        totalPages: number;
+    };
 }
 
 export const shipmentService = {
     /**
-     * Lista todos los envíos existentes.
+     * Lista todos los envíos existentes de forma paginada.
      */
-    listShipment: async (filters: ListShipmentsFilters = {}): Promise<Shipment[]> => {
-        const response = await api.get<{ shipments: Shipment[] }>('/api/admin/shipments', {params: filters});
-        return response.data.shipments;
+    listShipments: async (params: {
+        page: number,
+        pageSize: number,
+        search?: string,
+        sortBy?: string,
+        sortOrder?: 'asc' | 'desc'
+    }): Promise<PaginatedResponse<Shipment>> => {
+        const response = await api.get<ApiShipmentsResponse>('/api/admin/shipments', { params });
+        return {
+            data: response.data.shipments,
+            pageCount: response.data.pagination.totalPages,
+        };
     },
 
     updateShipment: async (shipmentId: number, payload: ShipmentUpdateData): Promise<Shipment> => {

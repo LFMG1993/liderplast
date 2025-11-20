@@ -1,8 +1,11 @@
-import {Fragment, useState, useMemo} from "react";
+import {Fragment, useState, useEffect} from "react";
 import {useNavigate} from "react-router-dom";
 import {Menu, Transition} from "@headlessui/react";
-import {useProductFilter} from "../../hooks/useProductFilter.ts";
-import {Search, FileImage} from "react-bootstrap-icons";
+import {Search} from "lucide-react";
+import {useQuery} from "@tanstack/react-query";
+import {shopService} from "../../services/shopService.ts";
+import type {PaginatedResponse, Product} from "../../types";
+import {ImageIcon} from "lucide-react";
 
 interface SearchDropdownProps {
     isTransparent: boolean;
@@ -12,21 +15,34 @@ interface SearchDropdownProps {
 export default function SearchDropdown({isTransparent, isPanel = false}: SearchDropdownProps) {
     const navigate = useNavigate();
     const [searchQuery, setSearchQuery] = useState("");
-    const {filteredProducts: allProducts} = useProductFilter();
+    const [debouncedQuery, setDebouncedQuery] = useState("");
 
-    const suggestedProducts = useMemo(() => {
-        if (!searchQuery.trim()) return [];
-        const normalizedQuery = searchQuery.toLowerCase().trim();
-        return allProducts
-            .filter(p => p.name.toLowerCase().includes(normalizedQuery))
-            .slice(0, 5); // Mostramos solo los primeros 5 resultados.
-    }, [searchQuery, allProducts]);
+    // Debounce para no sobrecargar la API con cada tecleo
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedQuery(searchQuery);
+        }, 300);
+        return () => clearTimeout(timer);
+    }, [searchQuery]);
+
+    // Hook useQuery para buscar sugerencias de forma eficiente
+    const {data: suggestedProducts = []} = useQuery({
+        queryKey: ['searchSuggestions', debouncedQuery],
+        queryFn: () => shopService.getPublicProducts({
+            search: debouncedQuery,
+            page: 1,
+            limit: 5 // Solo queremos 5 sugerencias
+        }),
+        select: (data: PaginatedResponse<Product>) => data.data,
+        enabled: debouncedQuery.trim().length > 2, // Solo busca si hay al menos 3 caracteres
+        staleTime: 1000 * 60, // Cachea las sugerencias por 1 minuto
+    });
 
     const handleSelectProduct = (productName: string) => {
         navigate(`/tienda?search=${encodeURIComponent(productName)}`);
         setSearchQuery("");
     };
-    const buttonClasses = `p-2 rounded-full transition-colors ${isTransparent ? 'text-white hover:bg-white/20' : 'text-gray-700 hover:bg-gray-100'}`;
+    const buttonClasses = `p-2 rounded-full transition-colors ${isTransparent ? 'text-white hover:bg-white/20' : 'text-[var(--color-foreground)] hover:bg-[var(--color-muted)]'}`;
 
     const SearchContent = (
         <>
@@ -35,7 +51,7 @@ export default function SearchDropdown({isTransparent, isPanel = false}: SearchD
                     type="search"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-liderplast-primary focus:border-liderplast-primary"
+                    className="w-full px-3 py-2 border border-[var(--color-border)] bg-[var(--color-muted)] rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
                     placeholder="Buscar producto..."
                     autoFocus
                 />
@@ -47,21 +63,24 @@ export default function SearchDropdown({isTransparent, isPanel = false}: SearchD
                             <li key={product.id}>
                                 <button
                                     onClick={() => handleSelectProduct(product.name)}
-                                    className="w-full text-left flex items-center p-3 hover:bg-gray-100"
+                                    className="w-full text-left flex items-center p-3 hover:bg-[var(--color-muted)]"
                                 >
-                                    <div className="h-12 w-12 bg-gray-100 rounded-md flex-shrink-0 flex items-center justify-center">
+                                    <div
+                                        className="h-12 w-12 bg-[var(--color-muted)] border border-[var(--color-border)] rounded-md flex-shrink-0 flex items-center justify-center">
                                         {product.imageUrl ? (
-                                            <img src={product.imageUrl} alt={product.name} className="h-full w-full object-cover rounded-md"/>
+                                            <img src={product.imageUrl} alt={product.name}
+                                                 className="h-full w-full object-cover rounded-md"/>
                                         ) : (
-                                            <FileImage className="h-6 w-6 text-gray-400"/>
+                                            <ImageIcon className="h-6 w-6 text-[var(--color-foreground)]/40"/>
                                         )}
                                     </div>
-                                    <span className="ml-3 text-sm text-gray-800">{product.name}</span>
+                                    <span className="ml-3 text-sm">{product.name}</span>
                                 </button>
                             </li>
                         ))
                     ) : (
-                        <p className="text-center text-sm text-gray-500 py-4">No se encontraron resultados.</p>
+                        <p className="text-center text-sm text-[var(--color-foreground)]/60 py-4">No se encontraron
+                            resultados.</p>
                     )}
                 </ul>
             )}
@@ -73,7 +92,7 @@ export default function SearchDropdown({isTransparent, isPanel = false}: SearchD
     return (
         <Menu as="div" className="relative">
             <Menu.Button className={buttonClasses}>
-                <span className="sr-only">Buscar productos</span>
+                <span className="sr-only">Buscar</span>
                 <Search className="w-6 h-6"/>
             </Menu.Button>
 
@@ -87,7 +106,7 @@ export default function SearchDropdown({isTransparent, isPanel = false}: SearchD
                 leaveTo="transform opacity-0 scale-95"
             >
                 <Menu.Items
-                    className="absolute right-0 mt-2 w-80 origin-top-right bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                    className="absolute right-0 mt-2 w-80 origin-top-right bg-[var(--color-card)] text-[var(--color-foreground)] rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
                 >
                     {SearchContent}
                 </Menu.Items>

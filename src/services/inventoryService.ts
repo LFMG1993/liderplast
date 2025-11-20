@@ -1,10 +1,26 @@
 import {api} from './api';
-import type {InventoryItem, InventoryUpdateData} from '../types';
+import type {InventoryItem, InventoryUpdateData, PaginatedResponse} from '../types';
+
+interface ApiInventoryResponse {
+    inventory: InventoryItem[];
+    pagination: {
+        totalPages: number;
+    };
+}
 
 export const inventoryService = {
-    getInventory: async (): Promise<InventoryItem[]> => {
-        const response = await api.get<{ inventory: InventoryItem[] }>('/api/admin/inventory');
-        return response.data.inventory;
+    getInventory: async (params: {
+        page: number,
+        pageSize: number,
+        search?: string,
+        sortBy?: string,
+        sortOrder?: 'asc' | 'desc'
+    }): Promise<PaginatedResponse<InventoryItem>> => {
+        const response = await api.get<ApiInventoryResponse>('/api/admin/inventory', {params});
+        return {
+            data: response.data.inventory,
+            pageCount: response.data.pagination.totalPages,
+        };
     },
 
     updateVariantInventory: async (variantId: number, data: InventoryUpdateData): Promise<InventoryItem> => {

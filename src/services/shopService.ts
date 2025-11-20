@@ -1,13 +1,40 @@
 import {api} from './api';
-import type {Product, Category, Attribute} from '../types';
+import type {Product, Category, Attribute, PaginatedResponse} from '../types';
+
+interface ApiPublicProductsResponse {
+    products: Product[];
+    pagination: {
+        totalPages: number;
+    };
+}
+
+/**
+ * Parámetros para la obtención de productos públicos, incluyendo paginación y filtros.
+ */
+interface GetPublicProductsParams {
+    page: number;
+    limit: number;
+    search?: string;
+    featured?: boolean;
+    categoryIds?: number[];
+    attributeValueIds?: number[];
+}
 
 /**
  * Servicio para las llamadas a la API que son públicas (no requieren autenticación).
  */
 export const shopService = {
-    getPublicProducts: async (): Promise<Product[]> => {
-        const response = await api.get<{ products: Product[] }>('/api/products');
-        return response.data.products;
+    getPublicProducts: async (params: GetPublicProductsParams): Promise<PaginatedResponse<Product>> => {
+        const apiParams = {
+            ...params,
+            categoryIds: params.categoryIds?.join(','),
+            attributeValueIds: params.attributeValueIds?.join(','), // Convertimos el array a string
+        };
+        const response = await api.get<ApiPublicProductsResponse>('/api/products', {params: apiParams});
+        return {
+            data: response.data.products,
+            pageCount: response.data.pagination.totalPages,
+        };
     },
 
     // Obtiene los detalles completos de un solo producto.

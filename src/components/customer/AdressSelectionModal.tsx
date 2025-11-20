@@ -1,7 +1,8 @@
 import {useEffect, useState} from 'react';
+import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
 import {addressService} from '../../services/addressService.ts';
 import type {Address, AddressCreationData} from '../../types';
-import {useNotification} from '../../providers/NotificationProvider.tsx';
+import {useNotification} from "../../context/NotificationContext.tsx";
 import {Spinner} from '../general/Spinner.tsx';
 import {Button} from '../general/Button.tsx';
 import {PlusCircle} from 'lucide-react';
@@ -15,55 +16,56 @@ interface AddressSelectionModalProps {
 }
 
 export const AddressSelectionModal = ({isOpen, onClose, onAddressSelected}: AddressSelectionModalProps) => {
-    const [addresses, setAddresses] = useState<Address[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
+    const queryClient = useQueryClient();
     const [selectedAddressId, setSelectedAddressId] = useState<number | null>(null);
-    const {showNotification} = useNotification();
+    const {addNotification} = useNotification();
 
     // Estado para el modal de creación/edición
     const [isFormModalOpen, setIsFormModalOpen] = useState(false);
-    const [isSaving, setIsSaving] = useState(false);
 
-    const fetchAddresses = async () => {
-        setIsLoading(true);
-        try {
-            const data = await addressService.listAddresses();
-            setAddresses(data);
-            // Pre-seleccionar la dirección por defecto si existe
-            const defaultAddress = data.find(a => a.isDefault);
-            if (defaultAddress) {
-                setSelectedAddressId(defaultAddress.id);
-            }
-        } catch (error: any) {
-            if (error.response?.status === 404) {
-                setAddresses([]); // No hay direcciones, es un estado válido.
-            } else {
-                showNotification({message: `Error al cargar direcciones: ${error.message}`, type: 'error'});
-            }
-        } finally {
-            setIsLoading(false);
-        }
-    };
+    const {data: addresses = [], isLoading} = useQuery<Address[], any>({
+        queryKey: ['customerAddresses'],
+        queryFn: addressService.listAddresses,
+        enabled: isOpen, // Solo ejecuta la query cuando el modal está abierto
+    });
 
-    // Cargar direcciones cuando el modal principal se abre
     useEffect(() => {
-        if (isOpen) {
-            fetchAddresses();
+        if (addresses.length > 0 && !selectedAddressId) {
+            if (!selectedAddressId) {
+                const defaultAddress = addresses.find(a => a.isDefault);
+                if (defaultAddress) {
+                    setSelectedAddressId(defaultAddress.id);
+                }
+            }
         }
-    }, [isOpen]);
+    }, [addresses, selectedAddressId]);
 
-    const handleSaveNewAddress = async (data: AddressCreationData) => {
-        setIsSaving(true);
-        try {
-            await addressService.createAddress(data);
-            showNotification({message: 'Dirección creada con éxito.', type: 'success'});
-            setIsFormModalOpen(false);
-            await fetchAddresses(); // Recargar la lista para mostrar la nueva dirección
-        } catch (error: any) {
-            showNotification({message: `Error al guardar la dirección: ${error.message}`, type: 'error'});
-        } finally {
-            setIsSaving(false);
+    useEffect(() => {
+        if (isLoading) return; // Evitar notificaciones en la carga inicial
+        const queryState = queryClient.getQueryState(['customerAddresses']);
+        if (queryState?.error) {
+            const error = queryState.error as any;
+            if (error.response?.status === 404) {
+            } else {
+                addNotification(`Error al cargar direcciones: ${error.message}`, 'error');
+            }
         }
+    }, [isLoading, queryClient, addNotification]);
+
+    const createAddressMutation = useMutation({
+        mutationFn: (data: AddressCreationData) => addressService.createAddress(data),
+        onSuccess: () => {
+            addNotification('Dirección creada con éxito.', 'success');
+            queryClient.invalidateQueries({queryKey: ['customerAddresses']});
+            setIsFormModalOpen(false);
+        },
+        onError: (error: any) => {
+            addNotification(`Error al guardar la dirección: ${error.message}`, 'error');
+        }
+    });
+
+    const handleSaveNewAddress = (data: AddressCreationData) => {
+        createAddressMutation.mutate(data);
     };
 
     const handleConfirmSelection = () => {
@@ -82,13 +84,14 @@ export const AddressSelectionModal = ({isOpen, onClose, onAddressSelected}: Addr
                         {addresses.length > 0 ? (
                             addresses.map(addr => (
                                 <div key={addr.id}
-                                     className={`border rounded-lg p-4 cursor-pointer transition-all ${selectedAddressId === addr.id ? 'border-liderplast-primary ring-2 ring-liderplast-primary' : 'border-gray-300 hover:border-gray-400'}`}
-                                     onClick={() => setSelectedAddressId(addr.id)}>
+                                     className={`border rounded-lg p-4 cursor-pointer transition-all ${selectedAddressId === addr.id ? 'border-primary ring-2 ring-primary' : 'border-[var(--color-border)] hover:border-primary/50'}`}
+                                     onClick={() => setSelectedAddressId(addr.id)}
+                                >
                                     <div className="flex items-start">
                                         <input type="radio" name="address" checked={selectedAddressId === addr.id}
                                                readOnly
-                                               className="mt-1 h-4 w-4 text-liderplast-primary focus:ring-liderplast-primary"/>
-                                        <div className="ml-3 text-sm">
+                                               className="mt-1 h-4 w-4 text-primary focus:ring-primary bg-transparent border-[var(--color-border)]"/>
+                                        <div className="ml-3 text-sm text-[var(--color-foreground)]">
                                             <p className="font-bold">{addr.recipientName}</p>
                                             <p>{addr.street}, {addr.details}</p>
                                             <p>{addr.city}, {addr.state}</p>
@@ -97,8 +100,8 @@ export const AddressSelectionModal = ({isOpen, onClose, onAddressSelected}: Addr
                                 </div>
                             ))
                         ) : (
-                            <p className="text-center text-gray-600 py-4">No tienes direcciones guardadas. ¡Añade una
-                                para continuar!</p>
+                            <p className="text-center text-[var(--color-foreground)]/60 py-4">No tienes direcciones
+                                guardadas. ¡Añade una para continuar!</p>
                         )}
 
                         <Button variant="outline" size="md" className="w-full"
@@ -123,7 +126,7 @@ export const AddressSelectionModal = ({isOpen, onClose, onAddressSelected}: Addr
                 isOpen={isFormModalOpen}
                 onClose={() => setIsFormModalOpen(false)}
                 onSave={handleSaveNewAddress}
-                isSaving={isSaving}
+                isSaving={createAddressMutation.isPending}
             />
         </>
     );

@@ -8,16 +8,17 @@ interface UserFormProps {
     onClose: () => void;
     onSubmit: (data: UserCreationData) => void;
     userToEdit: User | null;
+    isSubmitting: boolean;
 }
 
 const initialState: UserCreationData = {
     nombre: '',
     email: '',
     password: '',
-    rol: 'user', // ✅ MEJORA: Se estandariza el rol por defecto.
+    rol: '',
 };
 
-export const UserForm = ({isOpen, onClose, onSubmit, userToEdit}: UserFormProps) => {
+export const UserForm = ({isOpen, onClose, onSubmit, userToEdit, isSubmitting}: UserFormProps) => {
     const [formData, setFormData] = useState<UserCreationData>({
         ...initialState
     });
@@ -59,50 +60,65 @@ export const UserForm = ({isOpen, onClose, onSubmit, userToEdit}: UserFormProps)
     return (
         <div
             className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-start pt-10 overflow-y-auto">
-            <div className="bg-white rounded-lg shadow-xl w-full max-w-lg" onClick={(e) => e.stopPropagation()}>
+            <div
+                className="bg-[var(--color-card)] text-[var(--color-card-foreground)] rounded-lg shadow-xl w-full max-w-lg"
+                onClick={(e) => e.stopPropagation()}>
                 <form onSubmit={handleSubmit} className="flex flex-col">
-                    <div className="flex justify-between items-center p-6 border-b">
-                        <h3 className="text-lg font-medium text-gray-900">{isEditMode ? 'Editar Usuario' : 'Crear Nuevo Usuario'}</h3>
-                        <button type="button" onClick={onClose} className="text-gray-400 hover:text-gray-600">
+                    <div className="flex justify-between items-center p-6 border-b border-[var(--color-border)]">
+                        <h3 className="text-lg font-medium">{isEditMode ? 'Editar Usuario' : 'Crear Nuevo Usuario'}</h3>
+                        <button type="button" onClick={onClose}
+                                className="text-[var(--color-foreground)]/60 hover:text-[var(--color-foreground)]">
                             <X className="h-6 w-6"/>
                         </button>
                     </div>
 
-                    <div className="p-6 space-y-4 text-black">
+                    <div className="p-6 space-y-4">
                         <div>
-                            <label htmlFor="nombre" className="block text-sm font-medium text-gray-700">Nombre
+                            <label htmlFor="nombre"
+                                   className="block text-sm font-medium text-[var(--color-foreground)]/80">Nombre
                                 Completo</label>
-                            <input type="text" name="nombre" id="nombre" value={formData.nombre} onChange={handleChange}
-                                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required/>
+                            <input type="text" name="nombre" id="nombre" value={formData.nombre}
+                                   onChange={handleChange}
+                                   className="mt-1 block w-full rounded-md border-[var(--color-border)] bg-[var(--color-muted)] text-[var(--color-foreground)] shadow-sm focus:border-liderplast-primary focus:ring-liderplast-primary"
+                                   required/>
                         </div>
                         <div>
-                            <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
-                            <input type="email" name="email" id="email" value={formData.email} onChange={handleChange}
-                                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required/>
+                            <label htmlFor="email"
+                                   className="block text-sm font-medium text-[var(--color-foreground)]/80">Email</label>
+                            <input type="email" name="email" id="email" value={formData.email}
+                                   onChange={handleChange}
+                                   className="mt-1 block w-full rounded-md border-[var(--color-border)] bg-[var(--color-muted)] text-[var(--color-foreground)] shadow-sm focus:border-liderplast-primary focus:ring-liderplast-primary"
+                                   required/>
                         </div>
                         <div>
-                            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                            <label htmlFor="password"
+                                   className="block text-sm font-medium text-[var(--color-foreground)]/80">
                                 Contraseña {isEditMode ? '(Dejar en blanco para no cambiar)' : ''}
                             </label>
-                            <input type="password" name="password" id="password" value={formData.password || ''}
+                            <input type="password" name="password" id="password"
+                                   value={formData.password || ''}
                                    onChange={handleChange}
-                                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                                   className="mt-1 block w-full rounded-md border-[var(--color-border)] bg-[var(--color-muted)] text-[var(--color-foreground)] shadow-sm focus:border-liderplast-primary focus:ring-liderplast-primary"
                                    required={!isEditMode}/>
                         </div>
                         <div>
-                            <label htmlFor="rol" className="block text-sm font-medium text-gray-700">Rol</label>
+                            <label htmlFor="rol"
+                                   className="block text-sm font-medium text-[var(--color-foreground)]/80">Rol</label>
                             <select name="rol" id="rol" value={formData.rol} onChange={handleChange}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
-                                <option value="ADMIN">Administrador</option>
-                                <option value="VENDEDOR">Vendedor</option>
+                                    className="mt-1 block w-full rounded-md border-[var(--color-border)] bg-[var(--color-muted)] text-[var(--color-foreground)] shadow-sm focus:border-liderplast-primary focus:ring-liderplast-primary">
+                                <option value="admin">Administrador</option>
+                                <option value="employee">Vendedor</option>
                             </select>
                         </div>
                     </div>
 
-                    <div className="flex justify-end gap-4 p-6 border-t bg-gray-50 rounded-b-lg">
+                    <div
+                        className="flex justify-end gap-4 p-6 border-t border-[var(--color-border)] bg-[var(--color-card)] rounded-b-lg">
                         <Button type="button" variant="secondary" onClick={onClose}>Cancelar</Button>
-                        <Button type="submit" variant="primary">
-                            {isEditMode ? 'Actualizar Usuario' : 'Crear Usuario'}
+                        <Button type="submit" variant="primary" disabled={isSubmitting}>
+                            {isSubmitting
+                                ? (isEditMode ? 'Actualizando...' : 'Creando...')
+                                : (isEditMode ? 'Actualizar Usuario' : 'Crear Usuario')}
                         </Button>
                     </div>
                 </form>

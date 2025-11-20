@@ -251,12 +251,15 @@ export function ProductForm({
 
     return (
         <div
-            className="fixed inset-30 background-lider bg-opacity-50 z-50 flex flex-col text-black rounded-b-md border-purple-700 ">
-            <div className="bg-white shadow-xl w-full h-full flex flex-col" onClick={(e) => e.stopPropagation()}>
+            className="fixed inset-0 bg-black/50 z-50 flex justify-center items-center p-4">
+            <div
+                className="bg-[var(--color-card)] text-[var(--color-foreground)] rounded-lg shadow-xl w-full h-full max-w-6xl flex flex-col"
+                onClick={(e) => e.stopPropagation()}>
                 <form onSubmit={handleSubmit} className="flex flex-col h-full">
-                    <div className="flex justify-between items-center p-6 border-b">
-                        <h3 className="text-lg font-medium text-gray-900">{productToEdit ? `Editando "${productToEdit.name}"` : 'Crear Nuevo Producto'}</h3>
-                        <button type="button" onClick={onClose} className="text-gray-400 hover:text-gray-600">
+                    <div className="flex justify-between items-center p-6 border-b border-[var(--color-border)]">
+                        <h3 className="text-lg font-medium">{productToEdit ? `Editando "${productToEdit.name}"` : 'Crear Nuevo Producto'}</h3>
+                        <button type="button" onClick={onClose}
+                                className="text-[var(--color-foreground)]/60 hover:text-[var(--color-foreground)]">
                             <X className="h-6 w-6"/>
                         </button>
                     </div>
@@ -271,40 +274,42 @@ export function ProductForm({
                             <div className="md:col-span-2 space-y-4">
                                 <div>
                                     <label htmlFor="name"
-                                           className="block text-sm font-medium text-gray-700">Nombre</label>
+                                           className="block text-sm font-medium text-[var(--color-foreground)]/80">Nombre</label>
                                     <input type="text" name="name" id="name" value={formData.name}
                                            onChange={handleInputChange}
-                                           className="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required/>
+                                           className="mt-1 block w-full rounded-md border-[var(--color-border)] bg-[var(--color-muted)] shadow-sm"
+                                           required/>
                                 </div>
                                 <div>
                                     <label htmlFor="categoryId"
-                                           className="block text-sm font-medium text-gray-700">Categoría</label>
+                                           className="block text-sm font-medium text-[var(--color-foreground)]/80">Categoría</label>
                                     <select name="categoryId" id="categoryId" value={formData.categoryId}
                                             onChange={handleInputChange}
-                                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
+                                            className="mt-1 block w-full rounded-md border-[var(--color-border)] bg-[var(--color-muted)] shadow-sm"
+                                            required>
                                         <option value={0} disabled>Seleccione...</option>
                                         {renderCategoryOptions(categories)}
                                     </select>
                                 </div>
                                 <div>
                                     <label htmlFor="description"
-                                           className="block text-sm font-medium text-gray-700">Descripción</label>
+                                           className="block text-sm font-medium text-[var(--color-foreground)]/80">Descripción</label>
                                     <textarea name="description" id="description" value={formData.description}
                                               onChange={handleInputChange} rows={3}
-                                              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"></textarea>
+                                              className="mt-1 block w-full rounded-md border-[var(--color-border)] bg-[var(--color-muted)] shadow-sm"></textarea>
                                 </div>
                                 <div className="flex items-center">
                                     <input id="isFeatured" name="isFeatured" type="checkbox"
                                            checked={formData.isFeatured} onChange={handleInputChange}
-                                           className="h-4 w-4 text-liderplast-primary rounded border-gray-300"/>
-                                    <label htmlFor="isFeatured" className="ml-2 block text-sm text-gray-900">Marcar como
+                                           className="h-4 w-4 text-primary rounded border-[var(--color-border)] bg-[var(--color-muted)]"/>
+                                    <label htmlFor="isFeatured" className="ml-2 block text-sm">Marcar como
                                         producto destacado</label>
                                 </div>
                             </div>
                         </div>
 
                         <div className="border-t pt-6">
-                            <h4 className="text-md font-medium text-gray-700 mb-4">Variantes</h4>
+                            <h4 className="text-md font-medium mb-4">Variantes</h4>
                             <div className="space-y-4">
                                 {formData.variants.map((variant, index) => (
                                     <VariantAccordionItem
@@ -330,7 +335,7 @@ export function ProductForm({
                         </div>
                     </div>
 
-                    <div className="flex-shrink-0 flex justify-end gap-4 p-6 border-t bg-gray-50">
+                    <div className="flex-shrink-0 flex justify-end gap-4 p-6 border-t border-[var(--color-border)]">
                         <Button type="button" variant="secondary" onClick={onClose}
                                 disabled={isSubmitting}>Cancelar</Button>
                         <Button type="submit"

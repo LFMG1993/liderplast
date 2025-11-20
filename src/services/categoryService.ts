@@ -4,7 +4,9 @@ import {api} from "./api.ts";
 // --- Funciones del CRUD de Categorías ---
 export const categoryService = {
     getCategories: async (): Promise<Category[]> => {
-        const response = await api.get<{ categories: Category[] }>('/api/admin/categories');
+        const response = await api.get<{ categories: Category[] }>('/api/admin/categories', {
+            params: {page: 1, pageSize: 9999}
+        });
         return response.data.categories;
     },
     createCategory: async (data: CategoryCreationData): Promise<Category> => {
@@ -16,6 +18,7 @@ export const categoryService = {
         return response.data.category;
     },
     deleteCategory: async (id: number): Promise<{ success: boolean }> => {
-        return api.delete(`/api/admin/categories/${id}`);
+        const response = await api.delete(`/api/admin/categories/${id}`);
+        return response.data;
     },
 };

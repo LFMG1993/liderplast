@@ -1,41 +1,59 @@
 import {paymentMethodService} from '../../services/paymentMethodService';
 import {Spinner} from '../../components/general/Spinner';
-import {useState, useEffect, useCallback} from 'react';
+import {useState, useEffect, useMemo} from 'react';
 import {Button} from '../../components/general/Button';
 import {PlusCircle} from 'lucide-react';
 import {PaymentMethodsTable} from "../../components/paymentMethods/PaymentMethodsTable.tsx";
-import type {PaymentMethod, PaymentMethodCreationData, PaymentMethodUpdateData} from "../../types";
-import {useNotification} from "../../providers/NotificationProvider.tsx";
+import type {PaymentMethod, PaymentMethodCreationData, PaymentMethodUpdateData, PaginatedResponse} from "../../types";
+import {useNotification} from "../../context/NotificationContext.tsx";
 import {PaymentMethodForm} from "../../components/paymentMethods/PaymentMethodForm.tsx";
 import {ConfirmationModal} from "../../components/general/ConfirmationModal.tsx";
 import {uploadImage} from "../../services/imageService.ts";
 import {slugify} from "../../utils/utils.ts";
+import {useQuery, useMutation, useQueryClient, keepPreviousData} from '@tanstack/react-query';
+import type {PaginationState, SortingState} from "@tanstack/react-table";
 
 export default function PaymentMethodsPage() {
-    const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
+    const queryClient = useQueryClient();
+    const {addNotification} = useNotification();
+
     const [isFormOpen, setIsFormOpen] = useState(false);
-    const [isSubmitting, setIsSubmitting] = useState(false);
     const [editingMethod, setEditingMethod] = useState<PaymentMethod | null>(null);
     const [methodToDelete, setMethodToDelete] = useState<PaymentMethod | null>(null);
-    const {showNotification} = useNotification();
 
-    const fetchData = useCallback(async () => {
-            try {
-                setIsLoading(true);
-                const data = await paymentMethodService.listAdmin();
-                setPaymentMethods(data);
-            } catch (err: any) {
-                showNotification({message: `Error al cargar métodos de pago: ${err.message}`, type: 'error'});
-            } finally {
-                setIsLoading(false);
-            }
-        }, [showNotification]
-    );
+    // --- Estados para TanStack Table ---
+    const [{pageIndex, pageSize}, setPagination] = useState<PaginationState>({
+        pageIndex: 0,
+        pageSize: 10,
+    });
+    const [sorting, setSorting] = useState<SortingState>([]);
+    const [globalFilter, setGlobalFilter] = useState('');
+    const [debouncedFilter, setDebouncedFilter] = useState('');
 
     useEffect(() => {
-        fetchData();
-    }, [fetchData]);
+        const timer = setTimeout(() => setDebouncedFilter(globalFilter), 500);
+        return () => clearTimeout(timer);
+    }, [globalFilter]);
+
+    const {
+        data: methodsData,
+        isLoading: isLoadingMethods,
+        isError,
+        error
+    } = useQuery<PaginatedResponse<PaymentMethod>, Error>({
+        queryKey: ['paymentMethods', pageIndex, pageSize, debouncedFilter, sorting],
+        queryFn: () => paymentMethodService.listAdmin({
+            page: pageIndex + 1,
+            pageSize: pageSize,
+            search: debouncedFilter,
+            sortBy: sorting[0]?.id,
+            sortOrder: sorting[0] ? (sorting[0].desc ? 'desc' : 'asc') : undefined,
+        }),
+        placeholderData: keepPreviousData,
+    });
+
+    const paymentMethods = useMemo(() => methodsData?.data ?? [], [methodsData]);
+    const pageCount = useMemo(() => methodsData?.pageCount ?? -1, [methodsData]);
 
     const handleOpenCreate = () => {
         setEditingMethod(null);
@@ -51,68 +69,77 @@ export default function PaymentMethodsPage() {
         setMethodToDelete(method);
     };
 
-    const confirmDelete = async () => {
-        if (methodToDelete) {
-            try {
-                await paymentMethodService.delete(methodToDelete.id);
-                showNotification({message: 'Método de pago eliminado con éxito.', type: 'success'});
-                setMethodToDelete(null);
-                await fetchData(); // Recargar datos
-            } catch (err: any) {
-                showNotification({message: `Error al eliminar: ${err.message}`, type: 'error'});
-            }
-        }
-    };
-
-    const handleSave = async (data: PaymentMethodUpdateData & { id?: number | null },
-                              imageFile: File | null
-    ) => {
-        setIsSubmitting(true);
-        try {
+    const saveMutation = useMutation({
+        mutationFn: async ({data, imageFile}: {
+            data: PaymentMethodUpdateData & { id?: number | null },
+            imageFile: File | null
+        }) => {
             let finalData = {...data};
             delete finalData.id;
 
-            // Si hay un archivo de imagen, lo subimos ANTES de llamar a la API para crear/actualizar.
             if (imageFile) {
                 const nameForSlug = data.name || editingMethod?.name;
                 if (!nameForSlug) throw new Error("No se pudo determinar un nombre para generar el slug de la imagen.");
                 const slug = slugify(nameForSlug);
                 const entityName = `payment-method/${slug}`;
                 const imageUrl = await uploadImage(imageFile, entityName);
-                // Añadimos la URL real al objeto que vamos a guardar.
                 finalData.qrCodeUrl = imageUrl;
             } else if (data.qrCodeUrl === null && editingMethod) {
-                // Si el usuario eliminó la imagen existente, nos aseguramos de que se guarde como null.
                 finalData.qrCodeUrl = null;
             }
 
             if (editingMethod) {
-                await paymentMethodService.update(editingMethod.id, finalData);
+                return paymentMethodService.update(editingMethod.id, finalData);
             } else {
-                await paymentMethodService.create(finalData as PaymentMethodCreationData);
+                return paymentMethodService.create(finalData as PaymentMethodCreationData);
             }
-
+        },
+        onSuccess: () => {
             const successMessage = editingMethod ? 'Método actualizado con éxito.' : 'Método creado con éxito.';
-            showNotification({message: successMessage, type: 'success'});
+            addNotification(successMessage, 'success');
+            queryClient.invalidateQueries({queryKey: ['paymentMethods']});
             setIsFormOpen(false);
             setEditingMethod(null);
-            await fetchData(); // Recargar datos
-        } catch (err: any) {
-            showNotification({message: `Error al guardar: ${err.message}`, type: 'error'});
-        } finally {
-            setIsSubmitting(false);
+        },
+        onError: (err: Error) => {
+            addNotification(`Error al guardar: ${err.message}`, 'error');
+        }
+    });
+
+    const deleteMutation = useMutation({
+        mutationFn: (id: number) => paymentMethodService.delete(id),
+        onSuccess: () => {
+            addNotification('Método de pago eliminado con éxito.', 'success');
+            queryClient.invalidateQueries({queryKey: ['paymentMethods']});
+            setMethodToDelete(null);
+        },
+        onError: (err: Error) => {
+            addNotification(`Error al eliminar: ${err.message}`, 'error');
+        }
+    });
+
+    const confirmDelete = () => {
+        if (methodToDelete) {
+            deleteMutation.mutate(methodToDelete.id);
         }
     };
+
+    const handleSave = (data: PaymentMethodUpdateData & { id?: number | null }, imageFile: File | null) => {
+        saveMutation.mutate({data, imageFile});
+    };
+
+    const isLoading = isLoadingMethods && methodsData === undefined;
 
     if (isLoading) {
         return <div className="flex justify-center items-center p-8"><Spinner/></div>;
     }
+
     return (
         <div className="p-4 sm:p-6 lg:p-8">
             <div className="sm:flex sm:items-center">
                 <div className="sm:flex-auto">
-                    <h1 className="text-2xl font-bold leading-6 text-gray-900">Métodos de Pago (QR)</h1>
-                    <p className="mt-2 text-sm text-gray-700">
+                    <h1 className="text-3xl font-bold text-[var(--color-foreground)]">Métodos de Pago (QR)</h1>
+                    <p className="mt-2 text-sm text-[var(--color-foreground)]/80">
                         Gestiona los códigos QR y las instrucciones que verán tus clientes al pagar.
                     </p>
                 </div>
@@ -126,11 +153,22 @@ export default function PaymentMethodsPage() {
 
             <div className="mt-8 flow-root">
                 <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                    <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-                        {paymentMethods.length > 0 ? (
-                            <PaymentMethodsTable methods={paymentMethods} onEdit={handleOpenEdit}
-                                                 onDelete={handleDelete}/>
-                        ) : <p className="text-center text-gray-500 py-8">No se han creado métodos de pago todavía.</p>}
+                    <div className="inline-block min-w-full py-2 align-middle">
+                        {isError ? (
+                            <p className="text-red-500 text-center">Error: {error.message}</p>
+                        ) : (
+                            <PaymentMethodsTable
+                                methods={paymentMethods}
+                                onEdit={handleOpenEdit}
+                                onDelete={handleDelete}
+                                pagination={{pageIndex, pageSize}}
+                                setPagination={setPagination}
+                                sorting={sorting}
+                                setSorting={setSorting}
+                                globalFilter={globalFilter}
+                                setGlobalFilter={setGlobalFilter}
+                                pageCount={pageCount}/>
+                        )}
                     </div>
                 </div>
             </div>
@@ -140,13 +178,14 @@ export default function PaymentMethodsPage() {
                 onClose={() => setIsFormOpen(false)}
                 onSave={handleSave}
                 methodToEdit={editingMethod}
-                isSubmitting={isSubmitting}
+                isSubmitting={saveMutation.isPending}
             />
 
             <ConfirmationModal
                 isOpen={!!methodToDelete}
                 onClose={() => setMethodToDelete(null)}
                 onConfirm={confirmDelete}
+                isConfirming={deleteMutation.isPending}
                 title="Confirmar Eliminación"
                 message={`¿Estás seguro de que deseas eliminar el método "${methodToDelete?.name}"? Esta acción no se puede deshacer.`}
             />

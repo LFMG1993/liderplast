@@ -1,6 +1,6 @@
-import {useState, useEffect, useCallback} from 'react';
+import {useState, useMemo} from 'react';
 import {userService} from '../../services/userService.ts';
-import type {User, UserCreationData} from '../../types'
+import type {User, UserCreationData, PaginatedResponse} from '../../types'
 import {UserTable} from '../../components/users/UserTable.tsx';
 import {UserForm} from '../../components/users/UserForm.tsx';
 import {ConfirmationModal} from '../../components/general/ConfirmationModal.tsx';
@@ -8,33 +8,62 @@ import {Button} from '../../components/general/Button.tsx';
 import {PlusCircle} from 'lucide-react';
 import {useNotification} from "../../context/NotificationContext.tsx";
 import {Spinner} from "../../components/general/Spinner.tsx";
+import {useQuery, useMutation, useQueryClient, keepPreviousData} from '@tanstack/react-query';
+import type {PaginationState} from "@tanstack/react-table";
 
 export default function UsersPage() {
-    const [users, setUsers] = useState<User[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
     const {addNotification} = useNotification();
+    const queryClient = useQueryClient();
 
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [userToEdit, setUserToEdit] = useState<User | null>(null);
     const [userToDelete, setUserToDelete] = useState<User | null>(null);
+    const [{pageIndex, pageSize}, setPagination] = useState<PaginationState>({
+        pageIndex: 0, // Página inicial
+        pageSize: 10, // Items por página
+    });
 
-    const fetchUsers = useCallback(async () => {
-        try {
-            setIsLoading(true);
-            const data = await userService.getUsers();
-            setUsers(data);
-            setError(null);
-        } catch (err: any) {
-            setError(err.message || 'Error al cargar los usuarios.');
-        } finally {
-            setIsLoading(false);
-        }
-    }, []);
+    // Hook useQuery para obtener los datos
+    const {data, isLoading, isError, error} = useQuery<PaginatedResponse<User>, Error>({
+        queryKey: ['users', pageIndex, pageSize],
+        queryFn: () => userService.getUsers({page: pageIndex + 1, limit: pageSize}),
+        placeholderData: keepPreviousData,
+    });
 
-    useEffect(() => {
-        fetchUsers();
-    }, [fetchUsers]);
+    // Usamos useMemo para evitar recalcular en cada render.
+    const users = useMemo(() => data?.data ?? [], [data]);
+    const pageCount = useMemo(() => data?.pageCount ?? -1, [data]);
+
+    // Hook useMutation para crear/actualizar usuarios
+    const userMutation = useMutation({
+        mutationFn: async (data: { userData: UserCreationData; id?: number }) => {
+            if (data.id) {
+                return userService.updateUser(data.id, data.userData);
+            }
+            return userService.createUser(data.userData);
+        },
+        onSuccess: (_, variables) => {
+            addNotification(`Usuario ${variables.id ? 'actualizado' : 'creado'} con éxito`, 'success');
+            queryClient.invalidateQueries({queryKey: ['users']}); // Invalida y refetchea la query de usuarios
+            handleCloseModal();
+        },
+        onError: (err: Error) => {
+            addNotification(err.message || 'Error al guardar el usuario.', 'error');
+        },
+    });
+
+    // 3. Hook useMutation para eliminar usuarios
+    const deleteMutation = useMutation({
+        mutationFn: (userId: number) => userService.deleteUser(userId),
+        onSuccess: () => {
+            addNotification('Usuario eliminado con éxito', 'success');
+            queryClient.invalidateQueries({queryKey: ['users']});
+            setUserToDelete(null);
+        },
+        onError: (err: Error) => {
+            addNotification(err.message || 'Error al eliminar el usuario.', 'error');
+        },
+    });
 
     const handleOpenCreateModal = () => {
         setUserToEdit(null);
@@ -56,41 +85,25 @@ export default function UsersPage() {
     };
 
     const confirmDelete = async () => {
-        if (!userToDelete) return;
-
-        try {
-            await userService.deleteUser(userToDelete.id);
-            addNotification('Usuario eliminado con éxito', 'success');
-            setUserToDelete(null);
-            fetchUsers(); // Recargar la lista
-        } catch (err: any) {
-            addNotification(err.message || 'Error al eliminar el usuario.', 'error');
+        if (userToDelete) {
+            deleteMutation.mutate(userToDelete.id);
         }
     };
 
     const handleFormSubmit = async (data: UserCreationData) => {
-        try {
-            if (userToEdit) {
-                await userService.updateUser(userToEdit.id, data);
-                addNotification('Usuario actualizado con éxito', 'success');
-            } else {
-                await userService.createUser(data);
-                addNotification('Usuario creado con éxito', 'success');
-            }
-            handleCloseModal();
-            fetchUsers(); // Recargar la lista
-        } catch (err: any) {
-            // Idealmente, mostrar este error en el formulario
-            addNotification(err.message || 'Error al guardar el usuario.', 'error');
-        }
+        userMutation.mutate({
+            userData: data,
+            id: userToEdit?.id,
+        });
     };
 
     return (
         <div className="p-4 sm:p-6 lg:p-8">
             <div className="sm:flex sm:items-center">
                 <div className="sm:flex-auto">
-                    <h1 className="text-xl font-semibold text-gray-900">Usuarios</h1>
-                    <p className="mt-2 text-sm text-gray-700">Una lista de todos los usuarios en el sistema.</p>
+                    <h1 className="text-xl font-semibold">Usuarios</h1>
+                    <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">Una lista de todos los usuarios en el
+                        sistema.</p>
                 </div>
                 <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
                     <Button onClick={handleOpenCreateModal}><PlusCircle className="mr-2 h-5 w-5"/>Crear Usuario</Button>
@@ -100,21 +113,30 @@ export default function UsersPage() {
                 {isLoading && <div className="flex justify-center items-center py-16">
                     <Spinner/>
                 </div>}
-                {error && <p className="text-red-500">{error}</p>}
-                {!isLoading && !error &&
-                    <UserTable users={users} onEdit={handleOpenEditModal} onDelete={handleDelete}/>}
+                {isError &&
+                    <p className="text-red-500 text-center">{error.message || 'Error al cargar los usuarios.'}</p>}
+                {!isLoading && !isError &&
+                    <UserTable
+                        users={users}
+                        onEdit={handleOpenEditModal}
+                        onDelete={handleDelete}
+                        pagination={{pageIndex, pageSize}}
+                        setPagination={setPagination}
+                        pageCount={pageCount}/>}
             </div>
             <UserForm
                 isOpen={isFormOpen}
                 onClose={handleCloseModal}
                 onSubmit={handleFormSubmit}
                 userToEdit={userToEdit}
+                isSubmitting={userMutation.isPending}
             />
             <ConfirmationModal
                 isOpen={!!userToDelete}
                 onClose={() => setUserToDelete(null)}
                 onConfirm={confirmDelete}
                 title="Confirmar Eliminación"
+                isConfirming={deleteMutation.isPending}
                 message={`¿Estás seguro de que deseas eliminar al usuario "${userToDelete?.nombre}"? Esta acción no se puede deshacer.`}
             />
         </div>
