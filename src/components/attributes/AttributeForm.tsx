@@ -1,3 +1,4 @@
+import * as React from "react";
 import {Button} from '../general/Button.tsx';
 import {X} from 'lucide-react';
 

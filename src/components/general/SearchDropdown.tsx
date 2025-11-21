@@ -44,6 +44,13 @@ export default function SearchDropdown({isTransparent, isPanel = false}: SearchD
     };
     const buttonClasses = `p-2 rounded-full transition-colors ${isTransparent ? 'text-white hover:bg-white/20' : 'text-[var(--color-foreground)] hover:bg-[var(--color-muted)]'}`;
 
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter' && searchQuery.trim()) {
+            e.preventDefault();
+            handleSelectProduct(searchQuery);
+        }
+    };
+
     const SearchContent = (
         <>
             <div className="p-4">
@@ -51,6 +58,7 @@ export default function SearchDropdown({isTransparent, isPanel = false}: SearchD
                     type="search"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={handleKeyDown}
                     className="w-full px-3 py-2 border border-[var(--color-border)] bg-[var(--color-muted)] rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
                     placeholder="Buscar producto..."
                     autoFocus

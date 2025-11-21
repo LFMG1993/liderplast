@@ -1,4 +1,5 @@
 import {useState, useEffect} from 'react';
+import { FormattedNumberInput } from '../general/FormattedNumberInput.tsx';
 
 interface EditableCellProps {
     initialValue: number | null;
@@ -23,10 +24,9 @@ export const EditableCell = ({initialValue, onSave, formatter}: EditableCellProp
 
     if (isEditing) {
         return (
-            <input
-                type="number"
+            <FormattedNumberInput
                 value={value ?? ''}
-                onChange={(e) => setValue(e.target.value === '' ? null : parseFloat(e.target.value))}
+                onChange={(newValue) => setValue(newValue)}
                 onBlur={handleSave}
                 onKeyDown={(e) => e.key === 'Enter' && handleSave()}
                 className="w-24 rounded-md border-[var(--color-border)] bg-[var(--color-muted)] text-[var(--color-foreground)] shadow-sm text-sm p-1"

@@ -71,9 +71,10 @@ export const Header = () => {
                 </SmartLink>
                 {/* Navegación para Desktop */}
                 <nav className="hidden md:flex items-center space-x-8">
-                    <SmartLink to="/" className={navLinkClasses}>{t("Inicio")}</SmartLink>
-                    <SmartLink to="/tienda" className={navLinkClasses}>{t("Tienda")}</SmartLink>
-                    <SmartLink to="/contacto" className={navLinkClasses}>{t("Contáctanos")}</SmartLink>
+                    <SmartLink to="/" className={navLinkClasses}>{t("header.home")}</SmartLink>
+                    <SmartLink to="/tienda" className={navLinkClasses}>{t("header.shop")}</SmartLink>
+                    <SmartLink to="/emprender" className={navLinkClasses}>{t("header.emprender")}</SmartLink>
+                    <SmartLink to="/contacto" className={navLinkClasses}>{t("header.contact")}</SmartLink>
                 </nav>
                 {/* Acciones para Desktop */}
                 <div className="hidden md:flex items-center space-x-1 md:space-x-2">
@@ -94,7 +95,8 @@ export const Header = () => {
                 {/* Acciones para Móvil */}
                 <div className="md:hidden flex items-center gap-2">
                     {/* Botón para abrir panel de búsqueda */}
-                    <button onClick={() => setIsSearchPanelOpen(true)} className={`p-2 rounded-full ${isTransparent ? 'text-white' : 'text-[var(--color-foreground)]'}`}>
+                    <button onClick={() => setIsSearchPanelOpen(true)}
+                            className={`p-2 rounded-full ${isTransparent ? 'text-white' : 'text-[var(--color-foreground)]'}`}>
                         <Search size={24}/>
                     </button>
                     <button
@@ -126,11 +128,16 @@ export const Header = () => {
             {/* Menú Desplegable para Móvil */}
             <MobilePanel isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} title="Menú">
                 <nav className="flex-grow p-4 space-y-2">
-                    <Link to="/" className="block py-3 px-3 rounded-md hover:bg-[var(--color-muted)] font-medium text-lg">
+                    <Link to="/"
+                          className="block py-3 px-3 rounded-md hover:bg-[var(--color-muted)] font-medium text-lg">
                         Inicio
                     </Link>
-                    <Link to="/tienda" className="block py-3 px-3 rounded-md hover:bg-[var(--color-muted)] font-medium text-lg">Tienda</Link>
-                    <Link to="/contacto" className="block py-3 px-3 rounded-md hover:bg-[var(--color-muted)] font-medium text-lg">Contáctanos</Link>
+                    <Link to="/tienda"
+                          className="block py-3 px-3 rounded-md hover:bg-[var(--color-muted)] font-medium text-lg">Tienda</Link>
+                    <Link to="/emprender"
+                          className="block py-3 px-3 rounded-md hover:bg-[var(--color-muted)] font-medium text-lg">¿Quieres emprender?</Link>
+                    <Link to="/contacto"
+                          className="block py-3 px-3 rounded-md hover:bg-[var(--color-muted)] font-medium text-lg">Contáctanos</Link>
                     <hr className="my-4"/>
                     {isAuthenticated ? (
                         <>
@@ -191,9 +198,11 @@ const MobilePanel = ({isOpen, onClose, title, children}: {
             {/* Panel */}
             <div
                 className={`absolute top-0 right-0 flex flex-col w-full max-w-md h-full bg-[var(--color-card)] text-[var(--color-foreground)] shadow-xl transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
-                <div className="flex items-center justify-between p-4 border-b border-[var(--color-border)] sticky top-0 bg-[var(--color-card)] z-10">
+                <div
+                    className="flex items-center justify-between p-4 border-b border-[var(--color-border)] sticky top-0 bg-[var(--color-card)] z-10">
                     <h2 className="font-bold text-lg">{title}</h2>
-                    <button onClick={onClose} className="p-2 text-[var(--color-foreground)]/80 hover:text-[var(--color-foreground)]">
+                    <button onClick={onClose}
+                            className="p-2 text-[var(--color-foreground)]/80 hover:text-[var(--color-foreground)]">
                         <X size={24}/>
                     </button>
                 </div>

@@ -7,7 +7,7 @@ import {Button} from '../../components/general/Button.tsx';
 import {ConfirmationModal} from '../../components/general/ConfirmationModal.tsx';
 import {ProductTable} from '../../components/products/ProductTable.tsx';
 import {useNotification} from '../../context/NotificationContext.tsx';
-import {ProductForm, type ProductFormData} from '../../components/products/ProductForm.tsx';
+import {ProductForm, type ProductFormData, initialState as initialProductFormState} from '../../components/products/ProductForm.tsx';
 import {attributeService} from "../../services/attributeService.ts";
 import {categoryService} from "../../services/categoryService.ts";
 import type {Attribute, Category} from "../../types";
@@ -20,6 +20,7 @@ const ProductsPage = () => {
     const {addNotification} = useNotification();
     const [isFormModalOpen, setIsFormModalOpen] = useState(false);
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+    const [formData, setFormData] = useState<ProductFormData>(initialProductFormState);
     const [productToDelete, setProductToDelete] = useState<Product | null>(null);
 
     // Estados para las tablas
@@ -73,6 +74,25 @@ const ProductsPage = () => {
     const handleEdit = async (id: number) => {
         try {
             const productDetails = await productService.getProductById(id);
+            // Pre-populamos el estado del formulario para edición.
+            setFormData({
+                name: productDetails.name,
+                description: productDetails.description || '',
+                categoryId: productDetails.category.id,
+                isFeatured: productDetails.isFeatured,
+                image_url: productDetails.imageUrl || null,
+                imageFile: null,
+                variants: productDetails.variants.map(v => ({
+                    ...v,
+                    imageFile: null,
+                    selectedAttributes: (v.variantValues ?? []).reduce((acc: Record<number, number>, vv) => {
+                        if (vv.attributeValue && vv.attributeValue.attributeId) {
+                            acc[vv.attributeValue.attributeId] = vv.attributeValue.id;
+                        }
+                        return acc;
+                    }, {}),
+                })),
+            });
             setEditingProduct(productDetails);
             setIsFormModalOpen(true);
         } catch (err: any) {
@@ -118,8 +138,8 @@ const ProductsPage = () => {
                     return {
                         id: v.id,
                         sku: v.sku,
-                        price: v.price,
-                        stock: v.stock,
+                        price: Number(v.price),
+                        stock: Number(v.stock),
                         salePrice: v.salePrice === null ? undefined : v.salePrice,
                         imageUrl: variantImageUrls[index],
                         unitOfMeasure: v.unitOfMeasure,
@@ -169,6 +189,11 @@ const ProductsPage = () => {
         }
     };
 
+    const handleFormClose = () => {
+        setIsFormModalOpen(false);
+        setEditingProduct(null);
+    };
+
     const isLoading = isLoadingProducts && productsData === undefined;
 
     return (
@@ -176,6 +201,7 @@ const ProductsPage = () => {
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-3xl font-bold text-[var(--color-foreground)]">Gestión de Productos</h1>
                 <Button onClick={() => {
+                    setFormData(initialProductFormState);
                     setEditingProduct(null);
                     setIsFormModalOpen(true);
                 }}>Crear Producto</Button>
@@ -204,18 +230,21 @@ const ProductsPage = () => {
 
             <ProductForm
                 isOpen={isFormModalOpen}
-                onClose={() => setIsFormModalOpen(false)}
+                onClose={handleFormClose}
                 onSave={(formData) => saveProductMutation.mutate(formData)}
                 productToEdit={editingProduct}
                 attributes={attributes}
                 categories={categories}
                 isSubmitting={saveProductMutation.isPending}
+                formData={formData}
+                setFormData={setFormData}
             />
 
             <ConfirmationModal
                 isOpen={!!productToDelete}
                 onClose={() => setProductToDelete(null)}
                 onConfirm={handleConfirmDelete}
+                isConfirming={deleteProductMutation.isPending}
                 title="Confirmar Eliminación"
                 message={`¿Estás seguro de que deseas eliminar el producto "${productToDelete?.name}"? Esta acción no se puede deshacer.`}
             />

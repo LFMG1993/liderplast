@@ -1,10 +1,15 @@
 import * as React from "react";
-import {type JSX, useEffect, useState, useMemo} from 'react';
+import {useMemo, useState, Fragment} from 'react';
 import type {Product, Attribute, Category, VolumeDiscount} from '../../types';
 import {Button} from '../general/Button.tsx';
-import {X, PlusCircle} from 'lucide-react';
+import {X, PlusCircle, ChevronsUpDown, Check} from 'lucide-react';
+import {Combobox, Transition} from '@headlessui/react';
 import {VariantAccordionItem} from './VariantAccordionItem.tsx';
 import {ImageUploader} from "../general/ImageUploader.tsx";
+import {AttributeForm} from "../attributes/AttributeForm.tsx";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
+import {attributeService} from "../../services/attributeService.ts";
+import {useNotification} from "../../context/NotificationContext.tsx";
 
 interface ProductFormProps {
     isOpen: boolean;
@@ -14,13 +19,15 @@ interface ProductFormProps {
     attributes: Attribute[];
     categories: Category[];
     isSubmitting: boolean;
+    formData: ProductFormData;
+    setFormData: React.Dispatch<React.SetStateAction<ProductFormData>>;
 }
 
 export interface VariantFormData {
     id?: number;
     sku: string;
-    price: number;
-    stock: number;
+    price: number | '';
+    stock: number | '';
     salePrice?: number | null;
     imageUrl: string | null;
     imageFile: File | null;
@@ -40,10 +47,10 @@ export interface ProductFormData {
     imageFile: File | null;
 }
 
-const emptyVariant: VariantFormData = {
+export const emptyVariant: VariantFormData = {
     sku: '',
-    price: 0,
-    stock: 0,
+    price: '',
+    stock: '',
     selectedAttributes: {},
     imageUrl: null,
     imageFile: null,
@@ -52,7 +59,7 @@ const emptyVariant: VariantFormData = {
     volumeDiscounts: [],
 };
 
-const initialState: ProductFormData = {
+export const initialState: ProductFormData = {
     name: '',
     description: '',
     categoryId: 0,
@@ -62,22 +69,6 @@ const initialState: ProductFormData = {
     imageFile: null,
 };
 
-// Reutilizamos la misma lógica del formulario de categorías para una experiencia consistente.
-const renderCategoryOptions = (categories: Category[], level = 0): JSX.Element[] => {
-    let options: JSX.Element[] = [];
-    for (const category of categories) {
-        options.push(
-            <option key={category.id} value={category.id}>
-                {'— '.repeat(level)}{category.name}
-            </option>
-        );
-        if (category.children) {
-            options = options.concat(renderCategoryOptions(category.children, level + 1));
-        }
-    }
-    return options;
-};
-
 export function ProductForm({
                                 isOpen,
                                 onClose,
@@ -85,43 +76,21 @@ export function ProductForm({
                                 productToEdit,
                                 attributes,
                                 categories,
-                                isSubmitting
+                                isSubmitting,
+                                formData,
+                                setFormData
                             }: ProductFormProps) {
-    const [formData, setFormData] = useState<ProductFormData>(initialState);
+    const queryClient = useQueryClient();
+    const {addNotification} = useNotification();
+    const [isAttributeValueModalOpen, setIsAttributeValueModalOpen] = useState(false);
+    const [addingValueToAttribute, setAddingValueToAttribute] = useState<Attribute | null>(null);
+    const [newAttributeValue, setNewAttributeValue] = useState('');
+    const [categoryQuery, setCategoryQuery] = useState('');
 
     const unitOfMeasureAttribute = useMemo(
         () => attributes.find(attr => attr.name.toLowerCase() === 'unidad de medida'),
         [attributes]
     );
-
-    useEffect(() => {
-        if (isOpen) {
-            if (productToEdit) {
-                // Mapeamos los datos del producto a editar al formato del formulario.
-                setFormData({
-                    name: productToEdit.name,
-                    description: productToEdit.description || '',
-                    categoryId: productToEdit.category.id,
-                    isFeatured: productToEdit.isFeatured,
-                    image_url: productToEdit.imageUrl || null,
-                    imageFile: null,
-                    variants: productToEdit.variants.map(v => ({ // Para cada variante que viene de la API...
-                        ...v, // ...copiamos todas sus propiedades (id, sku, price, imageUrl, etc.)
-                        imageFile: null, //
-                        selectedAttributes: (v.variantValues ?? []).reduce((acc: Record<number, number>, vv) => {
-                            // La API nos da vv.attributeValue = { id, value, attributeId }
-                            if (vv.attributeValue && vv.attributeValue.attributeId) {
-                                acc[vv.attributeValue.attributeId] = vv.attributeValue.id;
-                            }
-                            return acc;
-                        }, {}),
-                    })),
-                });
-            } else {
-                setFormData(initialState);
-            }
-        }
-    }, [productToEdit, isOpen]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const {name, value, type} = e.target;
@@ -173,13 +142,14 @@ export function ProductForm({
             ? variant.unitOfMeasure.substring(0, 3).toUpperCase().replace(/\s/g, '')
             : '';
 
+        const uniqueSuffix = !productToEdit ? `-${Date.now().toString().slice(-5)}` : '';
         const skuParts = [productNameAbbr, ...attributeValueTexts];
         if (unitOfMeasureText) {
             skuParts.push(unitOfMeasureText);
         }
 
         let suggestedSku = skuParts.join('-');
-
+        suggestedSku += uniqueSuffix;
         // Lógica de unicidad para evitar SKUs duplicados en el mismo formulario.
         let counter = 2;
         const originalSku = suggestedSku;
@@ -188,11 +158,10 @@ export function ProductForm({
             counter++;
         }
 
-        if (!variant.sku || variant.sku.startsWith(productNameAbbr + '-')) {
+        if (!variant.sku || productToEdit === null) {
             variant.sku = suggestedSku;
         }
     };
-
 
     const handleAttributeChange = (variantIndex: number, attributeId: number, valueId: string) => {
         const newVariants = [...formData.variants];
@@ -247,6 +216,53 @@ export function ProductForm({
         onSave(formData);
     };
 
+    // --- Lógica para el modal de creación rápida de valores de atributo ---
+    const openNewAttributeValueModal = (attribute: Attribute) => {
+        setAddingValueToAttribute(attribute);
+        setNewAttributeValue('');
+        setIsAttributeValueModalOpen(true);
+    };
+
+    const saveAttributeValueMutation = useMutation({
+        mutationFn: (data: { attributeId: number, value: string }) => attributeService.createAttributeValue(data),
+        onSuccess: () => {
+            addNotification('Valor de atributo creado con éxito.', 'success');
+            queryClient.invalidateQueries({queryKey: ['attributes']}); // Invalida para recargar los atributos
+            setIsAttributeValueModalOpen(false);
+        },
+        onError: (err: Error) => addNotification(`Error: ${err.message}`, 'error'),
+    });
+
+    const handleSaveAttributeValue = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!addingValueToAttribute) return;
+        saveAttributeValueMutation.mutate({attributeId: addingValueToAttribute.id, value: newAttributeValue});
+    };
+
+    // --- Lógica para el Combobox de Categorías ---
+    const flattenedCategories = useMemo(() => {
+        const flatten = (cats: Category[], level = 0): { id: number, name: string, level: number }[] => {
+            let result: { id: number, name: string, level: number }[] = [];
+            for (const category of cats) {
+                result.push({id: category.id, name: category.name, level});
+                if (category.children) {
+                    result = result.concat(flatten(category.children, level + 1));
+                }
+            }
+            return result;
+        };
+        return flatten(categories);
+    }, [categories]);
+
+    const filteredCategories = categoryQuery === ''
+        ? flattenedCategories
+        : flattenedCategories.filter(cat =>
+            cat.name.toLowerCase().includes(categoryQuery.toLowerCase())
+        );
+
+    const selectedCategory = useMemo(() =>
+        flattenedCategories.find(c => c.id === formData.categoryId), [formData.categoryId, flattenedCategories]);
+
     if (!isOpen) return null;
 
     return (
@@ -283,13 +299,51 @@ export function ProductForm({
                                 <div>
                                     <label htmlFor="categoryId"
                                            className="block text-sm font-medium text-[var(--color-foreground)]/80">Categoría</label>
-                                    <select name="categoryId" id="categoryId" value={formData.categoryId}
-                                            onChange={handleInputChange}
-                                            className="mt-1 block w-full rounded-md border-[var(--color-border)] bg-[var(--color-muted)] shadow-sm"
-                                            required>
-                                        <option value={0} disabled>Seleccione...</option>
-                                        {renderCategoryOptions(categories)}
-                                    </select>
+                                    {/* Combobox buscable para categorías */}
+                                    <Combobox value={selectedCategory || null}
+                                              onChange={(category) => category && handleInputChange({
+                                                  target: {
+                                                      name: 'categoryId',
+                                                      value: String(category.id),
+                                                      type: 'select'
+                                                  }
+                                              } as any)}>
+                                        <div className="relative mt-1">
+                                            <Combobox.Input
+                                                className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-muted)] py-2 pl-3 pr-10 shadow-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                                                onChange={(event) => setCategoryQuery(event.target.value)}
+                                                displayValue={(category: {
+                                                    name: string
+                                                } | null) => category?.name || ''}
+                                                placeholder="Busca una categoría..."
+                                            />
+                                            <Combobox.Button
+                                                className="absolute inset-y-0 right-0 flex items-center pr-2">
+                                                <ChevronsUpDown className="h-5 w-5 text-[var(--color-foreground)]/60"
+                                                                aria-hidden="true"/>
+                                            </Combobox.Button>
+                                            <Transition as={Fragment} leave="transition ease-in duration-100"
+                                                        leaveFrom="opacity-100" leaveTo="opacity-0">
+                                                <Combobox.Options
+                                                    className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-[var(--color-card)] py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                                    {filteredCategories.map((cat) => (
+                                                        <Combobox.Option key={cat.id} value={cat}
+                                                                         className={({active}) => `relative cursor-default select-none py-2 pl-10 pr-4 ${active ? 'bg-primary/80 text-primary-foreground' : ''}`}>
+                                                            {({selected}) => (
+                                                                <>
+                                                                     <span style={{paddingLeft: `${cat.level * 1}rem`}}
+                                                                           className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>{cat.name}</span>
+                                                                    {selected && <span
+                                                                        className="absolute inset-y-0 left-0 flex items-center pl-3 text-primary"><Check
+                                                                        className="h-5 w-5" aria-hidden="true"/></span>}
+                                                                </>
+                                                            )}
+                                                        </Combobox.Option>
+                                                    ))}
+                                                </Combobox.Options>
+                                            </Transition>
+                                        </div>
+                                    </Combobox>
                                 </div>
                                 <div>
                                     <label htmlFor="description"
@@ -325,6 +379,7 @@ export function ProductForm({
                                         onRemoveVolumeDiscount={removeVolumeDiscount}
                                         onDiscountChange={handleDiscountChange}
                                         onRemoveVariant={removeVariant}
+                                        onAddNewAttributeValue={openNewAttributeValueModal}
                                         unitOfMeasureAttribute={unitOfMeasureAttribute}
                                         canBeRemoved={formData.variants.length > 1}
                                     />
@@ -342,6 +397,21 @@ export function ProductForm({
                                 disabled={isSubmitting}>{isSubmitting ? 'Guardando...' : 'Guardar Cambios'}</Button>
                     </div>
                 </form>
+                {/* Modal para creación rápida de valores de atributo */}
+                <AttributeForm
+                    title={`Añadir valor a "${addingValueToAttribute?.name}"`}
+                    isOpen={isAttributeValueModalOpen}
+                    onClose={() => setIsAttributeValueModalOpen(false)}
+                    onSubmit={handleSaveAttributeValue}
+                    isSubmitting={saveAttributeValueMutation.isPending}
+                >
+                    <label htmlFor="newValueName"
+                           className="block text-sm font-medium text-[var(--color-foreground)]/80">Nuevo Valor</label>
+                    <input type="text" id="newValueName" value={newAttributeValue}
+                           onChange={(e) => setNewAttributeValue(e.target.value)}
+                           className="mt-1 block w-full rounded-md border-[var(--color-border)] bg-[var(--color-muted)] text-[var(--color-foreground)] shadow-sm p-2.5"
+                           required/>
+                </AttributeForm>
             </div>
         </div>
     );

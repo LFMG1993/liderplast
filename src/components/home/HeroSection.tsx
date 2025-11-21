@@ -1,5 +1,6 @@
 import {useState, useEffect} from 'react';
 import {Link} from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 // Importa las imágenes del carrusel
 import car1 from '../../assets/carrousel/lider11.avif';
 import car2 from '../../assets/carrousel/lider12.avif';
@@ -8,6 +9,7 @@ import car3 from '../../assets/carrousel/lider13.avif';
 const carouselImages = [car1, car2, car3];
 
 export const HeroSection = () => {
+    const { t } = useTranslation();
     const [currentIndex, setCurrentIndex] = useState(0);
 
     useEffect(() => {
@@ -35,15 +37,14 @@ export const HeroSection = () => {
 
             <div className="relative z-10 flex flex-col items-center justify-center h-full text-center text-white px-4">
                 <h1 className="text-4xl md:text-6xl font-bold leading-tight mb-4 animate-fade-in-down">
-                    Soluciones en Plásticos Sostenibles
+                    {t('hero.title')}
                 </h1>
                 <p className="text-lg md:text-xl max-w-3xl mb-8 animate-fade-in-up">
-                    En Liderplast, impulsamos soluciones biodegradables y tradicionales con un enfoque responsable,
-                    alineado con las exigencias del presente y el compromiso con el futuro.
+                    {t('hero.subtitle')}
                 </p>
                 <Link to="/tienda"
                    className="background-lider text-white font-bold py-3 px-8 rounded-full hover:bg-gray-200 transition-all duration-300 transform hover:scale-105 animate-bounce-slow">
-                    Ver Productos
+                    {t('hero.button')}
                 </Link>
             </div>
         </section>

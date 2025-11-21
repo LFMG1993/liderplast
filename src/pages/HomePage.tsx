@@ -10,9 +10,11 @@ import {shopService} from '../services/shopService.ts';
 import type {Product, PaginatedResponse} from '../types';
 import {Spinner} from '../components/general/Spinner.tsx';
 import {useNotification} from '../context/NotificationContext.tsx';
+import { useTranslation } from 'react-i18next';
 
 const HomePage = () => {
     const {addNotification} = useNotification();
+    const { t } = useTranslation();
 
     const {data: featuredProducts = [], isLoading, isError, error} = useQuery({
         queryKey: ['featuredProducts'],
@@ -31,8 +33,8 @@ const HomePage = () => {
         <>
             <TopBar/>
             <SEO
-                title="Plásticos Biodegradables y Desechables en Cúcuta"
-                description="Descubre la gama líder en plásticos de un solo uso en Cúcuta. Ofrecemos soluciones 100% biodegradables y tradicionales. Calidad y sostenibilidad para tu negocio."
+                title={t('home.seoTitle')}
+                description={t('home.seoDescription')}
                 canonicalUrl="/"
             />
             <main className="-mt-28 relative z-0">
@@ -40,11 +42,11 @@ const HomePage = () => {
                 {isLoading ? (
                     <section className="py-16 bg-[var(--color-background)] flex flex-col justify-center items-center">
                         <Spinner/>
-                        <p className="text-[var(--color-foreground)]/80 mt-4">Cargando productos destacados...</p>
+                        <p className="text-[var(--color-foreground)]/80 mt-4">{t('home.loadingFeatured')}</p>
                     </section>
                 ) : isError ? (
                     <section className="py-16 bg-[var(--color-background)] text-center">
-                        <p className="text-red-500">No se pudieron cargar los productos destacados.</p>
+                        <p className="text-red-500">{t('home.errorFeatured')}</p>
                     </section>
                 ) : (
                     <FeaturedProducts products={featuredProducts}/>

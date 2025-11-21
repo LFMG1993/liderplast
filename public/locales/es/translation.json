@@ -1,6 +1,73 @@
 {
-  "Inicio": "Inicio",
-  "Tienda": "Tienda",
-  "Contáctanos": "Contáctanos",
-  "Buscar": "Buscar"
+  "header": {
+    "home": "Inicio",
+    "shop": "Tienda",
+    "emprender": "¿Quieres emprender?",
+    "contact": "Contáctanos",
+    "search": "Buscar"
+  },
+  "footer": {
+    "description": "Soluciones sostenibles para un mundo moderno.",
+    "navigationTitle": "Navegación",
+    "contactTitle": "Contacto",
+    "legalTitle": "Legal",
+    "privacyPolicy": "Política de Privacidad",
+    "cookiePolicy": "Política de Cookies",
+    "copyright": "Liderplast. Todos los derechos reservados.",
+    "designedBy": "Diseñado y Desarrollado por"
+  },
+  "home": {
+    "seoTitle": "Plásticos Biodegradables y Desechables en Cúcuta",
+    "seoDescription": "Descubre la gama líder en plásticos de un solo uso en Cúcuta. Ofrecemos soluciones 100% biodegradables y tradicionales. Calidad y sostenibilidad para tu negocio.",
+    "loadingFeatured": "Cargando productos destacados...",
+    "errorFeatured": "No se pudieron cargar los productos destacados."
+  },
+  "hero": {
+    "title": "Soluciones en Plásticos Sostenibles",
+    "subtitle": "En Liderplast, impulsamos soluciones biodegradables y tradicionales con un enfoque responsable, alineado con las exigencias del presente y el compromiso con el futuro.",
+    "button": "Ver Productos"
+  },
+  "about": {
+    "seoTitle": "Nosotros - Liderplast",
+    "seoDescription": "Conoce la historia de Liderplast, desde nuestros inicios en 2015 hasta convertirnos en un referente en soluciones plásticas sostenibles y tradicionales en Cúcuta.",
+    "historyTag": "Nuestra Historia",
+    "title": "De un sueño familiar a un referente en soluciones sostenibles",
+    "paragraph1": "Liderplast nació en 2015 como una microempresa familiar enfocada en la distribución de productos desechables. Con esfuerzo, cercanía al cliente y visión a futuro, fuimos creciendo paso a paso hasta convertirnos en una marca reconocida en el sector.",
+    "paragraph2": "Hoy, combinamos nuestra experiencia comercial con un compromiso real por el medio ambiente, ofreciendo tanto productos biodegradables como opciones tradicionales, siempre con el respaldo de calidad y responsabilidad que nos caracteriza.",
+    "philosophyTitle": "Nuestra Filosofía",
+    "philosophyText": "Más que un distribuidor, somos un aliado para tu negocio y un agente de cambio para el planeta. Nuestra misión es ofrecer soluciones prácticas y de calidad que respondan a las necesidades del mercado actual, sin comprometer el futuro.",
+    "timeline1Title": "El Comienzo",
+    "timeline1Text": "Nacimos como una microempresa familiar, con el sueño de abastecer al mercado local con productos desechables de calidad.",
+    "timeline2Title": "Crecimiento y Expansión",
+    "timeline2Text": "Nos consolidamos en Cúcuta, ampliando nuestro catálogo y nuestra base de clientes gracias a la confianza y el servicio.",
+    "timeline3Title": "Mirando al Futuro",
+    "timeline3Text": "Lideramos la transición hacia lo sostenible, introduciendo productos biodegradables y manteniendo nuestro compromiso con la innovación."
+  },
+  "contact": {
+    "seoTitle": "Contacto - Liderplast",
+    "seoDescription": "Ponte en contacto con el equipo de Liderplast para consultas, soporte o información sobre nuestros productos.",
+    "title": "Ponte en Contacto",
+    "subtitle": "Nos encantaría saber de ti.",
+    "formTitle": "Envíanos un mensaje",
+    "nameLabel": "Tu Nombre",
+    "emailLabel": "Tu Correo",
+    "subjectLabel": "Asunto",
+    "messageLabel": "Mensaje",
+    "sendingButton": "Enviando…",
+    "sendButton": "Enviar Mensaje",
+    "successAlert": "¡Gracias! Tu mensaje ha sido enviado.",
+    "errorAlert": "Ocurrió un error. Por favor, intenta de nuevo.",
+    "phoneLabel": "Teléfono:",
+    "websiteLabel": "Sitio web:"
+  },
+  "emprende": {
+    "seoTitle": "Emprende con Liderplast - Tutoriales e Ideas",
+    "seoDescription": "Descubre tutoriales, ideas y consejos para tu emprendimiento utilizando nuestros productos. ¡Inspírate y crece con nosotros!",
+    "title": "Emprende con Liderplast",
+    "subtitle": "Ideas, tutoriales y consejos para que lleves tu negocio al siguiente nivel con nuestros productos.",
+    "errorLoading": "Error al cargar el contenido:",
+    "emptyState": "Próximamente encontrarás nuevo contenido aquí.",
+    "loadingMore": "Cargando...",
+    "loadMore": "Cargar más"
+  }
 }

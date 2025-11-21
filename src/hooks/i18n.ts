@@ -4,13 +4,12 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 import HttpApi from 'i18next-http-backend';
 
 i18n
-    // Detecta el idioma del usuario (ej. en el navegador)
+    // Detecta el idioma del usuario
     .use(LanguageDetector)
-    // Carga las traducciones desde una ruta (ej. /locales/es/translation.json)
     .use(HttpApi)
-    // Pasa la instancia de i18n a react-i18next
     .use(initReactI18next)
     .init({
+
         // --- CONFIGURACIÓN PRINCIPAL ---
         lng: "es",
         fallbackLng: "es",
@@ -18,7 +17,7 @@ i18n
         debug: process.env.NODE_ENV === 'development', // Muestra logs solo en desarrollo
 
         interpolation: {
-            escapeValue: false, // React ya se encarga de la seguridad (XSS)
+            escapeValue: false,
         },
 
         // Configuración para el detector de idioma

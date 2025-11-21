@@ -1,12 +1,14 @@
 import {SEO} from '../components/general/SEO';
 import aboutUsImage from '../assets/Inicios3.avif';
+import {useTranslation} from 'react-i18next';
 
 export default function AboutUsPage() {
+    const {t} = useTranslation();
     return (
         <>
             <SEO
-                title="Nosotros - Liderplast"
-                description="Conoce la historia de Liderplast, desde nuestros inicios en 2015 hasta convertirnos en un referente en soluciones plásticas sostenibles y tradicionales en Cúcuta."
+                title={t('about.seoTitle')}
+                description={t('about.seoDescription')}
                 canonicalUrl="/nosotros"
             />
 
@@ -28,25 +30,17 @@ export default function AboutUsPage() {
                         <div className="md:w-1/2 w-full">
                                        <span
                                            className="inline-block bg-green-500/10 text-green-600 dark:text-green-400 text-sm font-semibold px-3 py-1 rounded-full mb-3">
-                    Nuestra Historia
+                                         {t('about.historyTag')}
                 </span>
                             <h1 className="text-3xl lg:text-4xl font-bold mb-4">
-                                De un sueño familiar a un referente en soluciones sostenibles
+                                {t('about.title')}
                             </h1>
                             <div className="space-y-4 text-[var(--color-foreground)]/80 lg:text-lg text-justify">
                                 <p>
-                                    Liderplast nació en 2015 como una microempresa familiar enfocada en la distribución
-                                    de productos
-                                    desechables. Con esfuerzo, cercanía al cliente y visión a futuro, fuimos creciendo
-                                    paso a paso hasta
-                                    convertirnos en una marca reconocida en el sector.
+                                    {t('about.paragraph1')}
                                 </p>
                                 <p>
-                                    Hoy, combinamos nuestra experiencia comercial con un compromiso real por el medio
-                                    ambiente,
-                                    ofreciendo tanto productos biodegradables como opciones tradicionales, siempre con
-                                    el respaldo de
-                                    calidad y responsabilidad que nos caracteriza.
+                                    {t('about.paragraph2')}
                                 </p>
                             </div>
                         </div>
@@ -58,12 +52,8 @@ export default function AboutUsPage() {
                 <div className="container mx-auto px-6 space-y-20">
 
                     {/* Sección de Misión y Visión */}
-                    <h2 className="text-3xl font-bold mb-4">Nuestra Filosofía</h2>
-                    <p className="text-lg text-[var(--color-foreground)]/80">
-                        Más que un distribuidor, somos un aliado para tu negocio y un agente de cambio para el
-                        planeta. Nuestra misión es ofrecer soluciones prácticas y de calidad que respondan a las
-                        necesidades del mercado actual, sin comprometer el futuro.
-                    </p>
+                    <h2 className="text-3xl font-bold mb-4 text-center">{t('about.philosophyTitle')}</h2>
+                    <p className="text-lg text-[var(--color-foreground)]/80"></p>
                 </div>
 
                 {/* Línea de tiempo de la historia */}
@@ -71,26 +61,20 @@ export default function AboutUsPage() {
                     <div
                         className="p-6 border border-[var(--color-border)] bg-[var(--color-background)] rounded-lg shadow-sm hover:shadow-lg transition-shadow">
                         <div className="text-4xl font-bold text-primary mb-2">2015</div>
-                        <h3 className="text-xl font-semibold mb-2">El Comienzo</h3>
-                        <p className="text-[var(--color-foreground)]/60">Nacimos como una microempresa familiar, con el
-                            sueño de
-                            abastecer al mercado local con productos desechables de calidad.</p>
+                        <h3 className="text-xl font-semibold mb-2">{t('about.timeline1Title')}</h3>
+                        <p className="text-[var(--color-foreground)]/60">{t('about.timeline1Text')}</p>
                     </div>
                     <div
                         className="p-6 border border-[var(--color-border)] bg-[var(--color-background)] rounded-lg shadow-sm hover:shadow-lg transition-shadow">
                         <div className="text-4xl font-bold text-primary mb-2">2020</div>
-                        <h3 className="text-xl font-semibold mb-2">Crecimiento y Expansión</h3>
-                        <p className="text-[var(--color-foreground)]/60">Nos consolidamos en Cúcuta, ampliando nuestro
-                            catálogo y
-                            nuestra base de clientes gracias a la confianza y el servicio.</p>
+                        <h3 className="text-xl font-semibold mb-2">{t('about.timeline2Title')}</h3>
+                        <p className="text-[var(--color-foreground)]/60">{t('about.timeline2Text')}</p>
                     </div>
                     <div
                         className="p-6 border border-[var(--color-border)] bg-[var(--color-background)] rounded-lg shadow-sm hover:shadow-lg transition-shadow">
                         <div className="text-4xl font-bold text-primary mb-2">Hoy</div>
-                        <h3 className="text-xl font-semibold mb-2">Mirando al Futuro</h3>
-                        <p className="text-[var(--color-foreground)]/60">Lideramos la transición hacia lo sostenible,
-                            introduciendo
-                            productos biodegradables y manteniendo nuestro compromiso con la innovación.</p>
+                        <h3 className="text-xl font-semibold mb-2">{t('about.timeline3Title')}</h3>
+                        <p className="text-[var(--color-foreground)]/60">{t('about.timeline3Text')}</p>
                     </div>
                 </div>
             </section>

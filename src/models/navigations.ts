@@ -9,7 +9,8 @@ import {
     Cylinder,
     Wallet,
     Folders,
-    Send
+    Send,
+    Lightbulb
 } from 'lucide-react';
 
 export interface NavItem {
@@ -21,6 +22,7 @@ export interface NavItem {
 export const dockItems: NavItem[] = [
     {name: 'Inicio', href: 'dashboard', icon: Home},
     {name: 'Usuarios', href: 'users', icon: Users},
+    {name: 'Emprende', href: 'emprende', icon: Lightbulb},
     {name: 'Categorías', href: 'categories', icon: Archive},
     {name: 'Atributos', href: 'attributes', icon: Cylinder},
     {name: 'Productos', href: 'products', icon: Package},

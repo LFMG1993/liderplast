@@ -1,13 +1,14 @@
 import type {Product} from '../../types';
 import {FileImage, Cart} from 'react-bootstrap-icons';
+import {Link} from 'react-router-dom';
+import {slugify} from '../../utils/utils.ts';
 
 interface Props {
     product: Product;
     onAdd: () => void;
-    onViewDetails: () => void;
 }
 
-export default function ProductCard({product, onAdd, onViewDetails}: Props) {
+export default function ProductCard({product, onAdd}: Props) {
     const displayVariant = product.variants?.[0];
     const displayPrice = displayVariant?.salePrice || displayVariant?.price;
     // Si el producto tiene más de una variante, el padre abrirá el modal.
@@ -15,7 +16,8 @@ export default function ProductCard({product, onAdd, onViewDetails}: Props) {
     const addButtonText = hasMultipleVariants ? 'Ver Opciones' : 'Añadir';
 
     return (
-        <div className="bg-[var(--color-card)] border border-[var(--color-border)] rounded-lg shadow-sm overflow-hidden h-full flex flex-col">
+        <div
+            className="bg-[var(--color-card)] border border-[var(--color-border)] rounded-lg shadow-sm overflow-hidden h-full flex flex-col">
             <div className="relative bg-[var(--color-muted)] aspect-square">
                 {/* Renderiza la imagen desde la URL de la base de datos, con un fallback. */}
                 {product.imageUrl ? (
@@ -45,7 +47,8 @@ export default function ProductCard({product, onAdd, onViewDetails}: Props) {
                     )}
                 </div>
                 {/* Mostramos el primer nivel de descuento por volumen si existe. */}
-                <div className="h-6 text-xs text-green-600 dark:text-green-400 font-medium flex items-center justify-center">
+                <div
+                    className="h-6 text-xs text-green-600 dark:text-green-400 font-medium flex items-center justify-center">
                     {displayVariant?.volumeDiscounts && displayVariant.volumeDiscounts.length > 0 && (
                         <span>
                              Desde ${displayVariant.volumeDiscounts[0].price.toLocaleString('es-CO')}
@@ -54,12 +57,12 @@ export default function ProductCard({product, onAdd, onViewDetails}: Props) {
                     )}
                 </div>
                 <div className="mt-auto pt-4 grid grid-cols-2 gap-2">
-                    <button
-                        className="bg-[var(--color-muted)] text-[var(--color-muted-foreground)] px-3 py-2 text-sm rounded-md transition-colors hover:bg-[var(--color-muted)]/80"
-                        onClick={onViewDetails}
+                    <Link
+                        to={`/producto/${slugify(product.name)}/${product.id}`}
+                        className="bg-[var(--color-muted)] text-[var(--color-muted-foreground)] px-3 py-2 text-sm rounded-md transition-colors hover:bg-[var(--color-muted)]/80 flex items-center justify-center"
                     >
                         Detalles
-                    </button>
+                    </Link>
                     <button
                         className="background-lider text-white flex items-center justify-center gap-2 px-3 py-2 text-sm rounded-md transition-colors hover:bg-liderplast-hover disabled:bg-gray-300 disabled:cursor-not-allowed"
                         onClick={onAdd}

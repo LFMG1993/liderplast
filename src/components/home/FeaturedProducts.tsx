@@ -31,15 +31,6 @@ export const FeaturedProducts = ({products}: FeaturedProductsProps) => {
         }
     };
 
-    const handleOpenDetailsModal = async (productId: number) => {
-        try {
-            const fullProduct = await shopService.getPublicProductById(productId);
-            setViewingProduct(fullProduct);
-        } catch (error) {
-            console.error("Error al cargar detalles del producto:", error);
-        }
-    };
-
     // Lógica del carrusel de auto-desplazamiento
     useEffect(() => {
         if (!scrollContainerRef.current || products.length === 0) return;
@@ -98,7 +89,6 @@ export const FeaturedProducts = ({products}: FeaturedProductsProps) => {
                                 <ProductCard
                                     product={product}
                                     onAdd={() => handleAddOrSelect(product)}
-                                    onViewDetails={() => handleOpenDetailsModal(product.id)}
                                 />
                             </div>
                         ))}

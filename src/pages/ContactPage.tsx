@@ -5,6 +5,7 @@ import {HouseDoorFill, TelephoneFill, Globe, EnvelopeFill} from 'react-bootstrap
 import SmartLink from "../components/general/SmartLink.tsx";
 import {SEO} from '../components/general/SEO';
 import {api} from "../services/api.ts";
+import { useTranslation } from 'react-i18next';
 
 interface FormInputProps {
     label: string;
@@ -48,6 +49,8 @@ const StatusAlert: FC<StatusAlertProps> = ({type, message}) => {
 };
 
 export default function ContactPage() {
+    const { t } = useTranslation();
+
     const [form, setForm] = useState({
         name: "",
         email: "",
@@ -84,18 +87,18 @@ export default function ContactPage() {
     return (
         <>
             <SEO
-                title="Contacto"
-                description="Ponte en contacto con el equipo de Liderplast."
+                title={t('contact.seoTitle')}
+                description={t('contact.seoDescription')}
             />
             <div className="bg-[var(--color-background)] text-[var(--color-foreground)] py-12">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     {/* Título */}
                     <div className="text-center mb-12">
                         <h1 className="text-4xl font-extrabold sm:text-5xl">
-                            Ponte en Contacto
+                            {t('contact.title')}
                         </h1>
                         <p className="mt-4 text-xl text-[var(--color-foreground)]/80">
-                            Nos encantaría saber de ti.
+                            {t('contact.subtitle')}
                         </p>
                     </div>
 
@@ -103,16 +106,16 @@ export default function ContactPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
                         {/* Columna del Formulario */}
                         <div className="bg-[var(--color-card)] p-8 rounded-lg shadow-lg">
-                            <h2 className="text-2xl font-bold mb-6">Envíanos un mensaje</h2>
+                            <h2 className="text-2xl font-bold mb-6">{t('contact.formTitle')}</h2>
                             <form onSubmit={handleSubmit} className="space-y-6">
-                                <FormInput label="Tu Nombre" name="name" value={form.name} onChange={handleChange}/>
-                                <FormInput label="Tu Correo" name="email" type="email" value={form.email}
+                                <FormInput label={t('contact.nameLabel')} name="name" value={form.name} onChange={handleChange}/>
+                                <FormInput label={t('contact.emailLabel')} name="email" type="email" value={form.email}
                                            onChange={handleChange}/>
-                                <FormInput label="Asunto" name="subject" value={form.subject} onChange={handleChange}/>
+                                <FormInput label={t('contact.subjectLabel')} name="subject" value={form.subject} onChange={handleChange}/>
                                 <div>
                                     <label htmlFor="message"
                                            className="block text-sm font-medium text-[var(--color-foreground)]/80">
-                                        Mensaje
+                                        {t('contact.messageLabel')}
                                     </label>
                                     <textarea
                                         id="message"
@@ -130,14 +133,14 @@ export default function ContactPage() {
                                         className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-primary-foreground bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50"
                                         disabled={status === "sending"}
                                     >
-                                        {status === "sending" ? "Enviando…" : "Enviar Mensaje"}
+                                        {status === "sending" ? t('contact.sendingButton') : t('contact.sendButton')}
                                     </button>
                                 </div>
                                 {status === "sent" &&
-                                    <StatusAlert type="success" message="¡Gracias! Tu mensaje ha sido enviado."/>}
+                                    <StatusAlert type="success" message={t('contact.successAlert')}/>}
                                 {status === "error" &&
                                     <StatusAlert type="error"
-                                                 message="Ocurrió un error. Por favor, intenta de nuevo."/>}
+                                                 message={t('contact.errorAlert')}/>}
                             </form>
                         </div>
 
@@ -166,17 +169,17 @@ export default function ContactPage() {
                                     </li>
                                     <li className="flex items-center">
                                         <TelephoneFill className="text-xl text-primary mr-4 flex-shrink-0"/>
-                                        <span>Teléfono: <SmartLink to="https://wa.me/573242940464"
+                                        <span>{t('contact.phoneLabel')} <SmartLink to="https://wa.me/573242940464"
                                                                    className="text-primary hover:underline">+57 324 294 0464</SmartLink></span>
                                     </li>
                                     <li className="flex items-center">
                                         <Globe className="text-xl text-primary mr-4 flex-shrink-0"/>
-                                        <span>Sitio web: <SmartLink to="https://distribucioneslider.com.co"
+                                        <span>{t('contact.websiteLabel')} <SmartLink to="https://distribucioneslider.com.co"
                                                                     className="text-primary hover:underline">www.distribucioneslider.com.co</SmartLink></span>
                                     </li>
                                     <li className="flex items-center">
                                         <EnvelopeFill className="text-xl text-primary mr-4 flex-shrink-0"/>
-                                        <span>Email: <SmartLink to="mailto:liderplast@gmail.com"
+                                        <span>Email: <SmartLink to="mailto:distribucionesliderjn@gmail.com"
                                                                 className="text-primary hover:underline">liderplast@gmail.com</SmartLink></span>
                                     </li>
                                 </ul>

@@ -76,15 +76,6 @@ export default function AllProductsPage() {
         }
     };
 
-    const handleOpenDetailsModal = async (productId: number) => {
-        try {
-            const fullProduct = await shopService.getPublicProductById(productId);
-            setViewingProduct(fullProduct);
-        } catch (error) {
-            console.error("Error al cargar detalles del producto:", error);
-        }
-    };
-
     return (
         <>
             <SEO
@@ -175,7 +166,6 @@ export default function AllProductsPage() {
                                             key={p.id}
                                             product={p}
                                             onAdd={() => handleAddOrSelect(p)}
-                                            onViewDetails={() => handleOpenDetailsModal(p.id)}
                                         />
                                     ))}
                                 </div>

@@ -4,6 +4,7 @@ interface SEOProps {
     title: string;
     description: string;
     canonicalUrl?: string;
+    imageUrl?: string;
     ogImage?: string;
     noIndex?: boolean;
 }

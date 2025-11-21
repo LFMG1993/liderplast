@@ -1,6 +1,73 @@
 {
-  "Inicio": "Home",
-  "Tienda": "Shop",
-  "Contáctanos": "Contact Us",
-  "Buscar": "Search"
+  "header": {
+    "home": "Home",
+    "shop": "Shop",
+    "emprender": "Start a Business?",
+    "contact": "Contact Us",
+    "search": "Search"
+  },
+  "footer": {
+    "description": "Sustainable solutions for a modern world.",
+    "navigationTitle": "Navigation",
+    "contactTitle": "Contact",
+    "legalTitle": "Legal",
+    "privacyPolicy": "Privacy Policy",
+    "cookiePolicy": "Cookie Policy",
+    "copyright": "Liderplast. All rights reserved.",
+    "designedBy": "Designed and Developed by"
+  },
+  "home": {
+    "seoTitle": "Biodegradable and Disposable Plastics in Cúcuta",
+    "seoDescription": "Discover the leading range of single-use plastics in Cúcuta. We offer 100% biodegradable and traditional solutions. Quality and sustainability for your business.",
+    "loadingFeatured": "Loading featured products...",
+    "errorFeatured": "Could not load featured products."
+  },
+  "hero": {
+    "title": "Solutions in Sustainable Plastics",
+    "subtitle": "At Liderplast, we drive biodegradable and traditional solutions with a responsible approach, aligned with the demands of the present and a commitment to the future.",
+    "button": "View Products"
+  },
+  "about": {
+    "seoTitle": "About Us - Liderplast",
+    "seoDescription": "Learn the history of Liderplast, from our beginnings in 2015 to becoming a benchmark in sustainable and traditional plastic solutions in Cúcuta.",
+    "historyTag": "Our History",
+    "title": "From a family dream to a benchmark in sustainable solutions",
+    "paragraph1": "Liderplast was born in 2015 as a family micro-enterprise focused on distributing disposable products. With effort, customer proximity, and a forward-thinking vision, we grew step by step to become a recognized brand in the sector.",
+    "paragraph2": "Today, we combine our commercial experience with a real commitment to the environment, offering both biodegradable products and traditional options, always with the backing of quality and responsibility that defines us.",
+    "philosophyTitle": "Our Philosophy",
+    "philosophyText": "More than a distributor, we are an ally for your business and an agent of change for the planet. Our mission is to offer practical, quality solutions that meet the needs of today's market without compromising the future.",
+    "timeline1Title": "The Beginning",
+    "timeline1Text": "We were born as a family micro-enterprise, with the dream of supplying the local market with quality disposable products.",
+    "timeline2Title": "Growth and Expansion",
+    "timeline2Text": "We consolidated our position in Cúcuta, expanding our catalog and customer base thanks to trust and service.",
+    "timeline3Title": "Looking to the Future",
+    "timeline3Text": "We are leading the transition to sustainability, introducing biodegradable products and maintaining our commitment to innovation."
+  },
+  "contact": {
+    "seoTitle": "Contact - Liderplast",
+    "seoDescription": "Get in touch with the Liderplast team for inquiries, support, or information about our products.",
+    "title": "Get in Touch",
+    "subtitle": "We'd love to hear from you.",
+    "formTitle": "Send us a message",
+    "nameLabel": "Your Name",
+    "emailLabel": "Your Email",
+    "subjectLabel": "Subject",
+    "messageLabel": "Message",
+    "sendingButton": "Sending…",
+    "sendButton": "Send Message",
+    "successAlert": "Thank you! Your message has been sent.",
+    "errorAlert": "An error occurred. Please try again.",
+    "phoneLabel": "Phone:",
+    "websiteLabel": "Website:"
+  },
+  "emprende": {
+    "seoTitle": "Start a Business with Liderplast - Tutorials & Ideas",
+    "seoDescription": "Discover tutorials, ideas, and tips for your business using our products. Get inspired and grow with us!",
+    "title": "Start a Business with Liderplast",
+    "subtitle": "Ideas, tutorials, and tips to take your business to the next level with our products.",
+    "errorLoading": "Error loading content:",
+    "emptyState": "New content will be available here soon.",
+    "loadingMore": "Loading...",
+    "loadMore": "Load more"
+  }
 }
