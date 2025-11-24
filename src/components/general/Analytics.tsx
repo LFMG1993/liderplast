@@ -26,7 +26,7 @@ export const Analytics = () => {
     }, [location]);
 
     // No renderizar nada en desarrollo o si no hay IDs
-    if (!import.meta.env.PROD || (!GA_MEASUREMENT_ID && !CLARITY_PROJECT_ID)) {
+    if (!GA_MEASUREMENT_ID && !CLARITY_PROJECT_ID) {
         return null;
     }
 
@@ -41,7 +41,9 @@ export const Analytics = () => {
                              window.dataLayer = window.dataLayer || [];
                              function gtag(){dataLayer.push(arguments);}
                              gtag('js', new Date());
-                             gtag('config', '${GA_MEASUREMENT_ID}');
+                             if (import.meta.env.PROD) {
+                                 gtag('config', '${GA_MEASUREMENT_ID}');
+                              }
                          `}
                     </script>
                 </>
