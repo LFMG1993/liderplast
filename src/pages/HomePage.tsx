@@ -31,6 +31,16 @@ const HomePage = () => {
 
     return (
         <>
+            {/* --- Bloque de Depuración de Variables de Entorno (Eliminar después) --- */}
+            <div className="mt-12 p-4 border-2 border-dashed border-yellow-500 rounded-lg bg-yellow-500/10">
+                <h3 className="font-bold text-yellow-300">Información de Depuración</h3>
+                <p className="mt-2 text-sm text-yellow-200">
+                    Valor de VITE_GA_MEASUREMENT_ID:
+                    <code className="ml-2 px-2 py-1 bg-black/30 rounded font-mono text-white">
+                        {import.meta.env.VITE_GA_MEASUREMENT_ID || 'NO DEFINIDA'}
+                    </code>
+                </p>
+            </div>
             <TopBar/>
             <SEO
                 title={t('home.seoTitle')}
