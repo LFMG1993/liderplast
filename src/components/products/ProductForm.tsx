@@ -4,7 +4,7 @@ import type {Product, Attribute, Category, VolumeDiscount} from '../../types';
 import {Button} from '../general/Button.tsx';
 import {X, PlusCircle, ChevronsUpDown, Check} from 'lucide-react';
 import {Combobox, Transition} from '@headlessui/react';
-import {VariantAccordionItem} from './VariantAccordionItem.tsx';
+import {VariantAccordionItem, type AttributeValue} from './VariantAccordionItem.tsx';
 import {ImageUploader} from "../general/ImageUploader.tsx";
 import {AttributeForm} from "../attributes/AttributeForm.tsx";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
@@ -47,7 +47,7 @@ export interface ProductFormData {
     imageFile: File | null;
 }
 
-export const emptyVariant: VariantFormData = {
+const createEmptyVariant = (): VariantFormData => ({
     sku: '',
     price: '',
     stock: '',
@@ -57,17 +57,17 @@ export const emptyVariant: VariantFormData = {
     unitOfMeasure: '',
     unitsPerItem: 1,
     volumeDiscounts: [],
-};
+});
 
-export const initialState: ProductFormData = {
+export const createInitialProductState = (): ProductFormData => ({
     name: '',
     description: '',
     categoryId: 0,
     isFeatured: false,
-    variants: [emptyVariant],
+    variants: [createEmptyVariant()],
     image_url: null,
     imageFile: null,
-};
+});
 
 export function ProductForm({
                                 isOpen,
@@ -142,8 +142,10 @@ export function ProductForm({
             ? variant.unitOfMeasure.substring(0, 3).toUpperCase().replace(/\s/g, '')
             : '';
 
-        const uniqueSuffix = !productToEdit ? `-${Date.now().toString().slice(-5)}` : '';
+        const uniqueSuffix = !variant.id ? `-${Date.now().toString().slice(-5)}` : '';
+
         const skuParts = [productNameAbbr, ...attributeValueTexts];
+
         if (unitOfMeasureText) {
             skuParts.push(unitOfMeasureText);
         }
@@ -158,7 +160,7 @@ export function ProductForm({
             counter++;
         }
 
-        if (!variant.sku || productToEdit === null) {
+        if (!variant.id) {
             variant.sku = suggestedSku;
         }
     };
@@ -196,11 +198,7 @@ export function ProductForm({
     };
 
     const addVariant = () => {
-        const newVariantInstance = {
-            ...emptyVariant,
-            selectedAttributes: {},
-            volumeDiscounts: [],
-        };
+        const newVariantInstance = createEmptyVariant();
         setFormData(prev => ({...prev, variants: [...prev.variants, newVariantInstance]}));
     };
 
@@ -217,18 +215,26 @@ export function ProductForm({
     };
 
     // --- Lógica para el modal de creación rápida de valores de atributo ---
-    const openNewAttributeValueModal = (attribute: Attribute) => {
+    const openNewAttributeValueModal = (attribute: Attribute, variantIndex: number) => {
         setAddingValueToAttribute(attribute);
         setNewAttributeValue('');
         setIsAttributeValueModalOpen(true);
+        (attribute as any)._variantIndex = variantIndex;
     };
 
     const saveAttributeValueMutation = useMutation({
-        mutationFn: (data: { attributeId: number, value: string }) => attributeService.createAttributeValue(data),
-        onSuccess: () => {
+        mutationFn: (data: {
+            attributeId: number,
+            value: string
+        }) => attributeService.createAttributeValue(data) as Promise<AttributeValue>,
+        onSuccess: (newAttributeValue) => {
             addNotification('Valor de atributo creado con éxito.', 'success');
             queryClient.invalidateQueries({queryKey: ['attributes']}); // Invalida para recargar los atributos
             setIsAttributeValueModalOpen(false);
+            const variantIndex = (addingValueToAttribute as any)?._variantIndex;
+            if (variantIndex !== undefined) {
+                handleAttributeChange(variantIndex, newAttributeValue.attributeId, String(newAttributeValue.id));
+            }
         },
         onError: (err: Error) => addNotification(`Error: ${err.message}`, 'error'),
     });

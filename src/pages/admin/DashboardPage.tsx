@@ -1,3 +1,5 @@
+import * as React from 'react';
+import type {DashboardSummary} from "../../types";
 import {useQuery} from '@tanstack/react-query';
 import {Users, TrendingUp, MousePointerClick, Hourglass} from 'lucide-react';
 import {Spinner} from '../../components/general/Spinner';
@@ -26,7 +28,7 @@ const StatCard = ({title, value, icon: Icon, isLoading}: {
 );
 
 const DashboardPage = () => {
-    const {data, isLoading} = useQuery({
+    const {data, isLoading} = useQuery<DashboardSummary>({
         queryKey: ['dashboardSummary'],
         queryFn: analyticsService.getDashboardSummary,
         staleTime: 1000 * 60 * 5, // Cachear los datos por 5 minutos

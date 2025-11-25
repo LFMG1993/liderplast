@@ -46,7 +46,7 @@ export default function AllProductsPage() {
         queryKey: ['allPublicProducts', searchText, selectedCategoryIds, selectedAttributes],
         queryFn: ({pageParam = 1}) => shopService.getPublicProducts({
             page: pageParam,
-            limit: 20, // Cargamos de 20 en 20
+            limit: 30, // Cargamos de 30 en 30
             search: searchText,
             categoryIds: selectedCategoryIds, // El backend debe estar preparado para recibir esto
             attributeValueIds: attributeValueIds,

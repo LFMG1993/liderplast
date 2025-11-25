@@ -1,5 +1,4 @@
 import SmartLink from "./SmartLink.tsx";
-import {Link} from "react-router-dom";
 import {useTranslation} from "react-i18next";
 
 export default function Footer() {
@@ -36,7 +35,7 @@ export default function Footer() {
                             <li>
                                 <SmartLink to="/nosotros"
                                            className="text-[var(--color-foreground)]/70 hover:text-primary hover:underline transition-colors">
-                                    Nosotros
+                                    {t('footer.aboutUs')}
                                 </SmartLink>
                             </li>
                         </ul>
@@ -99,11 +98,6 @@ export default function Footer() {
                 {/* Sección de Copyright */}
                 <div
                     className="mt-12 border-t border-[var(--color-border)] pt-8 text-center text-[var(--color-foreground)]/60">
-                    <Link to="/admin"
-                          className="text-xs text-[var(--color-foreground)]/60 hover:text-primary hover:underline transition-colors pt-4"
-                          target="_blank">
-                        Acceso Administrador
-                    </Link>
                     <p className="mb-2">&copy; {new Date().getFullYear()} {t('footer.copyright')}</p>
                     <p>
                         {t('footer.designedBy')}{' '}

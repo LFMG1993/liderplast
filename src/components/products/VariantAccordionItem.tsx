@@ -18,8 +18,8 @@ interface VariantAccordionItemProps {
     onAddVolumeDiscount: (variantIndex: number) => void;
     onRemoveVolumeDiscount: (variantIndex: number, discountIndex: number) => void;
     onDiscountChange: (variantIndex: number, discountIndex: number, field: 'minQuantity' | 'price', value: number) => void;
-    onRemoveVariant: (index: number) => void;
-    onAddNewAttributeValue: (attribute: Attribute) => void;
+    onRemoveVariant: (variantIndex: number) => void;
+    onAddNewAttributeValue: (attribute: Attribute, variantIndex: number) => void;
     canBeRemoved: boolean;
     unitOfMeasureAttribute: Attribute | undefined;
 }
@@ -89,27 +89,35 @@ export const VariantAccordionItem = (props: VariantAccordionItemProps) => {
                 <div className="p-4 border-t border-[var(--color-border)] space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <div>
-                            <label htmlFor={`sku-${index}`} className="block text-xs font-medium text-[var(--color-foreground)]/80 mb-1">Codigo</label>
+                            <label htmlFor={`sku-${index}`}
+                                   className="block text-xs font-medium text-[var(--color-foreground)]/80 mb-1">Codigo</label>
                             <input id={`sku-${index}`} type="text" placeholder="Auto-generado" value={variant.sku}
                                    className="w-full rounded-md border-[var(--color-border)] bg-[var(--color-muted)] shadow-sm cursor-not-allowed"
                                    readOnly/>
                         </div>
                         <div>
-                            <label htmlFor={`price-${index}`} className="block text-xs font-medium text-[var(--color-foreground)]/80 mb-1">Precio Detal</label>
+                            <label htmlFor={`price-${index}`}
+                                   className="block text-xs font-medium text-[var(--color-foreground)]/80 mb-1">Precio
+                                Detal</label>
                             <FormattedNumberInput id={`price-${index}`} placeholder="0" value={variant.price}
                                                   onChange={(value) => onVariantChange(index, 'price', value)}
                                                   className="w-full rounded-md border-[var(--color-border)] bg-[var(--color-muted)] shadow-sm"
                                                   required/>
                         </div>
                         <div>
-                            <label htmlFor={`salePrice-${index}`} className="block text-xs font-medium text-[var(--color-foreground)]/80 mb-1">Precio de Oferta</label>
-                            <FormattedNumberInput id={`salePrice-${index}`} placeholder="Opcional" value={variant.salePrice}
+                            <label htmlFor={`salePrice-${index}`}
+                                   className="block text-xs font-medium text-[var(--color-foreground)]/80 mb-1">Precio
+                                de Oferta</label>
+                            <FormattedNumberInput id={`salePrice-${index}`} placeholder="Opcional"
+                                                  value={variant.salePrice}
                                                   onChange={(value) => onVariantChange(index, 'salePrice', value)}
                                                   className="w-full rounded-md border-[var(--color-border)] bg-[var(--color-muted)] shadow-sm"
                             />
                         </div>
                         <div>
-                            <label htmlFor={`stock-${index}`} className="block text-xs font-medium text-[var(--color-foreground)]/80 mb-1">Cantidad Disponible</label>
+                            <label htmlFor={`stock-${index}`}
+                                   className="block text-xs font-medium text-[var(--color-foreground)]/80 mb-1">Cantidad
+                                Disponible</label>
                             <FormattedNumberInput id={`stock-${index}`} placeholder="0" value={variant.stock}
                                                   onChange={(value) => onVariantChange(index, 'stock', value)}
                                                   className="w-full rounded-md border-[var(--color-border)] bg-[var(--color-muted)] shadow-sm"
@@ -171,12 +179,11 @@ export const VariantAccordionItem = (props: VariantAccordionItemProps) => {
                                             items={attr.values}
                                             selectedValue={variant.selectedAttributes[attr.id]}
                                             onChange={(valueId) => onAttributeChange(index, attr.id, String(valueId))}
-                                        />
-                                        <Button type="button" variant="ghost" size="icon"
-                                                onClick={() => onAddNewAttributeValue(attr)}
-                                                title={`Añadir nuevo valor a ${attr.name}`}>
-                                            <Plus className="h-4 w-4"/>
-                                        </Button>
+                                        /><Button type="button" variant="ghost" size="icon"
+                                                  onClick={() => onAddNewAttributeValue(attr, index)}
+                                                  title={`Añadir nuevo valor a ${attr.name}`}>
+                                        <Plus className="h-4 w-4"/>
+                                    </Button>
                                     </div>
                                 </div>
                             ))}
@@ -265,4 +272,8 @@ const SearchableSelect = ({items, selectedValue, onChange}: SearchableSelectProp
 };
 
 // Exportamos los tipos para que el nuevo componente pueda usarlos
-export type {VariantFormData, Attribute};
+export interface AttributeValue {
+    id: number;
+    value: string;
+    attributeId: number;
+}

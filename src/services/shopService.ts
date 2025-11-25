@@ -24,11 +24,12 @@ interface GetPublicProductsParams {
  * Servicio para las llamadas a la API que son públicas (no requieren autenticación).
  */
 export const shopService = {
-    getPublicProducts: async (params: GetPublicProductsParams): Promise<PaginatedResponse<Product>> => {
+    getPublicProducts: async ({ limit, ...restParams }: GetPublicProductsParams): Promise<PaginatedResponse<Product>> => {
         const apiParams = {
-            ...params,
-            categoryIds: params.categoryIds?.join(','),
-            attributeValueIds: params.attributeValueIds?.join(','), // Convertimos el array a string
+            ...restParams,
+            pageSize: limit,
+            categoryIds: restParams.categoryIds?.join(','),
+            attributeValueIds: restParams.attributeValueIds?.join(','), // Convertimos el array a string
         };
         const response = await api.get<ApiPublicProductsResponse>('/api/products', {params: apiParams});
         return {

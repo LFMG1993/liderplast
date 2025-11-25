@@ -7,7 +7,7 @@ import {Button} from '../../components/general/Button.tsx';
 import {ConfirmationModal} from '../../components/general/ConfirmationModal.tsx';
 import {ProductTable} from '../../components/products/ProductTable.tsx';
 import {useNotification} from '../../context/NotificationContext.tsx';
-import {ProductForm, type ProductFormData, initialState as initialProductFormState} from '../../components/products/ProductForm.tsx';
+import {ProductForm, type ProductFormData, createInitialProductState} from '../../components/products/ProductForm.tsx';
 import {attributeService} from "../../services/attributeService.ts";
 import {categoryService} from "../../services/categoryService.ts";
 import type {Attribute, Category} from "../../types";
@@ -20,7 +20,7 @@ const ProductsPage = () => {
     const {addNotification} = useNotification();
     const [isFormModalOpen, setIsFormModalOpen] = useState(false);
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-    const [formData, setFormData] = useState<ProductFormData>(initialProductFormState);
+    const [formData, setFormData] = useState<ProductFormData>(createInitialProductState);
     const [productToDelete, setProductToDelete] = useState<Product | null>(null);
 
     // Estados para las tablas
@@ -201,7 +201,7 @@ const ProductsPage = () => {
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-3xl font-bold text-[var(--color-foreground)]">Gestión de Productos</h1>
                 <Button onClick={() => {
-                    setFormData(initialProductFormState);
+                    setFormData(createInitialProductState);
                     setEditingProduct(null);
                     setIsFormModalOpen(true);
                 }}>Crear Producto</Button>

@@ -53,6 +53,9 @@ const AdminThemeProvider: React.FC<{ children: React.ReactNode }> = ({children})
 );
 
 function App() {
+    if (!import.meta.env.DEV && window.location.hostname.startsWith('admin') && !window.location.pathname.startsWith('/admin')) {
+        window.location.pathname = '/admin/login';
+    }
     return (
         <NotificationProvider>
             <UserAuthProvider>
@@ -76,24 +79,33 @@ function App() {
                                 <Route path="/checkout/:orderId" element={<CheckoutPage/>}/>
                                 <Route path="/orden-confirmada/:orderId" element={<OrderConfirmationPage/>}/>
                             </Route>
-                            <Route path="/admin/login" element={<AdminThemeProvider><LoginPage/></AdminThemeProvider>}/>
-                            {/* --- Rutas Protegidas del Admin --- */}
-                            <Route path="/admin" element={<ProtectedRoute/>}>
-                                <Route element={<AdminThemeProvider><DashboardLayout/></AdminThemeProvider>}>
-                                    <Route index element={<DashboardPage/>}/>
-                                    <Route path="users" element={<UsersPage/>}/>
-                                    <Route path="categories" element={<CategoriesPage/>}/>
-                                    <Route path="attributes" element={<AttributesPage/>}/>
-                                    <Route path="products" element={<ProductsPage/>}/>
-                                    <Route path="providers" element={<ProvidersPage/>}/>
-                                    <Route path="inventory" element={<InventoryPage/>}/>
-                                    <Route path="emprende" element={<EmprendePage/>}/>
-                                    <Route path="payment-methods" element={<PaymentMethodsPage/>}/>
-                                    <Route path="orders" element={<OrdersPage/>}/>
-                                    <Route path="shipments" element={<ShipmentsPage/>}/>
-                                    <Route path="*" element={<Navigate to="/admin" replace/>}/>
-                                </Route>
-                            </Route>
+                            {/* --- Rutas de Administración (anidadas bajo /admin) --- */}
+                            <Route path="/admin/*" element={
+                                <AdminThemeProvider>
+                                    <Routes>
+                                        <Route path="login" element={<LoginPage/>}/>
+                                        <Route path="/" element={<ProtectedRoute/>}>
+                                            <Route element={<DashboardLayout/>}>
+                                                <Route index element={<Navigate to="dashboard" replace/>}/>
+                                                <Route path="dashboard" element={<DashboardPage/>}/>
+                                                <Route path="users" element={<UsersPage/>}/>
+                                                <Route path="categories" element={<CategoriesPage/>}/>
+                                                <Route path="attributes" element={<AttributesPage/>}/>
+                                                <Route path="products" element={<ProductsPage/>}/>
+                                                <Route path="providers" element={<ProvidersPage/>}/>
+                                                <Route path="inventory" element={<InventoryPage/>}/>
+                                                <Route path="emprende" element={<EmprendePage/>}/>
+                                                <Route path="payment-methods" element={<PaymentMethodsPage/>}/>
+                                                <Route path="orders" element={<OrdersPage/>}/>
+                                                <Route path="shipments" element={<ShipmentsPage/>}/>
+                                                <Route path="*" element={<Navigate to="dashboard" replace/>}/>
+                                            </Route>
+                                        </Route>
+                                    </Routes>
+                                </AdminThemeProvider>
+                            }/>
+                            {/* Redirige cualquier otra ruta no encontrada a la página de inicio */}
+                            <Route path="*" element={<Navigate to="/" replace/>}/>
                         </Routes>
                     </BrowserRouter>
                 </CartProvider>
