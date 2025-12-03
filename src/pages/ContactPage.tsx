@@ -180,7 +180,7 @@ export default function ContactPage() {
                                     <li className="flex items-center">
                                         <EnvelopeFill className="text-xl text-primary mr-4 flex-shrink-0"/>
                                         <span>Email: <SmartLink to="mailto:distribucionesliderjn@gmail.com"
-                                                                className="text-primary hover:underline">liderplast@gmail.com</SmartLink></span>
+                                                                className="text-primary hover:underline">distribucionesliderjn@gmail.com</SmartLink></span>
                                     </li>
                                 </ul>
                             </div>
