@@ -29,6 +29,7 @@ export interface VariantFormData {
     price: number | '';
     stock: number | '';
     salePrice?: number | null;
+    isActive: boolean;
     imageUrl: string | null;
     imageFile: File | null;
     unitOfMeasure: string | null;
@@ -42,6 +43,7 @@ export interface ProductFormData {
     description: string;
     categoryId: number;
     isFeatured: boolean;
+    isActive: boolean;
     variants: VariantFormData[];
     image_url: string | null;
     imageFile: File | null;
@@ -53,6 +55,7 @@ const createEmptyVariant = (): VariantFormData => ({
     stock: '',
     selectedAttributes: {},
     imageUrl: null,
+    isActive: true,
     imageFile: null,
     unitOfMeasure: '',
     unitsPerItem: 1,
@@ -65,6 +68,7 @@ export const createInitialProductState = (): ProductFormData => ({
     categoryId: 0,
     isFeatured: false,
     variants: [createEmptyVariant()],
+    isActive: true,
     image_url: null,
     imageFile: null,
 });
@@ -358,12 +362,29 @@ export function ProductForm({
                                               onChange={handleInputChange} rows={3}
                                               className="mt-1 block w-full rounded-md border-[var(--color-border)] bg-[var(--color-muted)] shadow-sm"></textarea>
                                 </div>
-                                <div className="flex items-center">
-                                    <input id="isFeatured" name="isFeatured" type="checkbox"
-                                           checked={formData.isFeatured} onChange={handleInputChange}
-                                           className="h-4 w-4 text-primary rounded border-[var(--color-border)] bg-[var(--color-muted)]"/>
-                                    <label htmlFor="isFeatured" className="ml-2 block text-sm">Marcar como
-                                        producto destacado</label>
+                                <div className="space-y-4">
+                                    <div className="relative flex items-start">
+                                        <div className="flex h-6 items-center">
+                                            <input id="isFeatured" name="isFeatured" type="checkbox"
+                                                   checked={formData.isFeatured} onChange={handleInputChange}
+                                                   className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"/>
+                                        </div>
+                                        <div className="ml-3 text-sm">
+                                            <label htmlFor="isFeatured" className="font-medium">Marcar como destacado</label>
+                                            <p className="text-[var(--color-foreground)]/60">El producto aparecerá en la página principal.</p>
+                                        </div>
+                                    </div>
+                                    <div className="relative flex items-start">
+                                        <div className="flex h-6 items-center">
+                                            <input id="isActive" name="isActive" type="checkbox"
+                                                   checked={formData.isActive} onChange={handleInputChange}
+                                                   className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"/>
+                                        </div>
+                                        <div className="ml-3 text-sm">
+                                            <label htmlFor="isActive" className="font-medium">Producto Activo</label>
+                                            <p className="text-[var(--color-foreground)]/60">Si se desactiva, no será visible para los clientes.</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

@@ -11,6 +11,7 @@ export interface ProductVariant {
     stock: number;
     salePrice?: number | null;
     imageUrl: string | null;
+    isActive: boolean;
     unitOfMeasure: string | null; // Ej: "Caja", "Unidad", "Millar"
     unitsPerItem: number | null; // Ej: 1000 (unidades por caja)
     volumeDiscounts: VolumeDiscount[];
@@ -31,6 +32,7 @@ export interface Product {
     name: string;
     description?: string | null;
     isFeatured: boolean;
+    isActive: boolean;
     imageUrl: string | null;
     category: {
         id: number;
@@ -44,6 +46,7 @@ export interface ProductCreationData {
     description?: string;
     categoryId: number;
     isFeatured?: boolean;
+    isActive?: boolean;
     imageUrl?: string | null;
     variants: {
         id?: number;
@@ -52,6 +55,7 @@ export interface ProductCreationData {
         stock: number;
         salePrice?: number | null;
         imageUrl?: string | null;
+        isActive?: boolean;
         unitOfMeasure?: string | null;
         unitsPerItem?: number | null;
         volumeDiscounts?: VolumeDiscount[];

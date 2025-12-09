@@ -27,11 +27,12 @@ export default function SearchDropdown({isTransparent, isPanel = false}: SearchD
 
     // Hook useQuery para buscar sugerencias de forma eficiente
     const {data: suggestedProducts = []} = useQuery({
-        queryKey: ['searchSuggestions', debouncedQuery],
+        queryKey: ['searchSuggestions', debouncedQuery, {isActive:true}],
         queryFn: () => shopService.getPublicProducts({
             search: debouncedQuery,
             page: 1,
-            limit: 5 // Solo queremos 5 sugerencias
+            limit: 5,
+            isActive: true
         }),
         select: (data: PaginatedResponse<Product>) => data.data,
         enabled: debouncedQuery.trim().length > 2, // Solo busca si hay al menos 3 caracteres

@@ -109,6 +109,23 @@ const columns: ColumnDef<Product>[] = [
         ),
     },
     {
+        accessorKey: 'isActive',
+        header: 'Estado',
+        cell: ({row}) => (
+            row.original.isActive ? (
+                <span
+                    className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100">
+                     Activo
+                 </span>
+            ) : (
+                <span
+                    className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-100">
+                     Inactivo
+                 </span>
+            )
+        )
+    },
+    {
         id: 'price',
         header: 'Precio',
         cell: ({row}) => getPriceDisplay(row.original.variants),

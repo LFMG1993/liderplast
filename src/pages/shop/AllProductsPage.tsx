@@ -43,13 +43,14 @@ export default function AllProductsPage() {
         isFetchingNextPage,
         isLoading: isLoadingProducts
     } = useInfiniteQuery({
-        queryKey: ['allPublicProducts', searchText, selectedCategoryIds, selectedAttributes],
+        queryKey: ['allPublicProducts', searchText, selectedCategoryIds, selectedAttributes, {isActive:true}],
         queryFn: ({pageParam = 1}) => shopService.getPublicProducts({
             page: pageParam,
             limit: 30, // Cargamos de 30 en 30
             search: searchText,
-            categoryIds: selectedCategoryIds, // El backend debe estar preparado para recibir esto
+            categoryIds: selectedCategoryIds,
             attributeValueIds: attributeValueIds,
+            isActive: true,
         }),
         initialPageParam: 1,
         getNextPageParam: (lastPage, allPages) => {
@@ -84,7 +85,6 @@ export default function AllProductsPage() {
                 canonicalUrl="/tienda"
             />
             <section className="py-8">
-                {/* ANTES: container-fluid */}
                 <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
                     {/* Botón de Filtros para Móvil */}
                     <div className="md:hidden mb-4">
@@ -133,7 +133,6 @@ export default function AllProductsPage() {
                             </div>
                         </Dialog>
                     </Transition.Root>
-                    {/* ANTES: row */}
                     <div className="flex flex-col md:flex-row gap-8">
                         {/* Sidebar para Desktop */}
                         <div

@@ -29,7 +29,7 @@ const PendingShipments = () => {
     }, [globalFilter]);
 
     const {data, isLoading, isError, error} = useQuery<PaginatedResponse<Order>, Error>({
-        queryKey: ['pendingShipments', pageIndex, pageSize, debouncedFilter, sorting],
+        queryKey: ['pendingShipments', pageIndex, pageSize, debouncedFilter, sorting, { includeItems: true }],
         queryFn: () => orderService.listAdmin({
             page: pageIndex + 1,
             pageSize: pageSize,
@@ -37,7 +37,8 @@ const PendingShipments = () => {
             sortBy: sorting[0]?.id,
             sortOrder: sorting[0]?.desc ? 'desc' : 'asc',
             paymentStatus: 'paid',
-            shippingStatus: 'unfulfilled'
+            shippingStatus: 'unfulfilled',
+            includeItems: true
         }),
         placeholderData: keepPreviousData,
     });

@@ -9,6 +9,7 @@ import {
     useReactTable, getCoreRowModel, flexRender, getSortedRowModel, getExpandedRowModel,
     type PaginationState, type SortingState, createColumnHelper
 } from '@tanstack/react-table';
+import React from "react";
 
 interface PendingShipmentsTableProps {
     orders: Order[];
@@ -102,9 +103,11 @@ export function PendingShipmentsTable(props: PendingShipmentsTableProps) {
         getCoreRowModel: getCoreRowModel(),
         getSortedRowModel: getSortedRowModel(),
         getExpandedRowModel: getExpandedRowModel(),
+        getRowCanExpand: () => true,
         manualPagination: true,
         manualSorting: true,
         manualFiltering: true,
+        manualExpanding: false
     });
 
     return (
@@ -138,8 +141,8 @@ export function PendingShipmentsTable(props: PendingShipmentsTableProps) {
                 </thead>
                 <tbody className="divide-y divide-[var(--color-border)]">
                 {table.getRowModel().rows.map(row => (
-                    <>
-                        <tr key={row.id} className="hover:bg-[var(--color-background)]">
+                    <React.Fragment key={row.id}>
+                        <tr className="hover:bg-[var(--color-background)]">
                             {row.getVisibleCells().map(cell => (
                                 <td key={cell.id} className="px-6 py-4 whitespace-nowrap text-sm">
                                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -147,37 +150,41 @@ export function PendingShipmentsTable(props: PendingShipmentsTableProps) {
                             ))}
                         </tr>
                         {row.getIsExpanded() && (
-                            <tr key={row.id + '-details'}>
-                                <td colSpan={columns.length + 2} className="p-0">
+                            <tr>
+                                <td colSpan={table.getAllColumns().length} className="p-0">
                                     <div className="p-4 border-l-4 border-primary bg-[var(--color-muted)]">
                                         <h4 className="font-semibold mb-3">Productos del Pedido:</h4>
-                                        <ul className="space-y-3">
-                                            {row.original.items.map(item => (
-                                                <li key={item.id} className="flex items-center gap-4 text-sm">
-                                                    <img
-                                                        src={item.product.imageUrl ?? '/placeholder.png'}
-                                                        alt={item.product.name}
-                                                        className="h-12 w-12 rounded object-cover bg-gray-200"
-                                                    />
-                                                    <div className="flex-grow">
-                                                        <p className="font-medium">{item.product.name}
-                                                            <span
-                                                                className="ml-2 text-[var(--color-foreground)]/60 font-normal">({getVariantAttributes(item.variant)})</span>
-                                                        </p>
-                                                        <p className="text-[var(--color-foreground)]/60">SKU: {item.variant?.sku || 'N/A'}</p>
-                                                    </div>
-                                                    <div className="text-right">
-                                                        <p>{item.quantity} x ${item.price.toLocaleString('es-CO')}</p>
-                                                        <p className="font-semibold">${(item.quantity * item.price).toLocaleString('es-CO')}</p>
-                                                    </div>
-                                                </li>
-                                            ))}
-                                        </ul>
+                                        {row.original.items && row.original.items.length > 0 ? (
+                                            <ul className="space-y-3">
+                                                {row.original.items.map(item => (
+                                                    <li key={item.id} className="flex items-center gap-4 text-sm">
+                                                        <img
+                                                            src={item.variant?.imageUrl ?? item.product.imageUrl ?? '/placeholder.png'}
+                                                            alt={item.product.name}
+                                                            className="h-12 w-12 rounded object-cover bg-gray-200"
+                                                        />
+                                                        <div className="flex-grow">
+                                                            <p className="font-medium">{item.product.name}
+                                                                <span
+                                                                    className="ml-2 text-[var(--color-foreground)]/60 font-normal">({getVariantAttributes(item.variant)})</span>
+                                                            </p>
+                                                            <p className="text-[var(--color-foreground)]/60">SKU: {item.variant?.sku || 'N/A'}</p>
+                                                        </div>
+                                                        <div className="text-right">
+                                                            <p>{item.quantity} x ${item.price.toLocaleString('es-CO')}</p>
+                                                            <p className="font-semibold">${(item.quantity * item.price).toLocaleString('es-CO')}</p>
+                                                        </div>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        ) : (
+                                            <p className="text-sm text-[var(--color-foreground)]/60">No se pudieron cargar los detalles de los productos.</p>
+                                        )}
                                     </div>
                                 </td>
                             </tr>
                         )}
-                    </>
+                    </React.Fragment>
                 ))}
                 </tbody>
             </table>

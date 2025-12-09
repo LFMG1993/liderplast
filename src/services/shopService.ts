@@ -18,6 +18,7 @@ interface GetPublicProductsParams {
     featured?: boolean;
     categoryIds?: number[];
     attributeValueIds?: number[];
+    isActive?: boolean;
 }
 
 /**
@@ -29,7 +30,8 @@ export const shopService = {
             ...restParams,
             pageSize: limit,
             categoryIds: restParams.categoryIds?.join(','),
-            attributeValueIds: restParams.attributeValueIds?.join(','), // Convertimos el array a string
+            attributeValueIds: restParams.attributeValueIds?.join(','),
+            is_active: restParams.isActive,
         };
         const response = await api.get<ApiPublicProductsResponse>('/api/products', {params: apiParams});
         return {

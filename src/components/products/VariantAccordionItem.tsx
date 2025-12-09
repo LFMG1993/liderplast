@@ -162,6 +162,20 @@ export const VariantAccordionItem = (props: VariantAccordionItemProps) => {
                                        onChange={(e) => onVariantChange(index, 'unitsPerItem', e.target.value === '' ? null : parseInt(e.target.value, 10))}
                                        className="mt-1 w-full rounded-md border-[var(--color-border)] bg-[var(--color-muted)] shadow-sm"/>
                             </div>
+                            <div className="relative flex items-start pt-6">
+                                <div className="flex h-6 items-center">
+                                    <input
+                                        id={`variant-isActive-${index}`}
+                                        type="checkbox"
+                                        checked={variant.isActive}
+                                        onChange={(e) => onVariantChange(index, 'isActive', e.target.checked)}
+                                        className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                                    />
+                                </div>
+                                <div className="ml-3 text-sm">
+                                    <label htmlFor={`variant-isActive-${index}`} className="font-medium text-[var(--color-foreground)]">Variante Activa</label>
+                                </div>
+                            </div>
                         </div>
                     </div>
 

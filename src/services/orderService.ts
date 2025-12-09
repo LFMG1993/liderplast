@@ -28,9 +28,10 @@ export const orderService = {
         sortBy?: string,
         sortOrder?: 'asc' | 'desc',
         paymentStatus?: PaymentStatus,
+        includeItems?: boolean,
         shippingStatus?: ShippingStatus
     }): Promise<PaginatedResponse<Order>> => {
-        const {page, pageSize, search, sortBy, sortOrder, paymentStatus, shippingStatus} = params;
+        const {page, pageSize, search, sortBy, sortOrder, paymentStatus, shippingStatus, includeItems} = params;
         const response = await api.get<ApiOrdersResponse>('/api/admin/orders', {
             params: {
                 page,
@@ -39,7 +40,8 @@ export const orderService = {
                 sortBy,
                 sortOrder,
                 payment_status: paymentStatus,
-                shipping_status: shippingStatus
+                shipping_status: shippingStatus,
+                include_items: includeItems
             },
         });
         return {

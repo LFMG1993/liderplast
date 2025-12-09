@@ -80,6 +80,7 @@ const ProductsPage = () => {
                 description: productDetails.description || '',
                 categoryId: productDetails.category.id,
                 isFeatured: productDetails.isFeatured,
+                isActive: productDetails.isActive,
                 image_url: productDetails.imageUrl || null,
                 imageFile: null,
                 variants: productDetails.variants.map(v => ({
@@ -132,6 +133,7 @@ const ProductsPage = () => {
                 description: formData.description,
                 categoryId: formData.categoryId,
                 isFeatured: formData.isFeatured,
+                isActive: formData.isActive,
                 imageUrl: mainImageUrl,
                 variants: formData.variants.map((v, index) => {
                     const attributeValueIds = Object.values(v.selectedAttributes).filter(id => id && !isNaN(id));
@@ -142,6 +144,7 @@ const ProductsPage = () => {
                         stock: Number(v.stock),
                         salePrice: v.salePrice === null ? undefined : v.salePrice,
                         imageUrl: variantImageUrls[index],
+                        isActive: v.isActive,
                         unitOfMeasure: v.unitOfMeasure,
                         unitsPerItem: v.unitsPerItem,
                         volumeDiscounts: v.volumeDiscounts,
