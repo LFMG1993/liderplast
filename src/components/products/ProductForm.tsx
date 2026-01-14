@@ -172,10 +172,12 @@ export function ProductForm({
     const handleAttributeChange = (variantIndex: number, attributeId: number, valueId: string) => {
         const newVariants = [...formData.variants];
         const currentVariant = newVariants[variantIndex];
-        const numericValueId = parseInt(valueId, 10);
-
-        // Actualizamos el mapa de atributos seleccionados para esta variante
-        currentVariant.selectedAttributes[attributeId] = numericValueId;
+        if (valueId) {
+            const numericValueId = parseInt(valueId, 10);
+            currentVariant.selectedAttributes[attributeId] = numericValueId;
+        } else {
+            delete currentVariant.selectedAttributes[attributeId];
+        }
 
         // Llamamos a la función centralizada para regenerar el SKU.
         regenerateSkuOnDraft(currentVariant, newVariants, variantIndex);

@@ -192,7 +192,7 @@ export const VariantAccordionItem = (props: VariantAccordionItemProps) => {
                                         <SearchableSelect
                                             items={attr.values}
                                             selectedValue={variant.selectedAttributes[attr.id]}
-                                            onChange={(valueId) => onAttributeChange(index, attr.id, String(valueId))}
+                                            onChange={(valueId) => onAttributeChange(index, attr.id, valueId !== null ? String(valueId) : '')}
                                         /><Button type="button" variant="ghost" size="icon"
                                                   onClick={() => onAddNewAttributeValue(attr, index)}
                                                   title={`Añadir nuevo valor a ${attr.name}`}>
@@ -236,8 +236,8 @@ export const VariantAccordionItem = (props: VariantAccordionItemProps) => {
 
 interface SearchableSelectProps {
     items: { id: number, value: string }[];
-    selectedValue: number | undefined;
-    onChange: (value: number) => void;
+    selectedValue: number | undefined | null;
+    onChange: (value: number | null) => void;
 }
 
 const SearchableSelect = ({items, selectedValue, onChange}: SearchableSelectProps) => {
@@ -249,7 +249,7 @@ const SearchableSelect = ({items, selectedValue, onChange}: SearchableSelectProp
         : items.filter(item => item.value.toLowerCase().includes(query.toLowerCase()));
 
     return (
-        <Combobox value={selectedItem || null} onChange={(item) => item && onChange(item.id)} nullable>
+        <Combobox value={selectedItem || null} onChange={(item) => onChange(item ? item.id : null)} nullable>
             <div className="relative w-full">
                 <Combobox.Input
                     className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-muted)] py-2 pl-3 pr-10 shadow-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
